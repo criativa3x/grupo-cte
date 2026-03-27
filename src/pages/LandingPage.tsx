@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2 } from 'lucide-react';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +12,20 @@ export default function LandingPage() {
     vagas: [] as any[],
   });
 
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
   useEffect(() => {
     fetchContent();
   }, []);
+
+  useEffect(() => {
+    if (content.banners.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentBannerIndex((prev) => (prev + 1) % content.banners.length);
+      }, 6000);
+      return () => clearInterval(timer);
+    }
+  }, [content.banners.length]);
 
   const fetchContent = async () => {
     try {
@@ -35,14 +47,27 @@ export default function LandingPage() {
     }
   };
 
-  // Default banner if none exists
-  const activeBanner = content.banners[0] || {
-    titulo: 'O seu futuro começa aqui.',
-    subtitulo: 'Capacitação e Estágio num só lugar.',
-    imagem_url: 'https://picsum.photos/seed/learning-group/1920/1080',
-    texto_botao: 'Ver Cursos',
-    link_botao: '#cursos'
-  };
+  // Fallback banners if none exists in DB
+  const displayBanners = content.banners.length > 0 ? content.banners : [
+    {
+      id: 'default-1',
+      titulo: 'O seu futuro começa aqui.',
+      subtitulo: 'Capacitação e Estágio num só lugar.',
+      imagem_url: 'https://picsum.photos/seed/learning-group/1920/1080',
+      texto_botao: 'Ver Cursos',
+      link_botao: '#cursos'
+    },
+    {
+      id: 'default-2',
+      titulo: 'Transforme sua carreira hoje.',
+      subtitulo: 'Cursos práticos com foco no mercado de trabalho.',
+      imagem_url: 'https://picsum.photos/seed/career-growth/1920/1080',
+      texto_botao: 'Conhecer Cursos',
+      link_botao: '#cursos'
+    }
+  ];
+
+  const activeBanner = displayBanners[currentBannerIndex];
 
   return (
     <div className="min-h-screen font-sans text-gray-800">
@@ -103,59 +128,131 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* 2. Hero Section - Rich Banner */}
+      {/* 2. Hero Section - Rich Banner Slider */}
       <section id="inicio" className="relative min-h-[85vh] flex items-center overflow-hidden bg-blue-950">
-        <div className="absolute inset-0">
-          <img
-            src={activeBanner.imagem_url}
-            alt="Banner Principal"
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          {/* Organic Blend Overlay: Navy Blue and Orange hints */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/70 to-orange-600/20"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentBannerIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <img
+              src={activeBanner.imagem_url}
+              alt={activeBanner.titulo}
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+            {/* Organic Blend Overlay: Navy Blue and Orange hints */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/70 to-orange-600/20"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
+          </motion.div>
+        </AnimatePresence>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-3xl">
-            <div className="inline-block px-4 py-1.5 bg-orange-600/90 text-white text-sm font-bold rounded-full mb-6 backdrop-blur-sm">
-              DESDE 1994 TRANSFORMANDO VIDAS
-            </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8">
-              {activeBanner.titulo}
-            </h1>
-            <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium">
-              {activeBanner.subtitulo}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
-                {activeBanner.texto_botao}
-              </a>
-              <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
-                Vagas de Estágio
-              </a>
-            </div>
-            
-            {/* Added CTA prominent in Hero */}
-            <div className="mt-12 flex items-center gap-4 text-white/80">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <img 
-                    key={i}
-                    src={`https://picsum.photos/seed/user${i}/100/100`} 
-                    className="w-10 h-10 rounded-full border-2 border-blue-950 object-cover" 
-                    alt="Aluno"
-                    referrerPolicy="no-referrer"
-                  />
-                ))}
-              </div>
-              <p className="text-sm font-semibold">
-                <span className="text-orange-500">+15.000</span> alunos já encaminhados
-              </p>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentBannerIndex}
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+                }}
+              >
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                  }}
+                  className="inline-block px-4 py-1.5 bg-orange-600/90 text-white text-sm font-bold rounded-full mb-6 backdrop-blur-sm"
+                >
+                  DESDE 1994 TRANSFORMANDO VIDAS
+                </motion.div>
+                
+                <motion.h1 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                  }}
+                  className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8"
+                >
+                  {activeBanner.titulo}
+                </motion.h1>
+                
+                <motion.p 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                  }}
+                  className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium"
+                >
+                  {activeBanner.subtitulo}
+                </motion.p>
+                
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                  }}
+                  className="flex flex-col sm:flex-row gap-6"
+                >
+                  <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                    {activeBanner.texto_botao}
+                  </a>
+                  <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
+                    Vagas de Estágio
+                  </a>
+                </motion.div>
+                
+                {/* Added CTA prominent in Hero */}
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.8 } }
+                  }}
+                  className="mt-12 flex items-center gap-4 text-white/80"
+                >
+                  <div className="flex -space-x-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <img 
+                        key={i}
+                        src={`https://picsum.photos/seed/user${i}/100/100`} 
+                        className="w-10 h-10 rounded-full border-2 border-blue-950 object-cover" 
+                        alt="Aluno"
+                        referrerPolicy="no-referrer"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm font-semibold">
+                    <span className="text-orange-500">+15.000</span> alunos já encaminhados
+                  </p>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
+
+        {/* Slider Controls - Dots */}
+        {displayBanners.length > 1 && (
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
+            {displayBanners.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentBannerIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentBannerIndex === index 
+                    ? "bg-orange-600 w-10 shadow-[0_0_15px_rgba(234,88,12,0.8)]" 
+                    : "bg-white/40 hover:bg-white/60"
+                }`}
+                aria-label={`Ir para slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 3. Vagas de Estágio Humanizadas */}
