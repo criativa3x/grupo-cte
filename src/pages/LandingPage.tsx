@@ -130,28 +130,33 @@ export default function LandingPage() {
 
       {/* 2. Hero Section - Rich Banner Slider */}
       <section id="inicio" className="relative min-h-[85vh] flex items-center overflow-hidden bg-blue-950">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={currentBannerIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <img
-              src={activeBanner.imagem_url}
-              alt={activeBanner.titulo}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-            {/* Organic Blend Overlay: Navy Blue and Orange hints */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/70 to-orange-600/20"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
-          </motion.div>
-        </AnimatePresence>
+        {/* Background Images Stack - Perfect Crossfade */}
+        <div className="absolute inset-0">
+          {displayBanners.map((banner, index) => (
+            <div 
+              key={banner.id || index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                currentBannerIndex === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <img
+                src={banner.imagem_url}
+                alt={banner.titulo}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Fixed Overlay - Always on top of images, below text */}
+        <div className="absolute inset-0 z-10">
+          {/* Organic Blend Overlay: Navy Blue and Orange hints */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/70 to-orange-600/20"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
+        </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-3xl">
             <AnimatePresence mode="wait">
               <motion.div
