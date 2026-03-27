@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -260,7 +261,7 @@ export default function LandingPage() {
         )}
       </section>
 
-      {/* 3. Vagas de Estágio Humanizadas */}
+      {/* 3. Vagas de Estágio Humanizadas - Vitrine */}
       <section id="estagios" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -268,9 +269,9 @@ export default function LandingPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">Conectamos jovens talentos às empresas que buscam renovação e energia.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {content.vagas.length > 0 ? (
-              content.vagas.map((vaga) => (
+              content.vagas.slice(0, 3).map((vaga) => (
                 <div key={vaga.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
                   <div className="p-10 flex flex-col items-center text-center">
                     <img 
@@ -319,6 +320,17 @@ export default function LandingPage() {
                 </div>
               ))
             )}
+          </div>
+
+          {/* CTA Button - Ver Todas */}
+          <div className="mt-16 text-center">
+            <Link 
+              to="/vagas" 
+              className="inline-flex items-center px-10 py-4 border-2 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white font-black text-lg rounded-full transition-all duration-300 group"
+            >
+              Ver todas as vagas
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </section>

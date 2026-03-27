@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import VagasPage from './pages/VagasPage';
 import AdminPanel from './pages/AdminPanel';
 import LoginPage from './pages/LoginPage';
 import { supabase } from './lib/supabase';
@@ -48,6 +49,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/vagas" element={<VagasPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route 
           path="/admin/*" 
