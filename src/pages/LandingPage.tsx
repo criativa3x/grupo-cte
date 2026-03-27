@@ -1,8 +1,53 @@
-import React, { useState } from 'react';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2 } from 'lucide-react';
+
+// SUPABASE CONFIGURATION
+const SUPABASE_URL = 'https://lrbfejskngapnzuwtiim.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JBe4LeOgxxcDPbJV1QZ0HA_ANnF_TvS';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState({
+    banners: [] as any[],
+    cursos: [] as any[],
+    vagas: [] as any[],
+  });
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const [bannersRes, cursosRes, vagasRes] = await Promise.all([
+        supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
+        supabase.from('cursos').select('*').order('created_at', { ascending: false }),
+        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      setContent({
+        banners: bannersRes.data || [],
+        cursos: cursosRes.data || [],
+        vagas: vagasRes.data || [],
+      });
+    } catch (error) {
+      console.error('Error fetching content:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Default banner if none exists
+  const activeBanner = content.banners[0] || {
+    titulo: 'O seu futuro começa aqui.',
+    subtitulo: 'Capacitação e Estágio num só lugar.',
+    imagem_url: 'https://picsum.photos/seed/learning-group/1920/1080',
+    texto_botao: 'Ver Cursos',
+    link_botao: '#cursos'
+  };
 
   return (
     <div className="min-h-screen font-sans text-gray-800">
@@ -62,8 +107,8 @@ export default function LandingPage() {
       <section id="inicio" className="relative min-h-[85vh] flex items-center overflow-hidden bg-blue-950">
         <div className="absolute inset-0">
           <img
-            src="https://picsum.photos/seed/learning-group/1920/1080"
-            alt="Jovens em ambiente de aprendizado"
+            src={activeBanner.imagem_url}
+            alt="Banner Principal"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
@@ -78,16 +123,14 @@ export default function LandingPage() {
               DESDE 1994 TRANSFORMANDO VIDAS
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8">
-              O seu futuro começa aqui. <br />
-              <span className="text-orange-500">Capacitação e Estágio</span> <br />
-              num só lugar.
+              {activeBanner.titulo}
             </h1>
             <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium">
-              Capacitação profissional e encaminhamento para estágio em um só lugar. Conectamos você às melhores empresas.
+              {activeBanner.subtitulo}
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
-              <a href="#cursos" className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
-                Ver Cursos
+              <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                {activeBanner.texto_botao}
               </a>
               <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
                 Vagas de Estágio
@@ -124,86 +167,56 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Card 1 */}
-            <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
-              <div className="p-10 flex flex-col items-center text-center">
-                <img 
-                  src="https://picsum.photos/seed/receptionist/200/200" 
-                  alt="Atendimento" 
-                  className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
-                <h3 className="text-2xl font-black text-gray-900 mb-4">Estágio em Atendimento</h3>
-                <div className="space-y-3 mb-8 w-full">
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <MapPin className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Camaçari - BA</span>
-                  </div>
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Bolsa: <strong className="text-gray-900">R$ 600,00</strong></span>
-                  </div>
-                </div>
-                <button className="w-full bg-blue-950 hover:bg-orange-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg">
-                  Candidatar-se
-                </button>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
-              <div className="p-10 flex flex-col items-center text-center">
-                <img 
-                  src="https://picsum.photos/seed/it-support/200/200" 
-                  alt="TI" 
-                  className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
-                <h3 className="text-2xl font-black text-gray-900 mb-4">Auxiliar de TI (Estágio)</h3>
-                <div className="space-y-3 mb-8 w-full">
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <MapPin className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Dias d'Ávila - BA</span>
-                  </div>
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Bolsa: <strong className="text-gray-900">R$ 750,00</strong></span>
+            {content.vagas.length > 0 ? (
+              content.vagas.map((vaga) => (
+                <div key={vaga.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
+                  <div className="p-10 flex flex-col items-center text-center">
+                    <img 
+                      src={`https://picsum.photos/seed/${vaga.titulo}/200/200`} 
+                      alt={vaga.titulo} 
+                      className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
+                    <h3 className="text-2xl font-black text-gray-900 mb-4">{vaga.titulo}</h3>
+                    <div className="space-y-3 mb-8 w-full">
+                      <div className="flex items-center justify-center text-gray-600 font-semibold">
+                        <MapPin className="h-5 w-5 mr-2 text-orange-500" />
+                        <span>{vaga.local}</span>
+                      </div>
+                      <div className="flex items-center justify-center text-gray-600 font-semibold">
+                        <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
+                        <span>Bolsa: <strong className="text-gray-900">{vaga.valor_bolsa}</strong></span>
+                      </div>
+                    </div>
+                    <a 
+                      href={vaga.link_candidatura} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full bg-blue-950 hover:bg-orange-600 text-white text-center font-black py-4 rounded-2xl transition-all shadow-lg"
+                    >
+                      Candidatar-se
+                    </a>
                   </div>
                 </div>
-                <button className="w-full bg-blue-950 hover:bg-orange-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg">
-                  Candidatar-se
-                </button>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
-              <div className="p-10 flex flex-col items-center text-center">
-                <img 
-                  src="https://picsum.photos/seed/hr-intern/200/200" 
-                  alt="RH" 
-                  className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
-                <h3 className="text-2xl font-black text-gray-900 mb-4">Estágio em RH</h3>
-                <div className="space-y-3 mb-8 w-full">
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <MapPin className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Camaçari - BA (Polo)</span>
-                  </div>
-                  <div className="flex items-center justify-center text-gray-600 font-semibold">
-                    <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
-                    <span>Bolsa: <strong className="text-gray-900">R$ 800,00</strong></span>
+              ))
+            ) : (
+              // Fallback cards if no vacancies in DB
+              [1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group animate-pulse">
+                  <div className="p-10 flex flex-col items-center text-center">
+                    <div className="w-20 h-20 rounded-full bg-gray-200 mb-6"></div>
+                    <div className="h-4 w-24 bg-gray-200 rounded-full mb-4"></div>
+                    <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
+                    <div className="space-y-3 mb-8 w-full">
+                      <div className="h-4 w-32 bg-gray-200 rounded mx-auto"></div>
+                      <div className="h-4 w-40 bg-gray-200 rounded mx-auto"></div>
+                    </div>
+                    <div className="h-14 w-full bg-gray-200 rounded-2xl"></div>
                   </div>
                 </div>
-                <button className="w-full bg-blue-950 hover:bg-orange-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg">
-                  Candidatar-se
-                </button>
-              </div>
-            </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -217,73 +230,46 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Category 1 */}
-            <div className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-              <img 
-                src="https://picsum.photos/seed/coding/600/800" 
-                alt="Informática" 
-                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <h3 className="text-2xl font-black text-white mb-4">Informática e Tecnologia</h3>
-                <a href="#curso-informatica" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                  Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Category 2 */}
-            <div className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-              <img 
-                src="https://picsum.photos/seed/health-worker/600/800" 
-                alt="Saúde" 
-                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <h3 className="text-2xl font-black text-white mb-4">Saúde e Bem-estar</h3>
-                <a href="#curso-saude" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                  Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Category 3 */}
-            <div className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-              <img 
-                src="https://picsum.photos/seed/business-meeting/600/800" 
-                alt="Administração" 
-                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <h3 className="text-2xl font-black text-white mb-4">Administração e Negócios</h3>
-                <a href="#curso-adm" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                  Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Category 4 */}
-            <div className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-              <img 
-                src="https://picsum.photos/seed/beauty-salon/600/800" 
-                alt="Beleza" 
-                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <h3 className="text-2xl font-black text-white mb-4">Beleza e Estética</h3>
-                <a href="#curso-beleza" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                  Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
-                </a>
-              </div>
-            </div>
+            {content.cursos.length > 0 ? (
+              content.cursos.map((curso) => (
+                <div key={curso.id} className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
+                  <img 
+                    src={curso.thumbnail_url || `https://picsum.photos/seed/${curso.nome}/600/800`} 
+                    alt={curso.nome} 
+                    className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <div className="text-orange-500 text-xs font-black uppercase tracking-widest mb-2">{curso.categoria}</div>
+                    <h3 className="text-2xl font-black text-white mb-4">{curso.nome}</h3>
+                    <div className="text-white/60 text-sm mb-4 line-clamp-2">{curso.descricao}</div>
+                    <a href="#" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
+                      Ver curso <ChevronRight className="ml-1 h-5 w-5" />
+                    </a>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Fallback categories
+              ['Informática', 'Saúde', 'Administração', 'Beleza'].map((cat, i) => (
+                <div key={i} className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
+                  <img 
+                    src={`https://picsum.photos/seed/${cat}/600/800`} 
+                    alt={cat} 
+                    className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <h3 className="text-2xl font-black text-white mb-4">{cat} e Tecnologia</h3>
+                    <a href="#" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
+                      Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
+                    </a>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -433,6 +419,7 @@ export default function LandingPage() {
               &copy; {new Date().getFullYear()} Grupo CTE. Todos os direitos reservados.
             </p>
             <div className="flex space-x-8">
+              <a href="/admin" className="hover:text-white transition-colors">Admin</a>
               <a href="#" className="hover:text-white transition-colors">Privacidade</a>
               <a href="#" className="hover:text-white transition-colors">Termos</a>
               <a href="#" className="hover:text-white transition-colors">Cookies</a>

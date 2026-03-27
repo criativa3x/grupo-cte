@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 // SUPABASE CONFIGURATION
-// Pre-filled with the provided credentials
 const SUPABASE_URL = 'https://lrbfejskngapnzuwtiim.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_JBe4LeOgxxcDPbJV1QZ0HA_ANnF_TvS';
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 type Tab = 'banners' | 'cursos' | 'vagas';
@@ -14,6 +13,8 @@ type Tab = 'banners' | 'cursos' | 'vagas';
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('banners');
   const [loading, setLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [data, setData] = useState<{
     banners: any[];
     cursos: any[];
@@ -51,7 +52,6 @@ export default function AdminPanel() {
       setData((prev) => ({ ...prev, [activeTab]: result || [] }));
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert('Erro ao carregar dados. Verifique se as tabelas existem no Supabase.');
     } finally {
       setLoading(false);
     }
@@ -73,24 +73,65 @@ export default function AdminPanel() {
         vagas: vagaForm,
       };
 
-      const { error } = await supabase
-        .from(tableMap[activeTab])
-        .insert([formMap[activeTab]]);
-
-      if (error) throw error;
+      if (editingId) {
+        const { error } = await supabase
+          .from(tableMap[activeTab])
+          .update(formMap[activeTab])
+          .eq('id', editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from(tableMap[activeTab])
+          .insert([formMap[activeTab]]);
+        if (error) throw error;
+      }
 
       // Reset form
-      if (activeTab === 'banners') setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
-      if (activeTab === 'cursos') setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
-      if (activeTab === 'vagas') setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
-
-      alert('Item salvo com sucesso!');
+      resetForm();
       fetchData();
     } catch (error) {
       console.error('Error saving data:', error);
       alert('Erro ao salvar. Verifique as permissões de RLS no Supabase.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
+    setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
+    setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
+  };
+
+  const handleEdit = (item: any) => {
+    setEditingId(item.id);
+    if (activeTab === 'banners') {
+      setBannerForm({
+        titulo: item.titulo || '',
+        subtitulo: item.subtitulo || '',
+        imagem_url: item.imagem_url || '',
+        texto_botao: item.texto_botao || '',
+        link_botao: item.link_botao || ''
+      });
+    } else if (activeTab === 'cursos') {
+      setCursoForm({
+        nome: item.nome || '',
+        descricao: item.descricao || '',
+        categoria: item.categoria || '',
+        carga_horaria: item.carga_horaria || '',
+        thumbnail_url: item.thumbnail_url || '',
+        banner_url: item.banner_url || ''
+      });
+    } else if (activeTab === 'vagas') {
+      setVagaForm({
+        titulo: item.titulo || '',
+        area: item.area || '',
+        local: item.local || '',
+        valor_bolsa: item.valor_bolsa || '',
+        descricao: item.descricao || '',
+        link_candidatura: item.link_candidatura || ''
+      });
     }
   };
 
@@ -119,307 +160,388 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans selection:bg-orange-100 selection:text-orange-600">
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-950 text-white flex flex-col shadow-xl">
-        <div className="p-6 border-b border-blue-900">
-          <h1 className="text-2xl font-black text-orange-500 tracking-tighter">CTE ADMIN</h1>
-          <p className="text-xs text-blue-300 font-bold mt-1">PAINEL DE CONTROLE</p>
+      <motion.aside 
+        initial={false}
+        animate={{ width: isSidebarOpen ? 280 : 80 }}
+        className="bg-[#0F172A] text-white flex flex-col shadow-2xl relative z-50 overflow-hidden"
+      >
+        <div className="p-6 border-b border-white/5 flex items-center justify-between">
+          {isSidebarOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center space-x-2"
+            >
+              <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center font-black text-white">C</div>
+              <h1 className="text-xl font-black text-white tracking-tighter">CTE <span className="text-orange-500">ADMIN</span></h1>
+            </motion.div>
+          )}
+          {!isSidebarOpen && <div className="w-8 h-8 bg-orange-600 rounded-lg mx-auto flex items-center justify-center font-black text-white">C</div>}
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
-          <button
-            onClick={() => setActiveTab('banners')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-bold ${activeTab === 'banners' ? 'bg-orange-600 text-white shadow-lg' : 'hover:bg-blue-900 text-blue-200'}`}
-          >
-            <Image size={20} />
-            <span>Banners Home</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('cursos')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-bold ${activeTab === 'cursos' ? 'bg-orange-600 text-white shadow-lg' : 'hover:bg-blue-900 text-blue-200'}`}
-          >
-            <GraduationCap size={20} />
-            <span>Cursos</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('vagas')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-bold ${activeTab === 'vagas' ? 'bg-orange-600 text-white shadow-lg' : 'hover:bg-blue-900 text-blue-200'}`}
-          >
-            <Briefcase size={20} />
-            <span>Vagas de Estágio</span>
-          </button>
+        <nav className="flex-1 p-4 space-y-2 mt-4">
+          <SidebarItem 
+            icon={<Image size={20} />} 
+            label="Banners Home" 
+            active={activeTab === 'banners'} 
+            onClick={() => setActiveTab('banners')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<GraduationCap size={20} />} 
+            label="Cursos" 
+            active={activeTab === 'cursos'} 
+            onClick={() => setActiveTab('cursos')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Briefcase size={20} />} 
+            label="Vagas de Estágio" 
+            active={activeTab === 'vagas'} 
+            onClick={() => setActiveTab('vagas')} 
+            isOpen={isSidebarOpen}
+          />
         </nav>
 
-        <div className="p-6 border-t border-blue-900">
-          <a href="/" className="text-sm text-blue-300 hover:text-white transition-colors flex items-center font-bold">
-            <LayoutDashboard size={16} className="mr-2" />
-            Voltar ao Site
-          </a>
+        <div className="p-4 border-t border-white/5 space-y-2">
+          <SidebarItem 
+            icon={<LayoutDashboard size={20} />} 
+            label="Voltar ao Site" 
+            href="/"
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<LogOut size={20} />} 
+            label="Sair" 
+            onClick={() => alert('Saindo...')} 
+            isOpen={isSidebarOpen}
+            className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+          />
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        <header className="flex justify-between items-center mb-10">
-          <div>
-            <h2 className="text-3xl font-black text-blue-950 capitalize">
-              Gerenciar {activeTab === 'vagas' ? 'Vagas de Estágio' : activeTab}
-            </h2>
-            <p className="text-gray-500 font-medium">Adicione ou remova conteúdo dinâmico do site.</p>
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Top Header */}
+        <header className="h-20 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-40">
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="h-6 w-[1px] bg-gray-200 mx-2"></div>
+            <div className="flex items-center text-sm font-medium text-gray-500">
+              <span>Dashboard</span>
+              <ChevronRight size={14} className="mx-2" />
+              <span className="text-blue-950 font-bold capitalize">{activeTab}</span>
+            </div>
           </div>
-          {loading && <Loader2 className="animate-spin text-orange-600" size={24} />}
+
+          <div className="flex items-center space-x-6">
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input 
+                type="text" 
+                placeholder="Buscar..." 
+                className="pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:ring-2 focus:ring-orange-500 outline-none w-64 transition-all"
+              />
+            </div>
+            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-600 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="flex items-center space-x-3 pl-4 border-l border-gray-100">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-blue-950">Admin Grupo CTE</p>
+                <p className="text-xs text-gray-500">Administrador Master</p>
+              </div>
+              <img 
+                src="https://picsum.photos/seed/admin/100/100" 
+                className="w-10 h-10 rounded-full border-2 border-orange-500 object-cover" 
+                alt="Admin"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          </div>
         </header>
 
-        {/* Form Section */}
-        <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-10">
-          <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {activeTab === 'banners' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Título do Banner</label>
-                  <input
-                    type="text"
-                    required
-                    value={bannerForm.titulo}
-                    onChange={(e) => setBannerForm({ ...bannerForm, titulo: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="Ex: O seu futuro começa aqui"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Subtítulo</label>
-                  <input
-                    type="text"
-                    value={bannerForm.subtitulo}
-                    onChange={(e) => setBannerForm({ ...bannerForm, subtitulo: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="Ex: Capacitação e Estágio"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">URL da Imagem</label>
-                  <input
-                    type="url"
-                    required
-                    value={bannerForm.imagem_url}
-                    onChange={(e) => setBannerForm({ ...bannerForm, imagem_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="https://..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Texto do Botão</label>
-                  <input
-                    type="text"
-                    value={bannerForm.texto_botao}
-                    onChange={(e) => setBannerForm({ ...bannerForm, texto_botao: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="Ex: Ver Cursos"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Link do Botão</label>
-                  <input
-                    type="text"
-                    value={bannerForm.link_botao}
-                    onChange={(e) => setBannerForm({ ...bannerForm, link_botao: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="#cursos"
-                  />
-                </div>
-              </>
-            )}
+        <div className="flex-1 overflow-y-auto p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <StatCard 
+                  title="Total de Banners" 
+                  value={data.banners.length} 
+                  icon={<Image className="text-blue-600" />} 
+                  color="bg-blue-50"
+                />
+                <StatCard 
+                  title="Cursos Ativos" 
+                  value={data.cursos.length} 
+                  icon={<GraduationCap className="text-orange-600" />} 
+                  color="bg-orange-50"
+                />
+                <StatCard 
+                  title="Vagas Abertas" 
+                  value={data.vagas.length} 
+                  icon={<Briefcase className="text-green-600" />} 
+                  color="bg-green-50"
+                />
+              </div>
 
-            {activeTab === 'cursos' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Nome do Curso</label>
-                  <input
-                    type="text"
-                    required
-                    value={cursoForm.nome}
-                    onChange={(e) => setCursoForm({ ...cursoForm, nome: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Categoria</label>
-                  <select
-                    value={cursoForm.categoria}
-                    onChange={(e) => setCursoForm({ ...cursoForm, categoria: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="Tecnologia">Tecnologia</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Administração">Administração</option>
-                    <option value="Beleza">Beleza</option>
-                  </select>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-bold text-gray-700">Descrição</label>
-                  <textarea
-                    value={cursoForm.descricao}
-                    onChange={(e) => setCursoForm({ ...cursoForm, descricao: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all h-24"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Carga Horária</label>
-                  <input
-                    type="text"
-                    value={cursoForm.carga_horaria}
-                    onChange={(e) => setCursoForm({ ...cursoForm, carga_horaria: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="Ex: 120h"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">URL Thumbnail</label>
-                  <input
-                    type="url"
-                    value={cursoForm.thumbnail_url}
-                    onChange={(e) => setCursoForm({ ...cursoForm, thumbnail_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">URL Banner</label>
-                  <input
-                    type="url"
-                    value={cursoForm.banner_url}
-                    onChange={(e) => setCursoForm({ ...cursoForm, banner_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-              </>
-            )}
-
-            {activeTab === 'vagas' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Título da Vaga</label>
-                  <input
-                    type="text"
-                    required
-                    value={vagaForm.titulo}
-                    onChange={(e) => setVagaForm({ ...vagaForm, titulo: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Área</label>
-                  <input
-                    type="text"
-                    value={vagaForm.area}
-                    onChange={(e) => setVagaForm({ ...vagaForm, area: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Local</label>
-                  <input
-                    type="text"
-                    value={vagaForm.local}
-                    onChange={(e) => setVagaForm({ ...vagaForm, local: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700">Valor da Bolsa</label>
-                  <input
-                    type="text"
-                    value={vagaForm.valor_bolsa}
-                    onChange={(e) => setVagaForm({ ...vagaForm, valor_bolsa: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                    placeholder="Ex: R$ 800,00"
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-bold text-gray-700">Descrição da Vaga</label>
-                  <textarea
-                    value={vagaForm.descricao}
-                    onChange={(e) => setVagaForm({ ...vagaForm, descricao: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all h-24"
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-bold text-gray-700">Link de Candidatura</label>
-                  <input
-                    type="text"
-                    value={vagaForm.link_candidatura}
-                    onChange={(e) => setVagaForm({ ...vagaForm, link_candidatura: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="md:col-span-2 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                <Save size={20} />
-                <span>Salvar Item</span>
-              </button>
-            </div>
-          </form>
-        </section>
-
-        {/* List Section */}
-        <section className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-            <h3 className="font-black text-blue-950">Itens Cadastrados</h3>
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{data[activeTab].length} Itens</span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-50 text-gray-400 text-xs uppercase tracking-widest font-black border-b border-gray-100">
-                  <th className="px-6 py-4">Título/Nome</th>
-                  <th className="px-6 py-4">Informações</th>
-                  <th className="px-6 py-4 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data[activeTab].map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-blue-950">{item.titulo || item.nome}</div>
-                      <div className="text-xs text-gray-400 truncate max-w-[200px]">{item.subtitulo || item.descricao}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">
-                        {activeTab === 'banners' && item.link_botao}
-                        {activeTab === 'cursos' && `${item.categoria} | ${item.carga_horaria}`}
-                        {activeTab === 'vagas' && `${item.area} | ${item.local}`}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Form Section */}
+                <div className="lg:col-span-1">
+                  <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-8">
+                    <div className="flex items-center justify-between mb-8">
+                      <h3 className="text-xl font-black text-blue-950">{editingId ? 'Editar Item' : 'Novo Item'}</h3>
+                      <div className={`p-2 ${editingId ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} rounded-lg`}>
+                        {editingId ? <Pencil size={20} /> : <Plus size={20} />}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
+                    </div>
+                    
+                    <form onSubmit={handleSave} className="space-y-6">
+                      {editingId && (
+                        <button 
+                          type="button" 
+                          onClick={resetForm}
+                          className="w-full flex items-center justify-center space-x-2 py-2 text-xs font-bold text-gray-500 hover:text-red-500 transition-colors border border-dashed border-gray-200 rounded-xl"
+                        >
+                          <XCircle size={14} />
+                          <span>Cancelar Edição</span>
+                        </button>
+                      )}
+                      {activeTab === 'banners' && (
+                        <>
+                          <FormInput label="Título" value={bannerForm.titulo} onChange={(v) => setBannerForm({...bannerForm, titulo: v})} placeholder="Ex: O seu futuro começa aqui" />
+                          <FormInput label="Subtítulo" value={bannerForm.subtitulo} onChange={(v) => setBannerForm({...bannerForm, subtitulo: v})} placeholder="Ex: Capacitação e Estágio" />
+                          <FormInput label="URL da Imagem" value={bannerForm.imagem_url} onChange={(v) => setBannerForm({...bannerForm, imagem_url: v})} placeholder="https://..." />
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormInput label="Texto Botão" value={bannerForm.texto_botao} onChange={(v) => setBannerForm({...bannerForm, texto_botao: v})} placeholder="Ver Cursos" />
+                            <FormInput label="Link Botão" value={bannerForm.link_botao} onChange={(v) => setBannerForm({...bannerForm, link_botao: v})} placeholder="#cursos" />
+                          </div>
+                        </>
+                      )}
+
+                      {activeTab === 'cursos' && (
+                        <>
+                          <FormInput label="Nome do Curso" value={cursoForm.nome} onChange={(v) => setCursoForm({...cursoForm, nome: v})} />
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Categoria</label>
+                            <select 
+                              value={cursoForm.categoria}
+                              onChange={(e) => setCursoForm({...cursoForm, categoria: e.target.value})}
+                              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                            >
+                              <option value="">Selecione...</option>
+                              <option value="Tecnologia">Tecnologia</option>
+                              <option value="Saúde">Saúde</option>
+                              <option value="Administração">Administração</option>
+                              <option value="Beleza">Beleza</option>
+                            </select>
+                          </div>
+                          <FormTextArea label="Descrição" value={cursoForm.descricao} onChange={(v) => setCursoForm({...cursoForm, descricao: v})} />
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="120h" />
+                            <FormInput label="Thumbnail URL" value={cursoForm.thumbnail_url} onChange={(v) => setCursoForm({...cursoForm, thumbnail_url: v})} />
+                          </div>
+                        </>
+                      )}
+
+                      {activeTab === 'vagas' && (
+                        <>
+                          <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v) => setVagaForm({...vagaForm, titulo: v})} />
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormInput label="Área" value={vagaForm.area} onChange={(v) => setVagaForm({...vagaForm, area: v})} />
+                            <FormInput label="Local" value={vagaForm.local} onChange={(v) => setVagaForm({...vagaForm, local: v})} />
+                          </div>
+                          <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
+                          <FormTextArea label="Descrição" value={vagaForm.descricao} onChange={(v) => setVagaForm({...vagaForm, descricao: v})} />
+                          <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v) => setVagaForm({...vagaForm, link_candidatura: v})} />
+                        </>
+                      )}
+
                       <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-orange-600/20 flex items-center justify-center space-x-2 disabled:opacity-50 group"
                       >
-                        <Trash2 size={18} />
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} className="group-hover:scale-110 transition-transform" />}
+                        <span>Salvar Alterações</span>
                       </button>
-                    </td>
-                  </tr>
-                ))}
-                {data[activeTab].length === 0 && !loading && (
-                  <tr>
-                    <td colSpan={3} className="px-6 py-10 text-center text-gray-400 font-medium">
-                      Nenhum item cadastrado nesta categoria.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                    </form>
+                  </div>
+                </div>
+
+                {/* List Section */}
+                <div className="lg:col-span-2">
+                  <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-8 border-b border-gray-100 flex justify-between items-center">
+                      <div>
+                        <h3 className="text-xl font-black text-blue-950">Itens Atuais</h3>
+                        <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button onClick={fetchData} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                          <Search size={18} />
+                        </button>
+                        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                          <Filter size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-gray-100">
+                            <th className="px-8 py-5">Visualização</th>
+                            <th className="px-8 py-5">Detalhes</th>
+                            <th className="px-8 py-5 text-right">Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                          {data[activeTab].map((item, idx) => (
+                            <motion.tr 
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                              key={item.id} 
+                              className="group hover:bg-gray-50/80 transition-all"
+                            >
+                              <td className="px-8 py-6">
+                                <div className="flex items-center space-x-4">
+                                  <div className="w-16 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
+                                    <img 
+                                      src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
+                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                      alt="Preview"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                  <div>
+                                    <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
+                                    <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : 'Banner Home'}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-8 py-6">
+                                <div className="max-w-[240px]">
+                                  <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
+                                    {item.subtitulo || item.descricao || item.local}
+                                  </div>
+                                  {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
+                                </div>
+                              </td>
+                              <td className="px-8 py-6 text-right">
+                                <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button 
+                                    onClick={() => handleEdit(item)}
+                                    className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                  >
+                                    <Pencil size={18} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 size={18} />
+                                  </button>
+                                </div>
+                              </td>
+                            </motion.tr>
+                          ))}
+                          {data[activeTab].length === 0 && !loading && (
+                            <tr>
+                              <td colSpan={3} className="px-8 py-20 text-center">
+                                <div className="flex flex-col items-center justify-center text-gray-400">
+                                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <Search size={32} />
+                                  </div>
+                                  <p className="font-bold">Nenhum item encontrado</p>
+                                  <p className="text-xs mt-1">Comece adicionando um novo item ao lado.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
+    </div>
+  );
+}
+
+function SidebarItem({ icon, label, active, onClick, href, isOpen, className = "" }: any) {
+  const content = (
+    <div className={`flex items-center ${isOpen ? 'space-x-3 px-4' : 'justify-center'} py-3.5 rounded-xl transition-all font-bold text-sm ${active ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'hover:bg-white/5 text-gray-400 hover:text-white'} ${className}`}>
+      <div className={`${active ? 'scale-110' : ''} transition-transform`}>{icon}</div>
+      {isOpen && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>{label}</motion.span>}
+    </div>
+  );
+
+  if (href) return <a href={href} className="block">{content}</a>;
+  return <button onClick={onClick} className="w-full text-left">{content}</button>;
+}
+
+function StatCard({ title, value, icon, color }: any) {
+  return (
+    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center space-x-5">
+      <div className={`w-14 h-14 ${color} rounded-2xl flex items-center justify-center`}>
+        {React.cloneElement(icon, { size: 24 })}
+      </div>
+      <div>
+        <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{title}</p>
+        <p className="text-2xl font-black text-blue-950">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function FormInput({ label, value, onChange, placeholder, type = "text" }: any) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{label}</label>
+      <input
+        type={type}
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium placeholder:text-gray-300"
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
+
+function FormTextArea({ label, value, onChange, placeholder }: any) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{label}</label>
+      <textarea
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium h-24 resize-none placeholder:text-gray-300"
+        placeholder={placeholder}
+      />
     </div>
   );
 }
