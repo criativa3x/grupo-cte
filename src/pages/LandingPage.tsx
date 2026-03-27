@@ -52,7 +52,12 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-black text-orange-600 tracking-tighter">Grupo CTE</span>
+              <img 
+                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+                alt="Grupo CTE Logo" 
+                className="h-12 w-auto"
+                referrerPolicy="no-referrer"
+              />
             </div>
 
             {/* Desktop Navigation */}

@@ -47,11 +47,16 @@ export default function LoginPage() {
         <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-blue-950/5 border border-gray-100 p-10 md:p-12">
           {/* Logo Section */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-600 rounded-2xl shadow-lg shadow-orange-600/20 mb-6">
-              <span className="text-3xl font-black text-white">C</span>
+            <div className="inline-flex items-center justify-center mb-6">
+              <img 
+                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+                alt="Grupo CTE Logo" 
+                className="h-16 w-auto"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <h1 className="text-3xl font-black text-blue-950 tracking-tighter">
-              CTE <span className="text-orange-600">ADMIN</span>
+              PAINEL <span className="text-orange-600">ADMIN</span>
             </h1>
             <p className="text-gray-400 font-bold text-sm mt-2 uppercase tracking-widest">Acesso Restrito</p>
           </div>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-type Tab = 'banners' | 'cursos' | 'vagas';
+type Tab = 'dashboard' | 'cursos' | 'vagas' | 'aparencia';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('banners');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -28,27 +28,59 @@ export default function AdminPanel() {
   const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
 
   useEffect(() => {
-    fetchData();
+    fetchAllData();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== 'dashboard') {
+      fetchTabData();
+    }
   }, [activeTab]);
 
-  const fetchData = async () => {
+  const fetchAllData = async () => {
     setLoading(true);
     try {
-      const tableMap: Record<Tab, string> = {
-        banners: 'banners_home',
+      const [bannersRes, cursosRes, vagasRes] = await Promise.all([
+        supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
+        supabase.from('cursos').select('*').order('created_at', { ascending: false }),
+        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      setData({
+        banners: bannersRes.data || [],
+        cursos: cursosRes.data || [],
+        vagas: vagasRes.data || [],
+      });
+    } catch (error) {
+      console.error('Error fetching all data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTabData = async () => {
+    setLoading(true);
+    try {
+      const tableMap: Partial<Record<Tab, string>> = {
+        aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
       };
       
+      const tableName = tableMap[activeTab];
+      if (!tableName) return;
+
       const { data: result, error } = await supabase
-        .from(tableMap[activeTab])
+        .from(tableName)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((prev) => ({ ...prev, [activeTab]: result || [] }));
+      
+      const dataKey = activeTab === 'aparencia' ? 'banners' : activeTab;
+      setData((prev) => ({ ...prev, [dataKey]: result || [] }));
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching tab data:', error);
     } finally {
       setLoading(false);
     }
@@ -58,34 +90,37 @@ export default function AdminPanel() {
     e.preventDefault();
     setLoading(true);
     try {
-      const tableMap: Record<Tab, string> = {
-        banners: 'banners_home',
+      const tableMap: Partial<Record<Tab, string>> = {
+        aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
       };
 
-      const formMap: Record<Tab, any> = {
-        banners: bannerForm,
+      const formMap: Partial<Record<Tab, any>> = {
+        aparencia: bannerForm,
         cursos: cursoForm,
         vagas: vagaForm,
       };
 
+      const tableName = tableMap[activeTab];
+      if (!tableName) return;
+
       if (editingId) {
         const { error } = await supabase
-          .from(tableMap[activeTab])
+          .from(tableName)
           .update(formMap[activeTab])
           .eq('id', editingId);
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from(tableMap[activeTab])
+          .from(tableName)
           .insert([formMap[activeTab]]);
         if (error) throw error;
       }
 
       // Reset form
       resetForm();
-      fetchData();
+      fetchTabData();
     } catch (error) {
       console.error('Error saving data:', error);
       alert('Erro ao salvar. Verifique as permissões de RLS no Supabase.');
@@ -103,7 +138,7 @@ export default function AdminPanel() {
 
   const handleEdit = (item: any) => {
     setEditingId(item.id);
-    if (activeTab === 'banners') {
+    if (activeTab === 'aparencia') {
       setBannerForm({
         titulo: item.titulo || '',
         subtitulo: item.subtitulo || '',
@@ -146,24 +181,34 @@ export default function AdminPanel() {
     if (!confirm('Tem certeza que deseja excluir este item?')) return;
     setLoading(true);
     try {
-      const tableMap: Record<Tab, string> = {
-        banners: 'banners_home',
+      const tableMap: Partial<Record<Tab, string>> = {
+        aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
       };
 
+      const tableName = tableMap[activeTab];
+      if (!tableName) return;
+
       const { error } = await supabase
-        .from(tableMap[activeTab])
+        .from(tableName)
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-      fetchData();
+      fetchTabData();
     } catch (error) {
       console.error('Error deleting data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getActiveData = () => {
+    if (activeTab === 'aparencia') return data.banners;
+    if (activeTab === 'cursos') return data.cursos;
+    if (activeTab === 'vagas') return data.vagas;
+    return [];
   };
 
   return (
@@ -181,19 +226,31 @@ export default function AdminPanel() {
               animate={{ opacity: 1 }}
               className="flex items-center space-x-2"
             >
-              <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center font-black text-white">C</div>
-              <h1 className="text-xl font-black text-white tracking-tighter">CTE <span className="text-orange-500">ADMIN</span></h1>
+              <img 
+                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+                alt="Logo" 
+                className="h-8 w-auto brightness-0 invert"
+                referrerPolicy="no-referrer"
+              />
+              <h1 className="text-xl font-black text-white tracking-tighter">ADMIN</h1>
             </motion.div>
           )}
-          {!isSidebarOpen && <div className="w-8 h-8 bg-orange-600 rounded-lg mx-auto flex items-center justify-center font-black text-white">C</div>}
+          {!isSidebarOpen && (
+            <img 
+              src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+              alt="Logo" 
+              className="h-8 w-auto mx-auto brightness-0 invert"
+              referrerPolicy="no-referrer"
+            />
+          )}
         </div>
         
         <nav className="flex-1 p-4 space-y-2 mt-4">
           <SidebarItem 
-            icon={<Image size={20} />} 
-            label="Banners Home" 
-            active={activeTab === 'banners'} 
-            onClick={() => setActiveTab('banners')} 
+            icon={<BarChart3 size={20} />} 
+            label="Dashboard" 
+            active={activeTab === 'dashboard'} 
+            onClick={() => setActiveTab('dashboard')} 
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
@@ -208,6 +265,13 @@ export default function AdminPanel() {
             label="Vagas de Estágio" 
             active={activeTab === 'vagas'} 
             onClick={() => setActiveTab('vagas')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Palette size={20} />} 
+            label="Aparência do Site" 
+            active={activeTab === 'aparencia'} 
+            onClick={() => setActiveTab('aparencia')} 
             isOpen={isSidebarOpen}
           />
         </nav>
@@ -285,209 +349,240 @@ export default function AdminPanel() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <StatCard 
-                  title="Total de Banners" 
-                  value={data.banners.length} 
-                  icon={<Image className="text-blue-600" />} 
-                  color="bg-blue-50"
-                />
-                <StatCard 
-                  title="Cursos Ativos" 
-                  value={data.cursos.length} 
-                  icon={<GraduationCap className="text-orange-600" />} 
-                  color="bg-orange-50"
-                />
-                <StatCard 
-                  title="Vagas Abertas" 
-                  value={data.vagas.length} 
-                  icon={<Briefcase className="text-green-600" />} 
-                  color="bg-green-50"
-                />
-              </div>
+              {activeTab === 'dashboard' ? (
+                <div className="space-y-10">
+                  <div className="flex flex-col">
+                    <h2 className="text-3xl font-black text-blue-950">Bem-vindo ao Dashboard</h2>
+                    <p className="text-gray-500 font-medium mt-1">Visão geral do seu sistema de gestão.</p>
+                  </div>
+                  
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <StatCard 
+                      title="Total de Banners" 
+                      value={data.banners.length} 
+                      icon={<Image className="text-blue-600" />} 
+                      color="bg-blue-50"
+                    />
+                    <StatCard 
+                      title="Cursos Ativos" 
+                      value={data.cursos.length} 
+                      icon={<GraduationCap className="text-orange-600" />} 
+                      color="bg-orange-50"
+                    />
+                    <StatCard 
+                      title="Vagas Abertas" 
+                      value={data.vagas.length} 
+                      icon={<Briefcase className="text-green-600" />} 
+                      color="bg-green-50"
+                    />
+                  </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Form Section */}
-                <div className="lg:col-span-1">
-                  <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-8">
-                    <div className="flex items-center justify-between mb-8">
-                      <h3 className="text-xl font-black text-blue-950">{editingId ? 'Editar Item' : 'Novo Item'}</h3>
-                      <div className={`p-2 ${editingId ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} rounded-lg`}>
-                        {editingId ? <Pencil size={20} /> : <Plus size={20} />}
-                      </div>
+                  <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm">
+                    <h3 className="text-xl font-black text-blue-950 mb-6">Atividades Recentes</h3>
+                    <div className="space-y-4">
+                      <p className="text-gray-400 font-medium italic">Nenhuma atividade recente para exibir.</p>
                     </div>
-                    
-                    <form onSubmit={handleSave} className="space-y-6">
-                      {editingId && (
-                        <button 
-                          type="button" 
-                          onClick={resetForm}
-                          className="w-full flex items-center justify-center space-x-2 py-2 text-xs font-bold text-gray-500 hover:text-red-500 transition-colors border border-dashed border-gray-200 rounded-xl"
-                        >
-                          <XCircle size={14} />
-                          <span>Cancelar Edição</span>
-                        </button>
-                      )}
-                      {activeTab === 'banners' && (
-                        <>
-                          <FormInput label="Título" value={bannerForm.titulo} onChange={(v) => setBannerForm({...bannerForm, titulo: v})} placeholder="Ex: O seu futuro começa aqui" />
-                          <FormInput label="Subtítulo" value={bannerForm.subtitulo} onChange={(v) => setBannerForm({...bannerForm, subtitulo: v})} placeholder="Ex: Capacitação e Estágio" />
-                          <FormInput label="URL da Imagem" value={bannerForm.imagem_url} onChange={(v) => setBannerForm({...bannerForm, imagem_url: v})} placeholder="https://..." />
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormInput label="Texto Botão" value={bannerForm.texto_botao} onChange={(v) => setBannerForm({...bannerForm, texto_botao: v})} placeholder="Ver Cursos" />
-                            <FormInput label="Link Botão" value={bannerForm.link_botao} onChange={(v) => setBannerForm({...bannerForm, link_botao: v})} placeholder="#cursos" />
-                          </div>
-                        </>
-                      )}
-
-                      {activeTab === 'cursos' && (
-                        <>
-                          <FormInput label="Nome do Curso" value={cursoForm.nome} onChange={(v) => setCursoForm({...cursoForm, nome: v})} />
-                          <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Categoria</label>
-                            <select 
-                              value={cursoForm.categoria}
-                              onChange={(e) => setCursoForm({...cursoForm, categoria: e.target.value})}
-                              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
-                            >
-                              <option value="">Selecione...</option>
-                              <option value="Tecnologia">Tecnologia</option>
-                              <option value="Saúde">Saúde</option>
-                              <option value="Administração">Administração</option>
-                              <option value="Beleza">Beleza</option>
-                            </select>
-                          </div>
-                          <FormTextArea label="Descrição" value={cursoForm.descricao} onChange={(v) => setCursoForm({...cursoForm, descricao: v})} />
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="120h" />
-                            <FormInput label="Thumbnail URL" value={cursoForm.thumbnail_url} onChange={(v) => setCursoForm({...cursoForm, thumbnail_url: v})} />
-                          </div>
-                        </>
-                      )}
-
-                      {activeTab === 'vagas' && (
-                        <>
-                          <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v) => setVagaForm({...vagaForm, titulo: v})} />
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormInput label="Área" value={vagaForm.area} onChange={(v) => setVagaForm({...vagaForm, area: v})} />
-                            <FormInput label="Local" value={vagaForm.local} onChange={(v) => setVagaForm({...vagaForm, local: v})} />
-                          </div>
-                          <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
-                          <FormTextArea label="Descrição" value={vagaForm.descricao} onChange={(v) => setVagaForm({...vagaForm, descricao: v})} />
-                          <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v) => setVagaForm({...vagaForm, link_candidatura: v})} />
-                        </>
-                      )}
-
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-orange-600/20 flex items-center justify-center space-x-2 disabled:opacity-50 group"
-                      >
-                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} className="group-hover:scale-110 transition-transform" />}
-                        <span>Salvar Alterações</span>
-                      </button>
-                    </form>
                   </div>
                 </div>
+              ) : (
+                <div className="space-y-8">
+                  <div className="flex flex-col">
+                    <h2 className="text-3xl font-black text-blue-950">
+                      {activeTab === 'cursos' ? 'Gestão de Cursos' : 
+                       activeTab === 'vagas' ? 'Vagas de Estágio' : 
+                       'Aparência do Site'}
+                    </h2>
+                    <p className="text-gray-500 font-medium mt-1">
+                      {activeTab === 'cursos' ? 'Adicione e edite os cursos oferecidos.' : 
+                       activeTab === 'vagas' ? 'Gerencie as oportunidades de estágio.' : 
+                       'Personalize os banners da página inicial.'}
+                    </p>
+                  </div>
 
-                {/* List Section */}
-                <div className="lg:col-span-2">
-                  <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-100 flex justify-between items-center">
-                      <div>
-                        <h3 className="text-xl font-black text-blue-950">Itens Atuais</h3>
-                        <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button onClick={fetchData} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
-                          <Search size={18} />
-                        </button>
-                        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
-                          <Filter size={18} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-gray-100">
-                            <th className="px-8 py-5">Visualização</th>
-                            <th className="px-8 py-5">Detalhes</th>
-                            <th className="px-8 py-5 text-right">Ações</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                          {data[activeTab].map((item, idx) => (
-                            <motion.tr 
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.05 }}
-                              key={item.id} 
-                              className="group hover:bg-gray-50/80 transition-all"
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Form Section */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-8">
+                        <div className="flex items-center justify-between mb-8">
+                          <h3 className="text-xl font-black text-blue-950">{editingId ? 'Editar Item' : 'Novo Item'}</h3>
+                          <div className={`p-2 ${editingId ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} rounded-lg`}>
+                            {editingId ? <Pencil size={20} /> : <Plus size={20} />}
+                          </div>
+                        </div>
+                        
+                        <form onSubmit={handleSave} className="space-y-6">
+                          {editingId && (
+                            <button 
+                              type="button" 
+                              onClick={resetForm}
+                              className="w-full flex items-center justify-center space-x-2 py-2 text-xs font-bold text-gray-500 hover:text-red-500 transition-colors border border-dashed border-gray-200 rounded-xl"
                             >
-                              <td className="px-8 py-6">
-                                <div className="flex items-center space-x-4">
-                                  <div className="w-16 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
-                                    <img 
-                                      src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
-                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                                      alt="Preview"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                  </div>
-                                  <div>
-                                    <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                    <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : 'Banner Home'}</div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-8 py-6">
-                                <div className="max-w-[240px]">
-                                  <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
-                                    {item.subtitulo || item.descricao || item.local}
-                                  </div>
-                                  {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
-                                </div>
-                              </td>
-                              <td className="px-8 py-6 text-right">
-                                <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button 
-                                    onClick={() => handleEdit(item)}
-                                    className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
-                                  >
-                                    <Pencil size={18} />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                  >
-                                    <Trash2 size={18} />
-                                  </button>
-                                </div>
-                              </td>
-                            </motion.tr>
-                          ))}
-                          {data[activeTab].length === 0 && !loading && (
-                            <tr>
-                              <td colSpan={3} className="px-8 py-20 text-center">
-                                <div className="flex flex-col items-center justify-center text-gray-400">
-                                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                    <Search size={32} />
-                                  </div>
-                                  <p className="font-bold">Nenhum item encontrado</p>
-                                  <p className="text-xs mt-1">Comece adicionando um novo item ao lado.</p>
-                                </div>
-                              </td>
-                            </tr>
+                              <XCircle size={14} />
+                              <span>Cancelar Edição</span>
+                            </button>
                           )}
-                        </tbody>
-                      </table>
+                          {activeTab === 'aparencia' && (
+                            <>
+                              <FormInput label="Título" value={bannerForm.titulo} onChange={(v) => setBannerForm({...bannerForm, titulo: v})} placeholder="Ex: O seu futuro começa aqui" />
+                              <FormInput label="Subtítulo" value={bannerForm.subtitulo} onChange={(v) => setBannerForm({...bannerForm, subtitulo: v})} placeholder="Ex: Capacitação e Estágio" />
+                              <FormInput label="URL da Imagem" value={bannerForm.imagem_url} onChange={(v) => setBannerForm({...bannerForm, imagem_url: v})} placeholder="https://..." />
+                              <div className="grid grid-cols-2 gap-4">
+                                <FormInput label="Texto Botão" value={bannerForm.texto_botao} onChange={(v) => setBannerForm({...bannerForm, texto_botao: v})} placeholder="Ver Cursos" />
+                                <FormInput label="Link Botão" value={bannerForm.link_botao} onChange={(v) => setBannerForm({...bannerForm, link_botao: v})} placeholder="#cursos" />
+                              </div>
+                            </>
+                          )}
+
+                          {activeTab === 'cursos' && (
+                            <>
+                              <FormInput label="Nome do Curso" value={cursoForm.nome} onChange={(v) => setCursoForm({...cursoForm, nome: v})} />
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Categoria</label>
+                                <select 
+                                  value={cursoForm.categoria}
+                                  onChange={(e) => setCursoForm({...cursoForm, categoria: e.target.value})}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                >
+                                  <option value="">Selecione...</option>
+                                  <option value="Tecnologia">Tecnologia</option>
+                                  <option value="Saúde">Saúde</option>
+                                  <option value="Administração">Administração</option>
+                                  <option value="Beleza">Beleza</option>
+                                </select>
+                              </div>
+                              <FormTextArea label="Descrição" value={cursoForm.descricao} onChange={(v) => setCursoForm({...cursoForm, descricao: v})} />
+                              <div className="grid grid-cols-2 gap-4">
+                                <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="120h" />
+                                <FormInput label="Thumbnail URL" value={cursoForm.thumbnail_url} onChange={(v) => setCursoForm({...cursoForm, thumbnail_url: v})} />
+                              </div>
+                            </>
+                          )}
+
+                          {activeTab === 'vagas' && (
+                            <>
+                              <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v) => setVagaForm({...vagaForm, titulo: v})} />
+                              <div className="grid grid-cols-2 gap-4">
+                                <FormInput label="Área" value={vagaForm.area} onChange={(v) => setVagaForm({...vagaForm, area: v})} />
+                                <FormInput label="Local" value={vagaForm.local} onChange={(v) => setVagaForm({...vagaForm, local: v})} />
+                              </div>
+                              <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
+                              <FormTextArea label="Descrição" value={vagaForm.descricao} onChange={(v) => setVagaForm({...vagaForm, descricao: v})} />
+                              <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v) => setVagaForm({...vagaForm, link_candidatura: v})} />
+                            </>
+                          )}
+
+                          <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-orange-600/20 flex items-center justify-center space-x-2 disabled:opacity-50 group"
+                          >
+                            {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} className="group-hover:scale-110 transition-transform" />}
+                            <span>Salvar Alterações</span>
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+
+                    {/* List Section */}
+                    <div className="lg:col-span-2">
+                      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="p-8 border-b border-gray-100 flex justify-between items-center">
+                          <div>
+                            <h3 className="text-xl font-black text-blue-950">Itens Atuais</h3>
+                            <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button onClick={fetchTabData} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                              <Search size={18} />
+                            </button>
+                            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                              <Filter size={18} />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left">
+                            <thead>
+                              <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-gray-100">
+                                <th className="px-8 py-5">Visualização</th>
+                                <th className="px-8 py-5">Detalhes</th>
+                                <th className="px-8 py-5 text-right">Ações</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                              {getActiveData().map((item, idx) => (
+                                <motion.tr 
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: idx * 0.05 }}
+                                  key={item.id} 
+                                  className="group hover:bg-gray-50/80 transition-all"
+                                >
+                                  <td className="px-8 py-6">
+                                    <div className="flex items-center space-x-4">
+                                      <div className="w-16 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
+                                        <img 
+                                          src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
+                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                          alt="Preview"
+                                          referrerPolicy="no-referrer"
+                                        />
+                                      </div>
+                                      <div>
+                                        <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : 'Banner Home'}</div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-8 py-6">
+                                    <div className="max-w-[240px]">
+                                      <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
+                                        {item.subtitulo || item.descricao || item.local}
+                                      </div>
+                                      {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
+                                    </div>
+                                  </td>
+                                  <td className="px-8 py-6 text-right">
+                                    <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button 
+                                        onClick={() => handleEdit(item)}
+                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                      >
+                                        <Pencil size={18} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                      >
+                                        <Trash2 size={18} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </motion.tr>
+                              ))}
+                              {getActiveData().length === 0 && !loading && (
+                                <tr>
+                                  <td colSpan={3} className="px-8 py-20 text-center">
+                                    <div className="flex flex-col items-center justify-center text-gray-400">
+                                      <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                        <Search size={32} />
+                                      </div>
+                                      <p className="font-bold">Nenhum item encontrado</p>
+                                      <p className="text-xs mt-1">Comece adicionando um novo item ao lado.</p>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
