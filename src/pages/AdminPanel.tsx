@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-
-// SUPABASE CONFIGURATION
-const SUPABASE_URL = 'https://lrbfejskngapnzuwtiim.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_JBe4LeOgxxcDPbJV1QZ0HA_ANnF_TvS';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 type Tab = 'banners' | 'cursos' | 'vagas';
 
 export default function AdminPanel() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('banners');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -135,6 +132,16 @@ export default function AdminPanel() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      alert('Erro ao sair. Tente novamente.');
+    }
+  };
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este item?')) return;
     setLoading(true);
@@ -215,7 +222,7 @@ export default function AdminPanel() {
           <SidebarItem 
             icon={<LogOut size={20} />} 
             label="Sair" 
-            onClick={() => alert('Saindo...')} 
+            onClick={handleLogout} 
             isOpen={isSidebarOpen}
             className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
           />

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2 } from 'lucide-react';
-
-// SUPABASE CONFIGURATION
-const SUPABASE_URL = 'https://lrbfejskngapnzuwtiim.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_JBe4LeOgxxcDPbJV1QZ0HA_ANnF_TvS';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
