@@ -129,9 +129,9 @@ export default function AdminPanel() {
       // Reset form
       resetForm();
       fetchTabData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving data:', error);
-      alert('Erro ao salvar. Verifique as permissões de RLS no Supabase.');
+      alert(`Erro ao salvar: ${error.message || 'Verifique as permissões de RLS no Supabase.'}`);
     } finally {
       setLoading(false);
     }
