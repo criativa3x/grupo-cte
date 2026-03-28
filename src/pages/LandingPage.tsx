@@ -544,7 +544,7 @@ export default function LandingPage() {
                     {/* Image Container */}
                     <div className="aspect-[4/5] relative overflow-hidden">
                       <img 
-                        src={aluno.foto || aluno.foto_url} 
+                        src={aluno.imagem_url || aluno.foto || aluno.foto_url} 
                         alt={aluno.nome} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         referrerPolicy="no-referrer"
