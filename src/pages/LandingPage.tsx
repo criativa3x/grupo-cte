@@ -195,86 +195,90 @@ export default function LandingPage() {
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-3xl">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentBannerIndex}
-                initial="hidden"
-                animate="visible"
+            {/* Initial Load Animation Wrapper (No key, so it only runs once) */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+              }}
+            >
+              {/* Badge - Only animates on initial load */}
+              <motion.div 
                 variants={{
-                  hidden: { opacity: 0 },
-                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
                 }}
+                className="inline-block px-4 py-1.5 bg-orange-600/90 text-white text-sm font-bold rounded-full mb-6 backdrop-blur-sm"
               >
-                <motion.div 
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-                  }}
-                  className="inline-block px-4 py-1.5 bg-orange-600/90 text-white text-sm font-bold rounded-full mb-6 backdrop-blur-sm"
+                DESDE 1994 TRANSFORMANDO VIDAS
+              </motion.div>
+              
+              {/* Keyed Content - Animates on every slide change */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentBannerIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 >
-                  DESDE 1994 TRANSFORMANDO VIDAS
-                </motion.div>
-                
-                <motion.h1 
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-                  }}
-                  className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8"
-                >
-                  {activeBanner.titulo}
-                </motion.h1>
-                
-                <motion.p 
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-                  }}
-                  className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium"
-                >
-                  {activeBanner.subtitulo}
-                </motion.p>
-                
-                <motion.div 
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-                  }}
-                  className="flex flex-col sm:flex-row gap-6"
-                >
-                  <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
-                    {activeBanner.texto_botao}
-                  </a>
-                  <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
-                    Vagas de Estágio
-                  </a>
-                </motion.div>
-                
-                {/* Added CTA prominent in Hero */}
-                <motion.div 
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.8 } }
-                  }}
-                  className="mt-12 flex items-center gap-4 text-white/80"
-                >
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <img 
-                        key={i}
-                        src={`https://picsum.photos/seed/user${i}/100/100`} 
-                        className="w-10 h-10 rounded-full border-2 border-blue-950 object-cover" 
-                        alt="Aluno"
-                        referrerPolicy="no-referrer"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm font-semibold">
-                    <span className="text-orange-500">+15.000</span> alunos já encaminhados
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8">
+                    {activeBanner.titulo}
+                  </h1>
+                  
+                  <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium">
+                    {activeBanner.subtitulo}
                   </p>
                 </motion.div>
+              </AnimatePresence>
+              
+              {/* Buttons - Only animate on initial load, then stay fixed */}
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+                }}
+                className="flex flex-col sm:flex-row gap-6"
+              >
+                <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                  {activeBanner.texto_botao}
+                </a>
+                <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
+                  Vagas de Estágio
+                </a>
               </motion.div>
-            </AnimatePresence>
+              
+              {/* Stats - Only animate on initial load */}
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.8 } }
+                }}
+                className="mt-12 flex items-center gap-4 text-white/80"
+              >
+                <div className="flex -space-x-3">
+                  {[
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1764622819/f550df6c-4ff5-44d9-a3cb-2d87dcb4a8d2_swghxz.jpg",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1764622818/01123a11-6121-48f4-9244-8605e5694ee6_mu7ttc.jpg",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734114/2_gmcdxg.webp",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp"
+                  ].map((url, i) => (
+                    <img 
+                      key={i}
+                      src={url} 
+                      className="w-10 h-10 rounded-full border-2 border-blue-950 object-cover" 
+                      alt="Aluno"
+                      referrerPolicy="no-referrer"
+                    />
+                  ))}
+                </div>
+                <p className="text-sm font-semibold">
+                  <span className="text-orange-500">+15.000</span> alunos já encaminhados
+                </p>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
 
