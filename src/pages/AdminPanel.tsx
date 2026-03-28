@@ -28,7 +28,7 @@ export default function AdminPanel() {
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
   const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
   const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
-  const [alunoForm, setAlunoForm] = useState({ nome: '', curso: '', empresa: '', imagem_url: '' });
+  const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
 
   useEffect(() => {
     fetchAllData();
@@ -142,7 +142,7 @@ export default function AdminPanel() {
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
     setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
     setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
-    setAlunoForm({ nome: '', curso: '', empresa: '', imagem_url: '' });
+    setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
   };
 
   const handleEdit = (item: any) => {
@@ -176,7 +176,7 @@ export default function AdminPanel() {
     } else if (activeTab === 'alunos') {
       setAlunoForm({
         nome: item.nome || '',
-        curso: item.curso || '',
+        idade: item.idade || item.curso || '',
         empresa: item.empresa || '',
         imagem_url: item.imagem_url || item.foto || item.foto_url || ''
       });
@@ -508,7 +508,7 @@ export default function AdminPanel() {
                           {activeTab === 'alunos' && (
                             <>
                               <FormInput label="Nome do Aluno" value={alunoForm.nome} onChange={(v) => setAlunoForm({...alunoForm, nome: v})} />
-                              <FormInput label="Curso" value={alunoForm.curso} onChange={(v) => setAlunoForm({...alunoForm, curso: v})} />
+                              <FormInput label="Idade" value={alunoForm.idade} onChange={(v) => setAlunoForm({...alunoForm, idade: v})} placeholder="Ex: 19 anos" />
                               <FormInput label="Empresa" value={alunoForm.empresa} onChange={(v) => setAlunoForm({...alunoForm, empresa: v})} />
                               <FormInput label="URL da Foto" value={alunoForm.imagem_url} onChange={(v) => setAlunoForm({...alunoForm, imagem_url: v})} placeholder="https://..." />
                             </>
@@ -574,7 +574,7 @@ export default function AdminPanel() {
                                       </div>
                                       <div>
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : activeTab === 'alunos' ? item.curso : 'Banner Home'}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
                                       </div>
                                     </div>
                                   </td>

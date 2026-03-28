@@ -25,25 +25,25 @@ export default function LandingPage() {
   const mockAlunos = [
     {
       nome: "Ana Oliveira",
-      curso: "Administração",
+      idade: "19 anos",
       empresa: "Banco Itaú",
       foto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
     },
     {
       nome: "Ricardo Santos",
-      curso: "Informática",
+      idade: "21 anos",
       empresa: "Dell Technologies",
       foto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop"
     },
     {
       nome: "Juliana Mendes",
-      curso: "Saúde",
+      idade: "20 anos",
       empresa: "Hospital Aliança",
       foto: "https://images.unsplash.com/photo-1559839734-2b71f1536783?q=80&w=800&auto=format&fit=crop"
     },
     {
       nome: "Felipe Almeida",
-      curso: "Tecnologia",
+      idade: "22 anos",
       empresa: "Accenture",
       foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop"
     }
@@ -563,7 +563,7 @@ export default function LandingPage() {
                       {/* Info Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                         <h4 className="text-xl font-black mb-1">{aluno.nome}</h4>
-                        <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Curso: {aluno.curso}</p>
+                        <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Idade: {aluno.idade || aluno.curso}</p>
                         <div className="flex items-center text-orange-500 font-black text-sm">
                           <Briefcase className="h-4 w-4 mr-2" />
                           {aluno.empresa}
