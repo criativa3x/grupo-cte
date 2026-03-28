@@ -563,7 +563,7 @@ export default function LandingPage() {
                       {/* Info Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                         <h4 className="text-xl font-black mb-1">{aluno.nome}</h4>
-                        <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Idade: {aluno.idade || aluno.curso}</p>
+                        <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">{aluno.idade || aluno.curso}</p>
                         <div className="flex items-center text-orange-500 font-black text-sm">
                           <Briefcase className="h-4 w-4 mr-2" />
                           {aluno.empresa}

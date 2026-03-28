@@ -508,7 +508,7 @@ export default function AdminPanel() {
                           {activeTab === 'alunos' && (
                             <>
                               <FormInput label="Nome do Aluno" value={alunoForm.nome} onChange={(v) => setAlunoForm({...alunoForm, nome: v})} />
-                              <FormInput label="Idade" value={alunoForm.idade} onChange={(v) => setAlunoForm({...alunoForm, idade: v})} placeholder="Ex: 19 anos" />
+                              <FormInput label="Idade" value={alunoForm.idade} onChange={(v) => setAlunoForm({...alunoForm, idade: v})} placeholder="Ex: 18 anos" />
                               <FormInput label="Empresa" value={alunoForm.empresa} onChange={(v) => setAlunoForm({...alunoForm, empresa: v})} />
                               <FormInput label="URL da Foto" value={alunoForm.imagem_url} onChange={(v) => setAlunoForm({...alunoForm, imagem_url: v})} placeholder="https://..." />
                             </>
