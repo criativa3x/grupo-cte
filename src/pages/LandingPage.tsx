@@ -574,6 +574,19 @@ export default function LandingPage() {
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* CTA Button - Mural de Sucesso */}
+            <div className="flex justify-center mt-12 mb-8">
+              <motion.a 
+                href="#cursos"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-orange-600 hover:bg-orange-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-[0_10px_30px_rgba(234,88,12,0.4)] transition-all hover:-translate-y-1 flex items-center group"
+              >
+                Quero ser o próximo!
+                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+              </motion.a>
+            </div>
           </div>
         </div>
       </section>
