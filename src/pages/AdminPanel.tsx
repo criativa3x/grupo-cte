@@ -28,7 +28,7 @@ export default function AdminPanel() {
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
   const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
   const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
-  const [alunoForm, setAlunoForm] = useState({ nome: '', curso: '', empresa: '', foto_url: '' });
+  const [alunoForm, setAlunoForm] = useState({ nome: '', curso: '', empresa: '', foto: '' });
 
   useEffect(() => {
     fetchAllData();
@@ -142,7 +142,7 @@ export default function AdminPanel() {
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
     setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
     setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
-    setAlunoForm({ nome: '', curso: '', empresa: '', foto_url: '' });
+    setAlunoForm({ nome: '', curso: '', empresa: '', foto: '' });
   };
 
   const handleEdit = (item: any) => {
@@ -178,7 +178,7 @@ export default function AdminPanel() {
         nome: item.nome || '',
         curso: item.curso || '',
         empresa: item.empresa || '',
-        foto_url: item.foto_url || ''
+        foto: item.foto || item.foto_url || ''
       });
     }
   };
@@ -510,7 +510,7 @@ export default function AdminPanel() {
                               <FormInput label="Nome do Aluno" value={alunoForm.nome} onChange={(v) => setAlunoForm({...alunoForm, nome: v})} />
                               <FormInput label="Curso" value={alunoForm.curso} onChange={(v) => setAlunoForm({...alunoForm, curso: v})} />
                               <FormInput label="Empresa" value={alunoForm.empresa} onChange={(v) => setAlunoForm({...alunoForm, empresa: v})} />
-                              <FormInput label="URL da Foto" value={alunoForm.foto_url} onChange={(v) => setAlunoForm({...alunoForm, foto_url: v})} placeholder="https://..." />
+                              <FormInput label="URL da Foto" value={alunoForm.foto} onChange={(v) => setAlunoForm({...alunoForm, foto: v})} placeholder="https://..." />
                             </>
                           )}
 
