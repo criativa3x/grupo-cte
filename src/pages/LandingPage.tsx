@@ -15,6 +15,33 @@ export default function LandingPage() {
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
+  const alunosContratados = [
+    {
+      nome: "Ana Oliveira",
+      curso: "Administração",
+      empresa: "Banco Itaú",
+      foto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      nome: "Ricardo Santos",
+      curso: "Informática",
+      empresa: "Dell Technologies",
+      foto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      nome: "Juliana Mendes",
+      curso: "Saúde",
+      empresa: "Hospital Aliança",
+      foto: "https://images.unsplash.com/photo-1559839734-2b71f1536783?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      nome: "Felipe Almeida",
+      curso: "Tecnologia",
+      empresa: "Accenture",
+      foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop"
+    }
+  ];
+
   useEffect(() => {
     fetchContent();
   }, []);
@@ -467,7 +494,62 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. Footer */}
+      {/* 6. Mural de Sucesso - Alunos Contratados */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">Mural de Sucesso</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
+              Nossos alunos já estão no mercado de trabalho. O próximo pode ser você!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {alunosContratados.map((aluno, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all"
+              >
+                {/* Image Container */}
+                <div className="aspect-[4/5] relative overflow-hidden">
+                  <img 
+                    src={aluno.foto} 
+                    alt={aluno.nome} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  {/* Floating Badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                      CONTRATADO(A)
+                    </span>
+                  </div>
+
+                  {/* Gradient Overlay for Info */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                  
+                  {/* Info Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <h4 className="text-xl font-black mb-1">{aluno.nome}</h4>
+                    <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Curso: {aluno.curso}</p>
+                    <div className="flex items-center text-orange-500 font-black text-sm">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      {aluno.empresa}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Footer */}
       <footer className="bg-blue-950 text-gray-300 pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
