@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-type Tab = 'dashboard' | 'cursos' | 'vagas' | 'aparencia';
+type Tab = 'dashboard' | 'cursos' | 'vagas' | 'aparencia' | 'alunos';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -16,16 +16,19 @@ export default function AdminPanel() {
     banners: any[];
     cursos: any[];
     vagas: any[];
+    alunos: any[];
   }>({
     banners: [],
     cursos: [],
     vagas: [],
+    alunos: [],
   });
 
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
   const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
   const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
+  const [alunoForm, setAlunoForm] = useState({ nome: '', curso: '', empresa: '', foto_url: '' });
 
   useEffect(() => {
     fetchAllData();
@@ -40,16 +43,18 @@ export default function AdminPanel() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [bannersRes, cursosRes, vagasRes] = await Promise.all([
+      const [bannersRes, cursosRes, vagasRes, alunosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
       ]);
 
       setData({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
         vagas: vagasRes.data || [],
+        alunos: alunosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching all data:', error);
@@ -65,6 +70,7 @@ export default function AdminPanel() {
         aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
+        alunos: 'alunos_contratados',
       };
       
       const tableName = tableMap[activeTab];
@@ -77,7 +83,7 @@ export default function AdminPanel() {
 
       if (error) throw error;
       
-      const dataKey = activeTab === 'aparencia' ? 'banners' : activeTab;
+      const dataKey = activeTab === 'aparencia' ? 'banners' : activeTab === 'alunos' ? 'alunos' : activeTab;
       setData((prev) => ({ ...prev, [dataKey]: result || [] }));
     } catch (error) {
       console.error('Error fetching tab data:', error);
@@ -94,12 +100,14 @@ export default function AdminPanel() {
         aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
+        alunos: 'alunos_contratados',
       };
 
       const formMap: Partial<Record<Tab, any>> = {
         aparencia: bannerForm,
         cursos: cursoForm,
         vagas: vagaForm,
+        alunos: alunoForm,
       };
 
       const tableName = tableMap[activeTab];
@@ -134,6 +142,7 @@ export default function AdminPanel() {
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
     setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
     setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
+    setAlunoForm({ nome: '', curso: '', empresa: '', foto_url: '' });
   };
 
   const handleEdit = (item: any) => {
@@ -164,6 +173,13 @@ export default function AdminPanel() {
         descricao: item.descricao || '',
         link_candidatura: item.link_candidatura || ''
       });
+    } else if (activeTab === 'alunos') {
+      setAlunoForm({
+        nome: item.nome || '',
+        curso: item.curso || '',
+        empresa: item.empresa || '',
+        foto_url: item.foto_url || ''
+      });
     }
   };
 
@@ -185,6 +201,7 @@ export default function AdminPanel() {
         aparencia: 'banners_home',
         cursos: 'cursos',
         vagas: 'vagas_estagio',
+        alunos: 'alunos_contratados',
       };
 
       const tableName = tableMap[activeTab];
@@ -208,6 +225,7 @@ export default function AdminPanel() {
     if (activeTab === 'aparencia') return data.banners;
     if (activeTab === 'cursos') return data.cursos;
     if (activeTab === 'vagas') return data.vagas;
+    if (activeTab === 'alunos') return data.alunos;
     return [];
   };
 
@@ -265,6 +283,13 @@ export default function AdminPanel() {
             label="Vagas de Estágio" 
             active={activeTab === 'vagas'} 
             onClick={() => setActiveTab('vagas')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Star size={20} />} 
+            label="Alunos Contratados" 
+            active={activeTab === 'alunos'} 
+            onClick={() => setActiveTab('alunos')} 
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
@@ -376,6 +401,12 @@ export default function AdminPanel() {
                       icon={<Briefcase className="text-green-600" />} 
                       color="bg-green-50"
                     />
+                    <StatCard 
+                      title="Alunos Contratados" 
+                      value={data.alunos.length} 
+                      icon={<Star className="text-yellow-600" />} 
+                      color="bg-yellow-50"
+                    />
                   </div>
 
                   <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm">
@@ -391,11 +422,13 @@ export default function AdminPanel() {
                     <h2 className="text-3xl font-black text-blue-950">
                       {activeTab === 'cursos' ? 'Gestão de Cursos' : 
                        activeTab === 'vagas' ? 'Vagas de Estágio' : 
+                       activeTab === 'alunos' ? 'Alunos Contratados' :
                        'Aparência do Site'}
                     </h2>
                     <p className="text-gray-500 font-medium mt-1">
                       {activeTab === 'cursos' ? 'Adicione e edite os cursos oferecidos.' : 
                        activeTab === 'vagas' ? 'Gerencie as oportunidades de estágio.' : 
+                       activeTab === 'alunos' ? 'Gerencie o mural de alunos contratados.' :
                        'Personalize os banners da página inicial.'}
                     </p>
                   </div>
@@ -472,6 +505,15 @@ export default function AdminPanel() {
                             </>
                           )}
 
+                          {activeTab === 'alunos' && (
+                            <>
+                              <FormInput label="Nome do Aluno" value={alunoForm.nome} onChange={(v) => setAlunoForm({...alunoForm, nome: v})} />
+                              <FormInput label="Curso" value={alunoForm.curso} onChange={(v) => setAlunoForm({...alunoForm, curso: v})} />
+                              <FormInput label="Empresa" value={alunoForm.empresa} onChange={(v) => setAlunoForm({...alunoForm, empresa: v})} />
+                              <FormInput label="URL da Foto" value={alunoForm.foto_url} onChange={(v) => setAlunoForm({...alunoForm, foto_url: v})} placeholder="https://..." />
+                            </>
+                          )}
+
                           <button
                             type="submit"
                             disabled={loading}
@@ -532,14 +574,14 @@ export default function AdminPanel() {
                                       </div>
                                       <div>
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : 'Banner Home'}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : activeTab === 'alunos' ? item.curso : 'Banner Home'}</div>
                                       </div>
                                     </div>
                                   </td>
                                   <td className="px-8 py-6">
                                     <div className="max-w-[240px]">
                                       <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
-                                        {item.subtitulo || item.descricao || item.local}
+                                        {item.subtitulo || item.descricao || item.local || item.empresa}
                                       </div>
                                       {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
                                     </div>

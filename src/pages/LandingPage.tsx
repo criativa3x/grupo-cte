@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,11 +17,12 @@ export default function LandingPage() {
     banners: [] as any[],
     cursos: [] as any[],
     vagas: [] as any[],
+    alunos_contratados: [] as any[],
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
-  const alunosContratados = [
+  const mockAlunos = [
     {
       nome: "Ana Oliveira",
       curso: "Administração",
@@ -57,16 +64,18 @@ export default function LandingPage() {
 
   const fetchContent = async () => {
     try {
-      const [bannersRes, cursosRes, vagasRes] = await Promise.all([
+      const [bannersRes, cursosRes, vagasRes, alunosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
       ]);
 
       setContent({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
         vagas: vagasRes.data || [],
+        alunos_contratados: alunosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching content:', error);
@@ -495,7 +504,7 @@ export default function LandingPage() {
       </section>
 
       {/* 6. Mural de Sucesso - Alunos Contratados */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">Mural de Sucesso</h2>
@@ -504,47 +513,67 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {alunosContratados.map((aluno, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all"
-              >
-                {/* Image Container */}
-                <div className="aspect-[4/5] relative overflow-hidden">
-                  <img 
-                    src={aluno.foto} 
-                    alt={aluno.nome} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  
-                  {/* Floating Badge */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-                      CONTRATADO(A)
-                    </span>
-                  </div>
+          <div className="relative">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={30}
+              slidesPerView={1}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              pagination={{ clickable: true }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 4,
+                },
+              }}
+              className="pb-16"
+            >
+              {(content.alunos_contratados.length > 0 ? content.alunos_contratados : mockAlunos).map((aluno, index) => (
+                <SwiperSlide key={index}>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all h-full"
+                  >
+                    {/* Image Container */}
+                    <div className="aspect-[4/5] relative overflow-hidden">
+                      <img 
+                        src={aluno.foto || aluno.foto_url} 
+                        alt={aluno.nome} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        referrerPolicy="no-referrer"
+                      />
+                      
+                      {/* Floating Badge */}
+                      <div className="absolute top-4 left-4 z-10">
+                        <span className="bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                          CONTRATADO(A)
+                        </span>
+                      </div>
 
-                  {/* Gradient Overlay for Info */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                  
-                  {/* Info Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h4 className="text-xl font-black mb-1">{aluno.nome}</h4>
-                    <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Curso: {aluno.curso}</p>
-                    <div className="flex items-center text-orange-500 font-black text-sm">
-                      <Briefcase className="h-4 w-4 mr-2" />
-                      {aluno.empresa}
+                      {/* Gradient Overlay for Info */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      {/* Info Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h4 className="text-xl font-black mb-1">{aluno.nome}</h4>
+                        <p className="text-white/70 text-xs font-bold mb-2 uppercase tracking-wide">Curso: {aluno.curso}</p>
+                        <div className="flex items-center text-orange-500 font-black text-sm">
+                          <Briefcase className="h-4 w-4 mr-2" />
+                          {aluno.empresa}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>
