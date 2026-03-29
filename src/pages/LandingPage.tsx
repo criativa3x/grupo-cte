@@ -215,14 +215,14 @@ export default function LandingPage() {
                 DESDE 1994 TRANSFORMANDO VIDAS
               </motion.div>
               
-              {/* Keyed Content - Animates on every slide change */}
+              {/* Keyed Content - Animates on every slide change with a 0.5s delay */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentBannerIndex}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 >
                   <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8">
                     {activeBanner.titulo}
