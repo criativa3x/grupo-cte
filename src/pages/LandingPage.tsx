@@ -331,7 +331,7 @@ export default function LandingPage() {
                     {/* Top: Ícone circular centralizado */}
                     <div className="relative mb-6">
                       <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
-                        {getAreaIcon(vaga['àrea'] || vaga.area)}
+                        {getAreaIcon(vaga.area || vaga['àrea'])}
                       </div>
                     </div>
 
