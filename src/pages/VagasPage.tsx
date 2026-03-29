@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Menu, X, MapPin, Briefcase, ChevronLeft, Loader2 } from 'lucide-react';
+import { Menu, X, MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
+import { getAreaIcon } from '../lib/icons';
 
 export default function VagasPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -86,31 +87,86 @@ export default function VagasPage() {
           ) : vagas.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {vagas.map((vaga) => (
-                <div key={vaga.id} className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
-                  <div className="p-8 flex flex-col items-center text-center">
-                    <img 
-                      src={`https://picsum.photos/seed/${vaga.titulo}/200/200`} 
-                      alt={vaga.titulo} 
-                      className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
-                    <h3 className="text-2xl font-black text-gray-900 mb-4">{vaga.titulo}</h3>
-                    <div className="space-y-3 mb-8 w-full">
-                      <div className="flex items-center justify-center text-gray-600 font-semibold">
-                        <MapPin className="h-5 w-5 mr-2 text-orange-500" />
-                        <span>{vaga.local}</span>
-                      </div>
-                      <div className="flex items-center justify-center text-gray-600 font-semibold">
-                        <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
-                        <span>Bolsa: <strong className="text-gray-900">{vaga.valor_bolsa}</strong></span>
+                <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group flex flex-col h-full">
+                  <div className="p-8 flex flex-col items-center flex-1">
+                    {/* Top: Ícone circular centralizado */}
+                    <div className="relative mb-6">
+                      <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
+                        {getAreaIcon(vaga['àrea'] || vaga.area)}
                       </div>
                     </div>
+
+                    {/* Tag Condicional (Badge) */}
+                    <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
+                      {vaga.quantidade_vagas === 1 
+                        ? 'UMA VAGA DE ESTÁGIO' 
+                        : `${vaga.quantidade_vagas || 1} VAGAS DE ESTÁGIO`}
+                    </div>
+
+                    {/* Título */}
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+
+                    {/* Resumo da Vaga */}
+                    {vaga.resumo && (
+                      <p className="text-gray-600 text-center mb-8 font-medium line-clamp-3">
+                        {vaga.resumo}
+                      </p>
+                    )}
+
+                    {/* Sessão de Requisitos: Alinhado à esquerda */}
+                    <div className="w-full text-left mb-8">
+                      <h4 className="text-lg font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
+                      <ul className="space-y-1 text-gray-700 text-lg">
+                        {vaga.requisitos ? (
+                          vaga.requisitos.split('\n').filter((line: string) => line.trim()).map((req: string, i: number) => (
+                            <li key={i} className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>{req}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Sexo: {vaga.sexo || 'Masculino'}</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Idade: {vaga.idade || 'A partir de 14 anos'}</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Horário: {vaga.horario || 'Manhã ou tarde'}</span>
+                            </li>
+                          </>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Destaques Inferiores (Bolsa e Local): Alinhados à esquerda */}
+                    <div className="w-full space-y-4 mb-10">
+                      <div className="flex items-center text-gray-800 text-lg">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                          <DollarSign className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="font-bold mr-1">Bolsa auxílio:</span>
+                        <span>{vaga.valor_bolsa}</span>
+                      </div>
+                      <div className="flex items-center text-gray-800 text-lg">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                          <MapPin className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="font-bold mr-1">Local:</span>
+                        <span>{vaga.local}</span>
+                      </div>
+                    </div>
+
+                    {/* Botão */}
                     <a 
                       href={vaga.link_candidatura} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-full bg-blue-950 hover:bg-orange-600 text-white text-center font-black py-4 rounded-2xl transition-all shadow-lg"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
                     >
                       Candidatar-se
                     </a>

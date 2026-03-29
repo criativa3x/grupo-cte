@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator } from 'lucide-react';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
+import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -21,13 +22,6 @@ export default function LandingPage() {
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-
-  const getVagaIcon = (titulo: string) => {
-    const t = titulo.toLowerCase();
-    if (t.includes('atendimento')) return <Headset className="h-10 w-10 text-white" />;
-    if (t.includes('caixa') || t.includes('vendas')) return <Calculator className="h-10 w-10 text-white" />;
-    return <Briefcase className="h-10 w-10 text-white" />;
-  };
 
   const mockAlunos = [
     {
@@ -337,7 +331,7 @@ export default function LandingPage() {
                     {/* Top: Ícone circular centralizado */}
                     <div className="relative mb-6">
                       <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
-                        {getVagaIcon(vaga.titulo)}
+                        {getAreaIcon(vaga['àrea'] || vaga.area)}
                       </div>
                     </div>
 
@@ -349,24 +343,42 @@ export default function LandingPage() {
                     </div>
 
                     {/* Título */}
-                    <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center leading-tight">{vaga.titulo}</h3>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+
+                    {/* Resumo da Vaga */}
+                    {vaga.resumo && (
+                      <p className="text-gray-600 text-center mb-8 font-medium line-clamp-3">
+                        {vaga.resumo}
+                      </p>
+                    )}
 
                     {/* Sessão de Requisitos: Alinhado à esquerda */}
                     <div className="w-full text-left mb-8">
                       <h4 className="text-lg font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
                       <ul className="space-y-1 text-gray-700 text-lg">
-                        <li className="flex items-start">
-                          <span className="mr-2">•</span>
-                          <span>Sexo: {vaga.sexo || 'Masculino'}</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="mr-2">•</span>
-                          <span>Idade: {vaga.idade || 'A partir de 14 anos'}</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="mr-2">•</span>
-                          <span>Horário: {vaga.horario || 'Manhã ou tarde'}</span>
-                        </li>
+                        {vaga.requisitos ? (
+                          vaga.requisitos.split('\n').filter(line => line.trim()).map((req, i) => (
+                            <li key={i} className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>{req}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Sexo: {vaga.sexo || 'Masculino'}</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Idade: {vaga.idade || 'A partir de 14 anos'}</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>Horário: {vaga.horario || 'Manhã ou tarde'}</span>
+                            </li>
+                          </>
+                        )}
                       </ul>
                     </div>
 

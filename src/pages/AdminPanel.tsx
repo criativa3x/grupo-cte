@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator } from 'lucide-react';
+import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
 type Tab = 'dashboard' | 'cursos' | 'vagas' | 'aparencia' | 'alunos';
@@ -27,7 +28,7 @@ export default function AdminPanel() {
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
   const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
-  const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
+  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', 'àrea': '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
 
   useEffect(() => {
@@ -141,7 +142,7 @@ export default function AdminPanel() {
     setEditingId(null);
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
     setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
-    setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', descricao: '', link_candidatura: '' });
+    setVagaForm({ titulo: '', resumo: '', 'àrea': '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
   };
 
@@ -167,10 +168,11 @@ export default function AdminPanel() {
     } else if (activeTab === 'vagas') {
       setVagaForm({
         titulo: item.titulo || '',
-        area: item.area || '',
+        resumo: item.resumo || '',
+        'àrea': item['àrea'] || item.area || '',
         local: item.local || '',
         valor_bolsa: item.valor_bolsa || '',
-        descricao: item.descricao || '',
+        requisitos: item.requisitos || item.descricao || '',
         link_candidatura: item.link_candidatura || ''
       });
     } else if (activeTab === 'alunos') {
@@ -494,14 +496,20 @@ export default function AdminPanel() {
 
                           {activeTab === 'vagas' && (
                             <>
-                              <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v) => setVagaForm({...vagaForm, titulo: v})} />
-                              <div className="grid grid-cols-2 gap-4">
-                                <FormInput label="Área" value={vagaForm.area} onChange={(v) => setVagaForm({...vagaForm, area: v})} />
-                                <FormInput label="Local" value={vagaForm.local} onChange={(v) => setVagaForm({...vagaForm, local: v})} />
+                              <div className="flex justify-center mb-6">
+                                <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md border-4 border-white">
+                                  {getAreaIcon(vagaForm['àrea'])}
+                                </div>
                               </div>
-                              <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
-                              <FormTextArea label="Descrição" value={vagaForm.descricao} onChange={(v) => setVagaForm({...vagaForm, descricao: v})} />
-                              <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v) => setVagaForm({...vagaForm, link_candidatura: v})} />
+                              <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v: string) => setVagaForm({...vagaForm, titulo: v})} />
+                              <FormTextArea label="Resumo da Vaga" value={vagaForm.resumo} onChange={(v: string) => setVagaForm({...vagaForm, resumo: v})} placeholder="Breve resumo da oportunidade..." />
+                              <div className="grid grid-cols-2 gap-4">
+                                <FormInput label="Área" value={vagaForm['àrea']} onChange={(v: string) => setVagaForm({...vagaForm, 'àrea': v})} />
+                                <FormInput label="Local" value={vagaForm.local} onChange={(v: string) => setVagaForm({...vagaForm, local: v})} />
+                              </div>
+                              <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v: string) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
+                              <FormTextArea label="Requisitos" value={vagaForm.requisitos} onChange={(v: string) => setVagaForm({...vagaForm, requisitos: v})} placeholder="Liste os requisitos da vaga..." />
+                              <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v: string) => setVagaForm({...vagaForm, link_candidatura: v})} />
                             </>
                           )}
 
@@ -564,24 +572,28 @@ export default function AdminPanel() {
                                 >
                                   <td className="px-8 py-6">
                                     <div className="flex items-center space-x-4">
-                                      <div className="w-16 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
-                                        <img 
-                                          src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
-                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                                          alt="Preview"
-                                          referrerPolicy="no-referrer"
-                                        />
+                                      <div className="w-16 h-12 rounded-xl bg-[#1a233e] overflow-hidden flex-shrink-0 border border-gray-100 flex items-center justify-center">
+                                        {activeTab === 'vagas' ? (
+                                          getAreaIcon(item['àrea'] || item.area, "h-6 w-6")
+                                        ) : (
+                                          <img 
+                                            src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                            alt="Preview"
+                                            referrerPolicy="no-referrer"
+                                          />
+                                        )}
                                       </div>
                                       <div>
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? item.area : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? (item['àrea'] || item.area) : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
                                       </div>
                                     </div>
                                   </td>
                                   <td className="px-8 py-6">
                                     <div className="max-w-[240px]">
                                       <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
-                                        {item.subtitulo || item.descricao || item.local || item.empresa}
+                                        {item.resumo || item.subtitulo || item.descricao || item.requisitos || item.local || item.empresa}
                                       </div>
                                       {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
                                     </div>
