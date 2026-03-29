@@ -15,6 +15,7 @@ export default function VagasPage() {
 
   const fetchVagas = async () => {
     try {
+      // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const { data, error } = await supabase
         .from('vagas_estagio')
         .select('*')

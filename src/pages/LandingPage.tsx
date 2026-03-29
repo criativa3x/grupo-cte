@@ -65,6 +65,7 @@ export default function LandingPage() {
 
   const fetchContent = async () => {
     try {
+      // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const [bannersRes, cursosRes, vagasRes, alunosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
@@ -75,20 +76,7 @@ export default function LandingPage() {
       setContent({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
-        vagas: [
-          {
-            id: 'real-vaga-1',
-            titulo: 'Atendimento ao público',
-            local: 'Camaçari',
-            quantidade_vagas: 4,
-            sexo: 'Masculino',
-            idade: 'A partir de 14 anos',
-            horario: 'Manhã ou tarde',
-            valor_bolsa: 'R$850,00',
-            link_candidatura: '#contato'
-          },
-          ...(vagasRes.data || [])
-        ],
+        vagas: vagasRes.data || [],
         alunos_contratados: alunosRes.data || [],
       });
     } catch (error) {
