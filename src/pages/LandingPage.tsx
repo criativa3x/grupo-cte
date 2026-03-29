@@ -333,7 +333,7 @@ export default function LandingPage() {
 
                     {/* Resumo da Vaga */}
                     {vaga.resumo && (
-                      <p className="text-gray-600 text-center mb-8 font-medium line-clamp-3">
+                      <p className="text-gray-700 text-center mb-8 font-medium line-clamp-3 text-base">
                         {vaga.resumo}
                       </p>
                     )}
@@ -341,7 +341,7 @@ export default function LandingPage() {
                     {/* Sessão de Requisitos: Alinhado à esquerda */}
                     <div className="w-full text-left mb-8">
                       <h4 className="text-lg font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
-                      <ul className="space-y-1 text-gray-700 text-lg">
+                      <ul className="space-y-1 text-gray-700 text-base">
                         {vaga.requisitos ? (
                           vaga.requisitos.split('\n').filter(line => line.trim()).map((req, i) => (
                             <li key={i} className="flex items-start">
@@ -370,19 +370,23 @@ export default function LandingPage() {
 
                     {/* Destaques Inferiores (Bolsa e Local): Alinhados à esquerda */}
                     <div className="w-full space-y-4 mb-10">
-                      <div className="flex items-center text-gray-800 text-lg">
-                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                      <div className="flex items-start gap-3 text-gray-800 text-base">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm mt-1">
                           <DollarSign className="h-5 w-5 text-white" />
                         </div>
-                        <span className="font-bold mr-1">Bolsa auxílio:</span>
-                        <span>{vaga.valor_bolsa}</span>
+                        <div>
+                          <span className="font-bold mr-1">Bolsa auxílio:</span>
+                          <span>{vaga.valor_bolsa}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center text-gray-800 text-lg">
-                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                      <div className="flex items-start gap-3 text-gray-800 text-base">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm mt-1">
                           <MapPin className="h-5 w-5 text-white" />
                         </div>
-                        <span className="font-bold mr-1">Local:</span>
-                        <span>{vaga.local}</span>
+                        <div>
+                          <span className="font-bold mr-1">Local:</span>
+                          <span>{vaga.local}</span>
+                        </div>
                       </div>
                     </div>
 
