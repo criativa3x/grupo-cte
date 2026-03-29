@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink } from 'lucide-react';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -74,7 +74,20 @@ export default function LandingPage() {
       setContent({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
-        vagas: vagasRes.data || [],
+        vagas: [
+          {
+            id: 'real-vaga-1',
+            titulo: 'Atendimento ao público',
+            local: 'Camaçari',
+            quantidade_vagas: 4,
+            sexo: 'Masculino',
+            idade: 'A partir de 14 anos',
+            horario: 'Manhã ou tarde',
+            valor_bolsa: 'R$850,00',
+            link_candidatura: '#contato'
+          },
+          ...(vagasRes.data || [])
+        ],
         alunos_contratados: alunosRes.data || [],
       });
     } catch (error) {
@@ -312,31 +325,71 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {content.vagas.length > 0 ? (
               content.vagas.slice(0, 3).map((vaga) => (
-                <div key={vaga.id} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group">
-                  <div className="p-10 flex flex-col items-center text-center">
-                    <img 
-                      src={`https://picsum.photos/seed/${vaga.titulo}/200/200`} 
-                      alt={vaga.titulo} 
-                      className="w-20 h-20 rounded-full border-2 border-orange-500 mb-6 object-cover shadow-lg group-hover:scale-110 transition-transform"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-xs font-black rounded-full mb-4 uppercase tracking-widest">Vaga Aberta</div>
-                    <h3 className="text-2xl font-black text-gray-900 mb-4">{vaga.titulo}</h3>
-                    <div className="space-y-3 mb-8 w-full">
-                      <div className="flex items-center justify-center text-gray-600 font-semibold">
-                        <MapPin className="h-5 w-5 mr-2 text-orange-500" />
+                <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group">
+                  <div className="p-8 flex flex-col items-center">
+                    {/* Top: Avatar circular centralizada */}
+                    <div className="relative mb-6">
+                      <img 
+                        src={`https://picsum.photos/seed/${vaga.titulo}/200/200`} 
+                        alt={vaga.titulo} 
+                        className="w-24 h-24 rounded-full border-4 border-orange-500 object-cover shadow-md group-hover:scale-105 transition-transform"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    {/* Tag Condicional (Badge) */}
+                    <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
+                      {vaga.quantidade_vagas && vaga.quantidade_vagas > 1 
+                        ? `${vaga.quantidade_vagas} VAGAS DE ESTÁGIO` 
+                        : '1 VAGA DE ESTÁGIO'}
+                    </div>
+
+                    {/* Título */}
+                    <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center leading-tight">{vaga.titulo}</h3>
+
+                    {/* Sessão de Requisitos: Alinhado à esquerda */}
+                    <div className="w-full text-left mb-8">
+                      <h4 className="text-lg font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
+                      <ul className="space-y-1 text-gray-700 text-lg">
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Sexo: {vaga.sexo || 'Masculino'}</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Idade: {vaga.idade || 'A partir de 14 anos'}</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Horário: {vaga.horario || 'Manhã ou tarde'}</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Destaques Inferiores (Bolsa e Local): Alinhados à esquerda */}
+                    <div className="w-full space-y-4 mb-10">
+                      <div className="flex items-center text-gray-800 text-lg">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                          <DollarSign className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="font-bold mr-1">Bolsa auxílio:</span>
+                        <span>{vaga.valor_bolsa}</span>
+                      </div>
+                      <div className="flex items-center text-gray-800 text-lg">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3 shrink-0 shadow-sm">
+                          <MapPin className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="font-bold mr-1">Local:</span>
                         <span>{vaga.local}</span>
                       </div>
-                      <div className="flex items-center justify-center text-gray-600 font-semibold">
-                        <Briefcase className="h-5 w-5 mr-2 text-orange-500" />
-                        <span>Bolsa: <strong className="text-gray-900">{vaga.valor_bolsa}</strong></span>
-                      </div>
                     </div>
+
+                    {/* Botão */}
                     <a 
                       href={vaga.link_candidatura} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-full bg-blue-950 hover:bg-orange-600 text-white text-center font-black py-4 rounded-2xl transition-all shadow-lg"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
                     >
                       Candidatar-se
                     </a>
@@ -346,16 +399,22 @@ export default function LandingPage() {
             ) : (
               // Fallback cards if no vacancies in DB
               [1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group animate-pulse">
-                  <div className="p-10 flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full bg-gray-200 mb-6"></div>
-                    <div className="h-4 w-24 bg-gray-200 rounded-full mb-4"></div>
-                    <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
-                    <div className="space-y-3 mb-8 w-full">
-                      <div className="h-4 w-32 bg-gray-200 rounded mx-auto"></div>
-                      <div className="h-4 w-40 bg-gray-200 rounded mx-auto"></div>
+                <div key={i} className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-50 animate-pulse">
+                  <div className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-gray-200 mb-6"></div>
+                    <div className="h-8 w-48 bg-gray-200 rounded-full mb-6"></div>
+                    <div className="h-10 w-64 bg-gray-200 rounded mb-8"></div>
+                    <div className="w-full space-y-4 mb-8">
+                      <div className="h-6 w-32 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-full bg-gray-200 rounded"></div>
+                      <div className="h-4 w-full bg-gray-200 rounded"></div>
+                      <div className="h-4 w-full bg-gray-200 rounded"></div>
                     </div>
-                    <div className="h-14 w-full bg-gray-200 rounded-2xl"></div>
+                    <div className="w-full space-y-4 mb-10">
+                      <div className="h-8 w-full bg-gray-100 rounded"></div>
+                      <div className="h-8 w-full bg-gray-100 rounded"></div>
+                    </div>
+                    <div className="h-14 w-full bg-gray-200 rounded-xl"></div>
                   </div>
                 </div>
               ))
