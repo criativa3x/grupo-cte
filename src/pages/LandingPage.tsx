@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign } from 'lucide-react';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -21,6 +21,13 @@ export default function LandingPage() {
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  const getVagaIcon = (titulo: string) => {
+    const t = titulo.toLowerCase();
+    if (t.includes('atendimento')) return <Headset className="h-10 w-10 text-white" />;
+    if (t.includes('caixa') || t.includes('vendas')) return <Calculator className="h-10 w-10 text-white" />;
+    return <Briefcase className="h-10 w-10 text-white" />;
+  };
 
   const mockAlunos = [
     {
@@ -325,23 +332,20 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {content.vagas.length > 0 ? (
               content.vagas.slice(0, 3).map((vaga) => (
-                <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group">
-                  <div className="p-8 flex flex-col items-center">
-                    {/* Top: Avatar circular centralizada */}
+                <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group flex flex-col h-full">
+                  <div className="p-8 flex flex-col items-center flex-1">
+                    {/* Top: Ícone circular centralizado */}
                     <div className="relative mb-6">
-                      <img 
-                        src={`https://picsum.photos/seed/${vaga.titulo}/200/200`} 
-                        alt={vaga.titulo} 
-                        className="w-24 h-24 rounded-full border-4 border-orange-500 object-cover shadow-md group-hover:scale-105 transition-transform"
-                        referrerPolicy="no-referrer"
-                      />
+                      <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
+                        {getVagaIcon(vaga.titulo)}
+                      </div>
                     </div>
 
                     {/* Tag Condicional (Badge) */}
                     <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
-                      {vaga.quantidade_vagas && vaga.quantidade_vagas > 1 
-                        ? `${vaga.quantidade_vagas} VAGAS DE ESTÁGIO` 
-                        : '1 VAGA DE ESTÁGIO'}
+                      {vaga.quantidade_vagas === 1 
+                        ? 'UMA VAGA DE ESTÁGIO' 
+                        : `${vaga.quantidade_vagas || 1} VAGAS DE ESTÁGIO`}
                     </div>
 
                     {/* Título */}
@@ -389,7 +393,7 @@ export default function LandingPage() {
                       href={vaga.link_candidatura} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
                     >
                       Candidatar-se
                     </a>
@@ -399,9 +403,11 @@ export default function LandingPage() {
             ) : (
               // Fallback cards if no vacancies in DB
               [1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-50 animate-pulse">
-                  <div className="p-8 flex flex-col items-center">
-                    <div className="w-24 h-24 rounded-full bg-gray-200 mb-6"></div>
+                <div key={i} className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-50 animate-pulse flex flex-col h-full">
+                  <div className="p-8 flex flex-col items-center flex-1">
+                    <div className="w-24 h-24 rounded-full bg-[#1a233e]/10 flex items-center justify-center mb-6">
+                      <div className="w-10 h-10 bg-[#1a233e]/20 rounded"></div>
+                    </div>
                     <div className="h-8 w-48 bg-gray-200 rounded-full mb-6"></div>
                     <div className="h-10 w-64 bg-gray-200 rounded mb-8"></div>
                     <div className="w-full space-y-4 mb-8">
@@ -414,7 +420,7 @@ export default function LandingPage() {
                       <div className="h-8 w-full bg-gray-100 rounded"></div>
                       <div className="h-8 w-full bg-gray-100 rounded"></div>
                     </div>
-                    <div className="h-14 w-full bg-gray-200 rounded-xl"></div>
+                    <div className="h-14 w-full bg-gray-200 rounded-xl mt-auto"></div>
                   </div>
                 </div>
               ))
