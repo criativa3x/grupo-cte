@@ -337,9 +337,7 @@ export default function LandingPage() {
 
                     {/* Tag Condicional (Badge) */}
                     <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
-                      {vaga.quantidade_vagas === 1 
-                        ? 'UMA VAGA DE ESTÁGIO' 
-                        : `${vaga.quantidade_vagas || 1} VAGAS DE ESTÁGIO`}
+                      VAGA DE ESTÁGIO
                     </div>
 
                     {/* Título */}
