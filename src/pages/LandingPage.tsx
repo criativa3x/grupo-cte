@@ -215,7 +215,7 @@ export default function LandingPage() {
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
                 }}
-                className="inline-block px-3 py-1 bg-orange-600/90 text-white text-[10px] md:text-xs font-bold rounded-full mb-6 backdrop-blur-sm uppercase tracking-wider"
+                className="inline-block px-3 py-1 bg-orange-600/90 text-white text-[10px] md:text-xs font-bold rounded-full mb-8 backdrop-blur-sm uppercase tracking-wider"
               >
                 DESDE 1994 TRANSFORMANDO VIDAS
               </motion.div>
@@ -456,17 +456,17 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
             {content.categorias.length > 0 ? (
               content.categorias.map((cat, i) => (
-                <div key={cat.id || i} className="group relative bg-gray-900 rounded-2xl overflow-hidden aspect-[4/5] shadow-xl transition-all hover:-translate-y-2">
+                <div key={cat.id || i} className="group relative bg-gray-100 rounded-2xl overflow-hidden aspect-[4/5] shadow-xl transition-all hover:-translate-y-2">
                   <img 
                     src={cat.imagem_url || `https://picsum.photos/seed/category-${i}/600/800`} 
                     alt={cat.titulo} 
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
-                    <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight">{cat.titulo}</h3>
-                    <a href="#cursos" className="inline-flex items-center text-orange-500 font-bold text-sm md:text-base group-hover:text-orange-400 transition-colors">
+                    <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight drop-shadow-md">{cat.titulo}</h3>
+                    <a href="#cursos" className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
                       Ver cursos <ChevronRight className="ml-1 h-4 w-4 md:h-5 md:w-5" />
                     </a>
                   </div>
@@ -481,17 +481,17 @@ export default function LandingPage() {
                 'Atendimento e Vendas',
                 'Idiomas'
               ].map((cat, i) => (
-                <div key={i} className="group relative bg-gray-900 rounded-2xl overflow-hidden aspect-[4/5] shadow-xl transition-all hover:-translate-y-2">
+                <div key={i} className="group relative bg-gray-100 rounded-2xl overflow-hidden aspect-[4/5] shadow-xl transition-all hover:-translate-y-2">
                   <img 
                     src={`https://picsum.photos/seed/category-${i}/600/800`} 
                     alt={cat} 
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
-                    <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight">{cat}</h3>
-                    <a href="#cursos" className="inline-flex items-center text-orange-500 font-bold text-sm md:text-base group-hover:text-orange-400 transition-colors">
+                    <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight drop-shadow-md">{cat}</h3>
+                    <a href="#cursos" className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
                       Ver cursos <ChevronRight className="ml-1 h-4 w-4 md:h-5 md:w-5" />
                     </a>
                   </div>
