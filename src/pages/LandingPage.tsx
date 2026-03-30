@@ -209,31 +209,31 @@ export default function LandingPage() {
                 visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
               }}
             >
-              {/* Badge - Only animates on initial load */}
+              {/* Badge - Always visible */}
               <motion.div 
                 variants={{
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
                 }}
-                className="inline-block px-4 py-1.5 bg-orange-600/90 text-white text-sm font-bold rounded-full mb-6 backdrop-blur-sm"
+                className="inline-block px-3 py-1 bg-orange-600/90 text-white text-[10px] md:text-xs font-bold rounded-full mb-6 backdrop-blur-sm uppercase tracking-wider"
               >
                 DESDE 1994 TRANSFORMANDO VIDAS
               </motion.div>
               
               {/* Keyed Content - Animates on every slide change with a 0.5s delay */}
               <AnimatePresence mode="wait">
-                <motion.div
+                <motion.div 
                   key={currentBannerIndex}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 >
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-8">
+                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 md:mb-8">
                     {activeBanner.titulo}
                   </h1>
                   
-                  <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed font-medium">
+                  <p className="text-lg sm:text-2xl text-gray-200 mb-8 md:mb-12 max-w-2xl leading-relaxed font-medium">
                     {activeBanner.subtitulo}
                   </p>
                 </motion.div>
@@ -245,23 +245,23 @@ export default function LandingPage() {
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
                 }}
-                className="flex flex-col sm:flex-row gap-6"
+                className="flex flex-col sm:flex-row gap-4 md:gap-6"
               >
-                <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-full font-black text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
                   {activeBanner.texto_botao}
                 </a>
-                <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-full font-black text-xl transition-all hover:-translate-y-1">
+                <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all hover:-translate-y-1">
                   Vagas de Estágio
                 </a>
               </motion.div>
               
-              {/* Stats - Only animate on initial load */}
+              {/* Stats - Hidden on mobile */}
               <motion.div 
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.8 } }
                 }}
-                className="mt-12 flex items-center gap-4 text-white/80"
+                className="hidden md:flex mt-12 items-center gap-4 text-white/80"
               >
                 <div className="flex -space-x-3">
                   {[
@@ -522,7 +522,7 @@ export default function LandingPage() {
             <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
               <div className="absolute -top-12 left-1/2 -translate-x-1/2">
                 <img 
-                  src="https://picsum.photos/seed/student-success-1/300/300" 
+                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774891231/5_rbubi3.webp" 
                   alt="Lucas Silva" 
                   className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
                   referrerPolicy="no-referrer"
@@ -542,7 +542,7 @@ export default function LandingPage() {
             <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
               <div className="absolute -top-12 left-1/2 -translate-x-1/2">
                 <img 
-                  src="https://picsum.photos/seed/student-success-2/300/300" 
+                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774734114/2_gmcdxg.webp" 
                   alt="Mariana Costa" 
                   className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
                   referrerPolicy="no-referrer"
@@ -562,7 +562,7 @@ export default function LandingPage() {
             <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
               <div className="absolute -top-12 left-1/2 -translate-x-1/2">
                 <img 
-                  src="https://picsum.photos/seed/student-success-3/300/300" 
+                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp" 
                   alt="Pedro Santos" 
                   className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
                   referrerPolicy="no-referrer"
