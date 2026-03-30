@@ -262,10 +262,10 @@ export default function LandingPage() {
               >
                 <div className="flex -space-x-3">
                   {[
-                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1764622819/f550df6c-4ff5-44d9-a3cb-2d87dcb4a8d2_swghxz.jpg",
-                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1764622818/01123a11-6121-48f4-9244-8605e5694ee6_mu7ttc.jpg",
-                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734114/2_gmcdxg.webp",
-                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp"
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774869604/4_zzbcvt.png",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774869604/3_kdgocd.png",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774869604/2_vynefl.png",
+                    "https://res.cloudinary.com/dapsovbs5/image/upload/v1774869604/1_oxjzqh.png"
                   ].map((url, i) => (
                     <img 
                       key={i}
@@ -450,47 +450,31 @@ export default function LandingPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">Cursos práticos com foco no que o mercado realmente exige.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {content.cursos.length > 0 ? (
-              content.cursos.map((curso) => (
-                <div key={curso.id} className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-                  <img 
-                    src={curso.thumbnail_url || `https://picsum.photos/seed/${curso.nome}/600/800`} 
-                    alt={curso.nome} 
-                    className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <div className="text-orange-500 text-xs font-black uppercase tracking-widest mb-2">{curso.categoria}</div>
-                    <h3 className="text-2xl font-black text-white mb-4">{curso.nome}</h3>
-                    <div className="text-white/60 text-sm mb-4 line-clamp-2">{curso.descricao}</div>
-                    <a href="#" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                      Ver curso <ChevronRight className="ml-1 h-5 w-5" />
-                    </a>
-                  </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
+            {[
+              'Informática e Tecnologia',
+              'Administração e Negócios',
+              'Saúde e Bem-Estar',
+              'Marketing e Design',
+              'Atendimento e Vendas',
+              'Idiomas'
+            ].map((cat, i) => (
+              <div key={i} className="group relative bg-gray-900 rounded-2xl overflow-hidden aspect-[4/5] shadow-xl transition-all hover:-translate-y-2">
+                <img 
+                  src={`https://picsum.photos/seed/category-${i}/600/800`} 
+                  alt={cat} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+                  <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight">{cat}</h3>
+                  <a href="#cursos" className="inline-flex items-center text-orange-500 font-bold text-sm md:text-base group-hover:text-orange-400 transition-colors">
+                    Ver cursos <ChevronRight className="ml-1 h-4 w-4 md:h-5 md:w-5" />
+                  </a>
                 </div>
-              ))
-            ) : (
-              // Fallback categories
-              ['Informática', 'Saúde', 'Administração', 'Beleza'].map((cat, i) => (
-                <div key={i} className="group relative bg-gray-900 rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl transition-all hover:-translate-y-2">
-                  <img 
-                    src={`https://picsum.photos/seed/${cat}/600/800`} 
-                    alt={cat} 
-                    className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <h3 className="text-2xl font-black text-white mb-4">{cat} e Tecnologia</h3>
-                    <a href="#" className="inline-flex items-center text-orange-500 font-bold group-hover:text-orange-400 transition-colors">
-                      Ver cursos <ChevronRight className="ml-1 h-5 w-5" />
-                    </a>
-                  </div>
-                </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </div>
       </section>

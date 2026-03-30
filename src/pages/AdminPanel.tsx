@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
-type Tab = 'dashboard' | 'cursos' | 'vagas' | 'aparencia' | 'alunos';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -16,11 +16,13 @@ export default function AdminPanel() {
   const [data, setData] = useState<{
     banners: any[];
     cursos: any[];
+    categorias: any[];
     vagas: any[];
     alunos: any[];
   }>({
     banners: [],
     cursos: [],
+    categorias: [],
     vagas: [],
     alunos: [],
   });
@@ -28,6 +30,8 @@ export default function AdminPanel() {
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
   const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
+  const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
+  const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
   const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
 
@@ -44,9 +48,10 @@ export default function AdminPanel() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [bannersRes, cursosRes, vagasRes, alunosRes] = await Promise.all([
+      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
+        supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
       ]);
@@ -54,6 +59,7 @@ export default function AdminPanel() {
       setData({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
+        categorias: categoriasRes.data || [],
         vagas: vagasRes.data || [],
         alunos: alunosRes.data || [],
       });
@@ -70,6 +76,7 @@ export default function AdminPanel() {
       const tableMap: Partial<Record<Tab, string>> = {
         aparencia: 'banners_home',
         cursos: 'cursos',
+        categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
       };
@@ -77,10 +84,15 @@ export default function AdminPanel() {
       const tableName = tableMap[activeTab];
       if (!tableName) return;
 
-      const { data: result, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .order('created_at', { ascending: false });
+      let query = supabase.from(tableName).select('*');
+      
+      if (activeTab === 'categorias') {
+        query = query.order('ordem', { ascending: true });
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      const { data: result, error } = await query;
 
       if (error) throw error;
       
@@ -100,6 +112,7 @@ export default function AdminPanel() {
       const tableMap: Partial<Record<Tab, string>> = {
         aparencia: 'banners_home',
         cursos: 'cursos',
+        categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
       };
@@ -107,6 +120,7 @@ export default function AdminPanel() {
       const formMap: Partial<Record<Tab, any>> = {
         aparencia: bannerForm,
         cursos: cursoForm,
+        categorias: categoriaForm,
         vagas: vagaForm,
         alunos: alunoForm,
       };
@@ -114,16 +128,37 @@ export default function AdminPanel() {
       const tableName = tableMap[activeTab];
       if (!tableName) return;
 
+      let finalFormData = { ...formMap[activeTab] };
+
+      // Handle Category Image Upload
+      if (activeTab === 'categorias' && categoriaFile) {
+        const fileExt = categoriaFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `categorias/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('categorias_imagens')
+          .upload(filePath, categoriaFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('categorias_imagens')
+          .getPublicUrl(filePath);
+
+        finalFormData.imagem_url = publicUrl;
+      }
+
       if (editingId) {
         const { error } = await supabase
           .from(tableName)
-          .update(formMap[activeTab])
+          .update(finalFormData)
           .eq('id', editingId);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from(tableName)
-          .insert([formMap[activeTab]]);
+          .insert([finalFormData]);
         if (error) throw error;
       }
 
@@ -142,6 +177,8 @@ export default function AdminPanel() {
     setEditingId(null);
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
     setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
+    setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
+    setCategoriaFile(null);
     setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
   };
@@ -164,6 +201,12 @@ export default function AdminPanel() {
         carga_horaria: item.carga_horaria || '',
         thumbnail_url: item.thumbnail_url || '',
         banner_url: item.banner_url || ''
+      });
+    } else if (activeTab === 'categorias') {
+      setCategoriaForm({
+        titulo: item.titulo || '',
+        ordem: item.ordem || 0,
+        imagem_url: item.imagem_url || ''
       });
     } else if (activeTab === 'vagas') {
       setVagaForm({
@@ -202,12 +245,29 @@ export default function AdminPanel() {
       const tableMap: Partial<Record<Tab, string>> = {
         aparencia: 'banners_home',
         cursos: 'cursos',
+        categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
       };
 
       const tableName = tableMap[activeTab];
       if (!tableName) return;
+
+      // If deleting a category, we might want to delete its image from storage too
+      if (activeTab === 'categorias') {
+        const itemToDelete = data.categorias.find(c => c.id === id);
+        if (itemToDelete && itemToDelete.imagem_url) {
+          try {
+            const urlParts = itemToDelete.imagem_url.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            await supabase.storage
+              .from('categorias_imagens')
+              .remove([`categorias/${fileName}`]);
+          } catch (storageError) {
+            console.error('Error deleting image from storage:', storageError);
+          }
+        }
+      }
 
       const { error } = await supabase
         .from(tableName)
@@ -226,6 +286,7 @@ export default function AdminPanel() {
   const getActiveData = () => {
     if (activeTab === 'aparencia') return data.banners;
     if (activeTab === 'cursos') return data.cursos;
+    if (activeTab === 'categorias') return data.categorias;
     if (activeTab === 'vagas') return data.vagas;
     if (activeTab === 'alunos') return data.alunos;
     return [];
@@ -278,6 +339,13 @@ export default function AdminPanel() {
             label="Cursos" 
             active={activeTab === 'cursos'} 
             onClick={() => setActiveTab('cursos')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Layers size={20} />} 
+            label="Categorias" 
+            active={activeTab === 'categorias'} 
+            onClick={() => setActiveTab('categorias')} 
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
@@ -398,6 +466,12 @@ export default function AdminPanel() {
                       color="bg-orange-50"
                     />
                     <StatCard 
+                      title="Categorias" 
+                      value={data.categorias.length} 
+                      icon={<Layers className="text-purple-600" />} 
+                      color="bg-purple-50"
+                    />
+                    <StatCard 
                       title="Vagas Abertas" 
                       value={data.vagas.length} 
                       icon={<Briefcase className="text-green-600" />} 
@@ -423,12 +497,14 @@ export default function AdminPanel() {
                   <div className="flex flex-col">
                     <h2 className="text-3xl font-black text-blue-950">
                       {activeTab === 'cursos' ? 'Gestão de Cursos' : 
+                       activeTab === 'categorias' ? 'Gerenciar Categorias' :
                        activeTab === 'vagas' ? 'Vagas de Estágio' : 
                        activeTab === 'alunos' ? 'Alunos Contratados' :
                        'Aparência do Site'}
                     </h2>
                     <p className="text-gray-500 font-medium mt-1">
                       {activeTab === 'cursos' ? 'Adicione e edite os cursos oferecidos.' : 
+                       activeTab === 'categorias' ? 'Gerencie as áreas de atuação e categorias.' :
                        activeTab === 'vagas' ? 'Gerencie as oportunidades de estágio.' : 
                        activeTab === 'alunos' ? 'Gerencie o mural de alunos contratados.' :
                        'Personalize os banners da página inicial.'}
@@ -480,16 +556,34 @@ export default function AdminPanel() {
                                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
                                 >
                                   <option value="">Selecione...</option>
-                                  <option value="Tecnologia">Tecnologia</option>
-                                  <option value="Saúde">Saúde</option>
-                                  <option value="Administração">Administração</option>
-                                  <option value="Beleza">Beleza</option>
+                                  {data.categorias.map(cat => (
+                                    <option key={cat.id} value={cat.titulo}>{cat.titulo}</option>
+                                  ))}
                                 </select>
                               </div>
                               <FormTextArea label="Descrição" value={cursoForm.descricao} onChange={(v) => setCursoForm({...cursoForm, descricao: v})} />
                               <div className="grid grid-cols-2 gap-4">
                                 <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="120h" />
                                 <FormInput label="Thumbnail URL" value={cursoForm.thumbnail_url} onChange={(v) => setCursoForm({...cursoForm, thumbnail_url: v})} />
+                              </div>
+                            </>
+                          )}
+
+                          {activeTab === 'categorias' && (
+                            <>
+                              <FormInput label="Título da Categoria" value={categoriaForm.titulo} onChange={(v) => setCategoriaForm({...categoriaForm, titulo: v})} />
+                              <FormInput label="Ordem de Exibição" type="number" value={categoriaForm.ordem} onChange={(v) => setCategoriaForm({...categoriaForm, ordem: parseInt(v) || 0})} />
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Imagem</label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={(e) => setCategoriaFile(e.target.files?.[0] || null)}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                />
+                                {categoriaForm.imagem_url && !categoriaFile && (
+                                  <p className="text-[10px] text-gray-400 mt-1">Imagem atual: {categoriaForm.imagem_url.split('/').pop()}</p>
+                                )}
                               </div>
                             </>
                           )}
@@ -539,10 +633,21 @@ export default function AdminPanel() {
                       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                         <div className="p-8 border-b border-gray-100 flex justify-between items-center">
                           <div>
-                            <h3 className="text-xl font-black text-blue-950">Itens Atuais</h3>
+                            <h3 className="text-xl font-black text-blue-950">
+                              {activeTab === 'categorias' ? 'Categorias Cadastradas' : 'Itens Atuais'}
+                            </h3>
                             <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
                           </div>
                           <div className="flex items-center space-x-2">
+                            {activeTab === 'categorias' && (
+                              <button 
+                                onClick={resetForm}
+                                className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white text-xs font-black rounded-xl hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 mr-2"
+                              >
+                                <Plus size={14} />
+                                <span>Nova Categoria</span>
+                              </button>
+                            )}
                             <button onClick={fetchTabData} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
                               <Search size={18} />
                             </button>
@@ -586,7 +691,7 @@ export default function AdminPanel() {
                                       </div>
                                       <div>
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'vagas' ? (item.area || item['àrea']) : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'categorias' ? `Ordem: ${item.ordem}` : activeTab === 'vagas' ? (item.area || item['àrea']) : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
                                       </div>
                                     </div>
                                   </td>
