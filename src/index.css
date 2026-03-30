@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/* Swiper Pagination Overrides */
+.swiper-pagination-bullet {
+  background: white !important;
+  opacity: 0.5 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: white !important;
+  opacity: 1 !important;
+}
+
+.testimonials-pagination .swiper-pagination-bullet {
+  background: white !important;
+  opacity: 0.5 !important;
+}
+
+.testimonials-pagination .swiper-pagination-bullet-active {
+  background: white !important;
+  opacity: 1 !important;
+}
+

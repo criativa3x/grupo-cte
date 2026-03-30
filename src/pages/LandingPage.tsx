@@ -20,6 +20,7 @@ export default function LandingPage() {
     vagas: [] as any[],
     alunos_contratados: [] as any[],
     categorias: [] as any[],
+    depoimentos: [] as any[],
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
@@ -67,12 +68,13 @@ export default function LandingPage() {
   const fetchContent = async () => {
     try {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
-      const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes] = await Promise.all([
+      const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
+        supabase.from('depoimentos').select('*').order('created_at', { ascending: false }),
       ]);
 
       setContent({
@@ -81,6 +83,7 @@ export default function LandingPage() {
         vagas: vagasRes.data || [],
         alunos_contratados: alunosRes.data || [],
         categorias: categoriasRes.data || [],
+        depoimentos: depoimentosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching content:', error);
@@ -106,6 +109,30 @@ export default function LandingPage() {
       imagem_url: 'https://picsum.photos/seed/career-growth/1920/1080',
       texto_botao: 'Conhecer Cursos',
       link_botao: '#cursos'
+    }
+  ];
+
+  const displayDepoimentos = content.depoimentos.length > 0 ? content.depoimentos : [
+    {
+      id: 1,
+      nome: "Lucas Silva",
+      cargo: "Aluno de Informática",
+      texto: "O CTE mudou minha visão de futuro. Comecei como aluno de Informática e hoje sou estagiário em uma grande empresa de tecnologia.",
+      foto_url: "https://res.cloudinary.com/dapsovbs5/image/upload/v1774891231/5_rbubi3.webp"
+    },
+    {
+      id: 2,
+      nome: "Mariana Costa",
+      cargo: "Aluna de Saúde",
+      texto: "A equipe do CTE é maravilhosa. O suporte que recebi para montar meu currículo e me preparar para as entrevistas foi o diferencial.",
+      foto_url: "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734114/2_gmcdxg.webp"
+    },
+    {
+      id: 3,
+      nome: "Pedro Santos",
+      cargo: "Aluno de Administração",
+      texto: "Não é apenas um curso, é uma ponte para o mercado. O Grupo CTE realmente se preocupa com o nosso encaminhamento profissional.",
+      foto_url: "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp"
     }
   ];
 
@@ -517,66 +544,64 @@ export default function LandingPage() {
             <p className="text-orange-100 text-xl max-w-3xl mx-auto font-medium">Histórias reais de quem transformou o sonho em carreira.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {/* Testimonial 1 */}
-            <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                <img 
-                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774891231/5_rbubi3.webp" 
-                  alt="Lucas Silva" 
-                  className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="pt-12 text-center">
-                <Quote className="h-10 w-10 text-orange-200 mx-auto mb-6" />
-                <p className="text-gray-700 italic mb-8 text-xl leading-relaxed font-medium">
-                  "O CTE mudou minha visão de futuro. Comecei como aluno de Informática e hoje sou estagiário em uma grande empresa de tecnologia."
-                </p>
-                <h4 className="font-black text-2xl text-gray-900">Lucas Silva</h4>
-                <p className="text-orange-600 font-bold">Aluno de Informática</p>
-              </div>
-            </div>
+          {/* Mobile Carousel (Breakpoint < md) */}
+          <div className="md:hidden">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={20}
+              slidesPerView={1}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              pagination={{ clickable: true, el: '.testimonials-pagination' }}
+              className="pb-12"
+            >
+              {displayDepoimentos.map((depo) => (
+                <SwiperSlide key={depo.id} className="pt-12">
+                  <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group h-full">
+                    <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+                      <img 
+                        src={depo.foto_url} 
+                        alt={depo.nome} 
+                        className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="pt-12 text-center">
+                      <Quote className="h-10 w-10 text-orange-200 mx-auto mb-6" />
+                      <p className="text-gray-700 italic mb-8 text-xl leading-relaxed font-medium">
+                        "{depo.texto}"
+                      </p>
+                      <h4 className="font-black text-2xl text-gray-900">{depo.nome}</h4>
+                      <p className="text-orange-600 font-bold">{depo.cargo}</p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="testimonials-pagination flex justify-center mt-4"></div>
+          </div>
 
-            {/* Testimonial 2 */}
-            <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                <img 
-                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774734114/2_gmcdxg.webp" 
-                  alt="Mariana Costa" 
-                  className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
+          {/* Desktop Grid (Breakpoint >= md) */}
+          <div className="hidden md:grid grid-cols-3 gap-12">
+            {displayDepoimentos.map((depo) => (
+              <div key={depo.id} className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+                  <img 
+                    src={depo.foto_url} 
+                    alt={depo.nome} 
+                    className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="pt-12 text-center">
+                  <Quote className="h-10 w-10 text-orange-200 mx-auto mb-6" />
+                  <p className="text-gray-700 italic mb-8 text-xl leading-relaxed font-medium">
+                    "{depo.texto}"
+                  </p>
+                  <h4 className="font-black text-2xl text-gray-900">{depo.nome}</h4>
+                  <p className="text-orange-600 font-bold">{depo.cargo}</p>
+                </div>
               </div>
-              <div className="pt-12 text-center">
-                <Quote className="h-10 w-10 text-orange-200 mx-auto mb-6" />
-                <p className="text-gray-700 italic mb-8 text-xl leading-relaxed font-medium">
-                  "A equipe do CTE é maravilhosa. O suporte que recebi para montar meu currículo e me preparar para as entrevistas foi o diferencial."
-                </p>
-                <h4 className="font-black text-2xl text-gray-900">Mariana Costa</h4>
-                <p className="text-orange-600 font-bold">Aluna de Saúde</p>
-              </div>
-            </div>
-
-            {/* Testimonial 3 */}
-            <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl relative group hover:-translate-y-2 transition-transform">
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                <img 
-                  src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp" 
-                  alt="Pedro Santos" 
-                  className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="pt-12 text-center">
-                <Quote className="h-10 w-10 text-orange-200 mx-auto mb-6" />
-                <p className="text-gray-700 italic mb-8 text-xl leading-relaxed font-medium">
-                  "Não é apenas um curso, é uma ponte para o mercado. O Grupo CTE realmente se preocupa com o nosso encaminhamento profissional."
-                </p>
-                <h4 className="font-black text-2xl text-gray-900">Pedro Santos</h4>
-                <p className="text-orange-600 font-bold">Aluno de Administração</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
