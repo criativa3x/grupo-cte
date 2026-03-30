@@ -144,8 +144,8 @@ export default function VagasPage() {
 
                     {/* Destaques Inferiores (Bolsa e Local): Alinhados à esquerda */}
                     <div className="w-full space-y-4 mb-10">
-                      <div className="flex items-start gap-3 text-gray-800 text-base">
-                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm mt-1">
+                      <div className="flex items-center gap-3 text-gray-800 text-base">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
                           <DollarSign className="h-5 w-5 text-white" />
                         </div>
                         <div>
@@ -153,8 +153,8 @@ export default function VagasPage() {
                           <span>{vaga.valor_bolsa}</span>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 text-gray-800 text-base">
-                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm mt-1">
+                      <div className="flex items-center gap-3 text-gray-800 text-base">
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
                           <MapPin className="h-5 w-5 text-white" />
                         </div>
                         <div>
