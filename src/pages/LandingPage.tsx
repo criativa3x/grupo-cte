@@ -138,6 +138,14 @@ export default function LandingPage() {
 
   const activeBanner = displayBanners[currentBannerIndex];
 
+  if (loading && content.banners.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue-950">
+        <Loader2 className="h-12 w-12 text-orange-600 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen font-sans text-gray-800">
       {/* 1. Header */}
@@ -257,11 +265,11 @@ export default function LandingPage() {
                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 >
                   <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 md:mb-8">
-                    {activeBanner.titulo}
+                    {activeBanner?.titulo}
                   </h1>
                   
                   <p className="text-lg sm:text-2xl text-gray-200 mb-8 md:mb-12 max-w-2xl leading-relaxed font-medium">
-                    {activeBanner.subtitulo}
+                    {activeBanner?.subtitulo}
                   </p>
                 </motion.div>
               </AnimatePresence>
@@ -274,8 +282,8 @@ export default function LandingPage() {
                 }}
                 className="flex flex-col sm:flex-row gap-4 md:gap-6"
               >
-                <a href={activeBanner.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
-                  {activeBanner.texto_botao}
+                <a href={activeBanner?.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                  {activeBanner?.texto_botao}
                 </a>
                 <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all hover:-translate-y-1">
                   Vagas de Estágio
