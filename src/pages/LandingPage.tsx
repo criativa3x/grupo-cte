@@ -612,9 +612,9 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
                     <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight drop-shadow-md">{cat.titulo}</h3>
-                    <a href="#cursos" className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
+                    <Link to={`/categorias/${cat.id}`} className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
                       Ver cursos <ChevronRight className="ml-1 h-4 w-4 md:h-5 md:w-5" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))
@@ -642,94 +642,12 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
                     <h3 className="text-base md:text-lg xl:text-xl font-black text-white mb-2 md:mb-4 leading-tight drop-shadow-md">{cat}</h3>
-                    <a href="#cursos" className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
+                    <Link to={`/categorias/${i}`} className="inline-flex items-center text-orange-400 font-bold text-sm md:text-base group-hover:text-orange-300 transition-colors drop-shadow-sm">
                       Ver cursos <ChevronRight className="ml-1 h-4 w-4 md:h-5 md:w-5" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* 4.5 Nossos Cursos - Grid de Cursos Reais */}
-      <section id="cursos" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-5xl font-black text-blue-950 mb-6">Nossos Cursos</h2>
-              <p className="text-xl text-gray-600 font-medium">
-                Capacitação profissional com foco na prática e no mercado de trabalho.
-              </p>
-            </div>
-            <div className="hidden md:block">
-              <div className="bg-orange-100 text-orange-700 px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center">
-                <GraduationCap className="mr-2 h-5 w-5" />
-                {content.cursos.length} Cursos Disponíveis
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {content.cursos.length > 0 ? (
-              content.cursos.filter(c => c.ativo).map((curso) => (
-                <motion.div 
-                  key={curso.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-gray-100 group flex flex-col h-full"
-                >
-                  <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={curso.imagem_url} 
-                      alt={curso.titulo} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-blue-950/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                        {content.categorias.find(cat => cat.id === curso.categoria_id)?.titulo || 'Curso'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="flex items-center space-x-2 text-orange-600 mb-4">
-                      <Clock size={16} />
-                      <span className="text-xs font-bold uppercase tracking-widest">{curso.carga_horaria}</span>
-                    </div>
-                    
-                    <h3 className="text-2xl font-black text-blue-950 mb-4 group-hover:text-orange-600 transition-colors leading-tight">
-                      {curso.titulo}
-                    </h3>
-                    
-                    <p className="text-gray-500 font-medium text-sm mb-8 line-clamp-3 leading-relaxed">
-                      {curso.descricao_curta}
-                    </p>
-                    
-                    <div className="mt-auto">
-                      <Link 
-                        to={`/cursos/${curso.slug}`}
-                        className="w-full bg-gray-50 hover:bg-orange-600 text-blue-950 hover:text-white py-4 rounded-2xl font-black transition-all flex items-center justify-center group/btn"
-                      >
-                        <span>Ver Detalhes</span>
-                        <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            ) : loading ? (
-              [1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-gray-100 animate-pulse h-[500px]"></div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-gray-200">
-                <GraduationCap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-400 font-bold text-xl uppercase tracking-widest">Nenhum curso cadastrado no momento.</p>
-              </div>
             )}
           </div>
         </div>
