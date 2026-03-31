@@ -36,6 +36,7 @@ export default function AdminPanel() {
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
   const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
+  const [alunoFile, setAlunoFile] = useState<File | null>(null);
   const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
   const [parceiroFile, setParceiroFile] = useState<File | null>(null);
 
@@ -177,6 +178,25 @@ export default function AdminPanel() {
         finalFormData.logo_url = publicUrl;
       }
 
+      // Handle Aluno Photo Upload
+      if (activeTab === 'alunos' && alunoFile) {
+        const fileExt = alunoFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `alunos/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('categorias_imagens')
+          .upload(filePath, alunoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('categorias_imagens')
+          .getPublicUrl(filePath);
+
+        finalFormData.imagem_url = publicUrl;
+      }
+
       if (editingId) {
         const { error } = await supabase
           .from(tableName)
@@ -209,6 +229,7 @@ export default function AdminPanel() {
     setCategoriaFile(null);
     setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
+    setAlunoFile(null);
     setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
     setParceiroFile(null);
   };
@@ -290,12 +311,12 @@ export default function AdminPanel() {
       const tableName = tableMap[activeTab];
       if (!tableName) return;
 
-      // If deleting a category or partner, we might want to delete its image from storage too
-      if (activeTab === 'categorias' || activeTab === 'parceiros') {
-        const dataKey = activeTab === 'categorias' ? 'categorias' : 'parceiros';
+      // If deleting a category, partner or student, we might want to delete its image from storage too
+      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'alunos') {
+        const dataKey = activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : 'alunos';
         const itemToDelete = data[dataKey].find(c => c.id === id);
-        const imageUrl = activeTab === 'categorias' ? itemToDelete?.imagem_url : itemToDelete?.logo_url;
-        const prefix = activeTab === 'categorias' ? 'categorias/' : 'parceiros/';
+        const imageUrl = activeTab === 'categorias' ? itemToDelete?.imagem_url : activeTab === 'parceiros' ? itemToDelete?.logo_url : itemToDelete?.imagem_url;
+        const prefix = activeTab === 'categorias' ? 'categorias/' : activeTab === 'parceiros' ? 'parceiros/' : 'alunos/';
 
         if (itemToDelete && imageUrl) {
           try {
@@ -802,7 +823,26 @@ export default function AdminPanel() {
                               <FormInput label="Nome do Aluno" value={alunoForm.nome} onChange={(v) => setAlunoForm({...alunoForm, nome: v})} />
                               <FormInput label="Idade" value={alunoForm.idade} onChange={(v) => setAlunoForm({...alunoForm, idade: v})} placeholder="Ex: 18 anos" />
                               <FormInput label="Empresa" value={alunoForm.empresa} onChange={(v) => setAlunoForm({...alunoForm, empresa: v})} />
-                              <FormInput label="URL da Foto" value={alunoForm.imagem_url} onChange={(v) => setAlunoForm({...alunoForm, imagem_url: v})} placeholder="https://..." />
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Foto do Aluno</label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={(e) => setAlunoFile(e.target.files?.[0] || null)}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                />
+                                {(alunoForm.imagem_url || alunoFile) && (
+                                  <div className="mt-4 p-2 bg-gray-50 rounded-2xl border border-gray-100 inline-block">
+                                    <img 
+                                      src={alunoFile ? URL.createObjectURL(alunoFile) : alunoForm.imagem_url} 
+                                      className="w-24 h-24 rounded-xl object-cover shadow-sm" 
+                                      alt="Preview"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                    <p className="text-[10px] text-gray-400 mt-2 text-center font-bold">PREVIEW</p>
+                                  </div>
+                                )}
+                              </div>
                             </>
                           )}
 
