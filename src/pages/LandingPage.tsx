@@ -93,7 +93,7 @@ export default function LandingPage() {
   };
 
   // Fallback banners if none exists in DB
-  const displayBanners = content.banners.length > 0 ? content.banners : [
+  const displayBanners = content.banners.length > 0 ? content.banners : (loading ? [] : [
     {
       id: 'default-1',
       titulo: 'O seu futuro começa aqui.',
@@ -110,9 +110,9 @@ export default function LandingPage() {
       texto_botao: 'Conhecer Cursos',
       link_botao: '#cursos'
     }
-  ];
+  ]);
 
-  const displayDepoimentos = content.depoimentos.length > 0 ? content.depoimentos : [
+  const displayDepoimentos = content.depoimentos.length > 0 ? content.depoimentos : (loading ? [] : [
     {
       id: 1,
       nome: "Lucas Silva",
@@ -134,7 +134,7 @@ export default function LandingPage() {
       texto: "Não é apenas um curso, é uma ponte para o mercado. O Grupo CTE realmente se preocupa com o nosso encaminhamento profissional.",
       foto_url: "https://res.cloudinary.com/dapsovbs5/image/upload/v1774734125/1_b9qnwx.webp"
     }
-  ];
+  ]);
 
   const activeBanner = displayBanners[currentBannerIndex];
 
@@ -499,6 +499,11 @@ export default function LandingPage() {
                   </div>
                 </div>
               ))
+            ) : loading ? (
+              // Loading skeletons for categories
+              [1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-gray-100 rounded-2xl overflow-hidden aspect-[4/5] animate-pulse"></div>
+              ))
             ) : (
               [
                 'Informática e Tecnologia',
@@ -636,7 +641,7 @@ export default function LandingPage() {
               }}
               className="pb-16"
             >
-              {(content.alunos_contratados.length > 0 ? content.alunos_contratados : mockAlunos).map((aluno, index) => (
+              {(content.alunos_contratados.length > 0 ? content.alunos_contratados : (loading ? [] : mockAlunos)).map((aluno, index) => (
                 <SwiperSlide key={index}>
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
