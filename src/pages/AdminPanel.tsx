@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
+
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
+    .trim();
+};
 
 type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros';
 
@@ -31,7 +42,18 @@ export default function AdminPanel() {
 
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
-  const [cursoForm, setCursoForm] = useState({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
+  const [cursoForm, setCursoForm] = useState({ 
+    titulo: '', 
+    slug: '', 
+    categoria_id: '', 
+    descricao_curta: '', 
+    descricao_completa: '', 
+    carga_horaria: '', 
+    imagem_url: '', 
+    topicos: [] as string[], 
+    ativo: true 
+  });
+  const [cursoFile, setCursoFile] = useState<File | null>(null);
   const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
   const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
@@ -178,6 +200,25 @@ export default function AdminPanel() {
         finalFormData.logo_url = publicUrl;
       }
 
+      // Handle Curso Image Upload
+      if (activeTab === 'cursos' && cursoFile) {
+        const fileExt = cursoFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `cursos/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('categorias_imagens')
+          .upload(filePath, cursoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('categorias_imagens')
+          .getPublicUrl(filePath);
+
+        finalFormData.imagem_url = publicUrl;
+      }
+
       // Handle Aluno Photo Upload
       if (activeTab === 'alunos' && alunoFile) {
         const fileExt = alunoFile.name.split('.').pop();
@@ -224,7 +265,18 @@ export default function AdminPanel() {
   const resetForm = () => {
     setEditingId(null);
     setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
-    setCursoForm({ nome: '', descricao: '', categoria: '', carga_horaria: '', thumbnail_url: '', banner_url: '' });
+    setCursoForm({ 
+      titulo: '', 
+      slug: '', 
+      categoria_id: '', 
+      descricao_curta: '', 
+      descricao_completa: '', 
+      carga_horaria: '', 
+      imagem_url: '', 
+      topicos: [], 
+      ativo: true 
+    });
+    setCursoFile(null);
     setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
     setCategoriaFile(null);
     setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
@@ -246,12 +298,15 @@ export default function AdminPanel() {
       });
     } else if (activeTab === 'cursos') {
       setCursoForm({
-        nome: item.nome || '',
-        descricao: item.descricao || '',
-        categoria: item.categoria || '',
+        titulo: item.titulo || '',
+        slug: item.slug || '',
+        categoria_id: item.categoria_id || '',
+        descricao_curta: item.descricao_curta || '',
+        descricao_completa: item.descricao_completa || '',
         carga_horaria: item.carga_horaria || '',
-        thumbnail_url: item.thumbnail_url || '',
-        banner_url: item.banner_url || ''
+        imagem_url: item.imagem_url || '',
+        topicos: item.topicos || [],
+        ativo: item.ativo !== undefined ? item.ativo : true
       });
     } else if (activeTab === 'categorias') {
       setCategoriaForm({
@@ -312,11 +367,11 @@ export default function AdminPanel() {
       if (!tableName) return;
 
       // If deleting a category, partner or student, we might want to delete its image from storage too
-      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'alunos') {
-        const dataKey = activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : 'alunos';
+      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'alunos' || activeTab === 'cursos') {
+        const dataKey = activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : activeTab === 'alunos' ? 'alunos' : 'cursos';
         const itemToDelete = data[dataKey].find(c => c.id === id);
         const imageUrl = activeTab === 'categorias' ? itemToDelete?.imagem_url : activeTab === 'parceiros' ? itemToDelete?.logo_url : itemToDelete?.imagem_url;
-        const prefix = activeTab === 'categorias' ? 'categorias/' : activeTab === 'parceiros' ? 'parceiros/' : 'alunos/';
+        const prefix = activeTab === 'categorias' ? 'categorias/' : activeTab === 'parceiros' ? 'parceiros/' : activeTab === 'alunos' ? 'alunos/' : 'cursos/';
 
         if (itemToDelete && imageUrl) {
           try {
@@ -746,24 +801,118 @@ export default function AdminPanel() {
 
                           {activeTab === 'cursos' && (
                             <>
-                              <FormInput label="Nome do Curso" value={cursoForm.nome} onChange={(v) => setCursoForm({...cursoForm, nome: v})} />
+                              <FormInput 
+                                label="Título do Curso" 
+                                value={cursoForm.titulo} 
+                                onChange={(v) => {
+                                  setCursoForm({
+                                    ...cursoForm, 
+                                    titulo: v,
+                                    slug: generateSlug(v)
+                                  });
+                                }} 
+                              />
+                              <FormInput 
+                                label="Slug" 
+                                value={cursoForm.slug} 
+                                onChange={(v) => setCursoForm({...cursoForm, slug: v})} 
+                              />
                               <div className="space-y-2">
                                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Categoria</label>
                                 <select 
-                                  value={cursoForm.categoria}
-                                  onChange={(e) => setCursoForm({...cursoForm, categoria: e.target.value})}
+                                  value={cursoForm.categoria_id}
+                                  onChange={(e) => setCursoForm({...cursoForm, categoria_id: e.target.value})}
                                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
                                 >
                                   <option value="">Selecione...</option>
                                   {data.categorias.map(cat => (
-                                    <option key={cat.id} value={cat.titulo}>{cat.titulo}</option>
+                                    <option key={cat.id} value={cat.id}>{cat.titulo}</option>
                                   ))}
                                 </select>
                               </div>
-                              <FormTextArea label="Descrição" value={cursoForm.descricao} onChange={(v) => setCursoForm({...cursoForm, descricao: v})} />
+                              <FormTextArea label="Descrição Curta" value={cursoForm.descricao_curta} onChange={(v) => setCursoForm({...cursoForm, descricao_curta: v})} />
+                              <FormTextArea label="Descrição Completa" value={cursoForm.descricao_completa} onChange={(v) => setCursoForm({...cursoForm, descricao_completa: v})} />
+                              
                               <div className="grid grid-cols-2 gap-4">
-                                <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="120h" />
-                                <FormInput label="Thumbnail URL" value={cursoForm.thumbnail_url} onChange={(v) => setCursoForm({...cursoForm, thumbnail_url: v})} />
+                                <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="Ex: 40 horas" />
+                                <div className="space-y-2">
+                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Status</label>
+                                  <div className="flex items-center space-x-3 mt-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => setCursoForm({...cursoForm, ativo: !cursoForm.ativo})}
+                                      className={`w-12 h-6 rounded-full transition-colors relative ${cursoForm.ativo ? 'bg-green-500' : 'bg-gray-300'}`}
+                                    >
+                                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${cursoForm.ativo ? 'left-7' : 'left-1'}`} />
+                                    </button>
+                                    <span className="text-sm font-bold text-gray-600">{cursoForm.ativo ? 'Ativo' : 'Inativo'}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Imagem de Capa</label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={(e) => setCursoFile(e.target.files?.[0] || null)}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                />
+                                {(cursoForm.imagem_url || cursoFile) && (
+                                  <div className="mt-4 p-2 bg-gray-50 rounded-2xl border border-gray-100 inline-block">
+                                    <img 
+                                      src={cursoFile ? URL.createObjectURL(cursoFile) : cursoForm.imagem_url} 
+                                      className="w-32 h-20 rounded-xl object-cover shadow-sm" 
+                                      alt="Preview"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Tópicos do Curso</label>
+                                  <button 
+                                    type="button"
+                                    onClick={() => setCursoForm({...cursoForm, topicos: [...cursoForm.topicos, '']})}
+                                    className="flex items-center space-x-1 text-orange-600 hover:text-orange-700 transition-colors"
+                                  >
+                                    <PlusCircle size={16} />
+                                    <span className="text-xs font-bold">Adicionar Módulo</span>
+                                  </button>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  {cursoForm.topicos.map((topico, index) => (
+                                    <div key={index} className="flex items-center space-x-2">
+                                      <input 
+                                        type="text"
+                                        value={topico}
+                                        onChange={(e) => {
+                                          const newTopicos = [...cursoForm.topicos];
+                                          newTopicos[index] = e.target.value;
+                                          setCursoForm({...cursoForm, topicos: newTopicos});
+                                        }}
+                                        placeholder={`Tópico ${index + 1}`}
+                                        className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-sm"
+                                      />
+                                      <button 
+                                        type="button"
+                                        onClick={() => {
+                                          const newTopicos = cursoForm.topicos.filter((_, i) => i !== index);
+                                          setCursoForm({...cursoForm, topicos: newTopicos});
+                                        }}
+                                        className="text-red-400 hover:text-red-600 transition-colors"
+                                      >
+                                        <MinusCircle size={20} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                  {cursoForm.topicos.length === 0 && (
+                                    <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">Nenhum tópico adicionado.</p>
+                                  )}
+                                </div>
                               </div>
                             </>
                           )}
@@ -921,16 +1070,35 @@ export default function AdminPanel() {
                                       </div>
                                       <div>
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
-                                        <div className="text-xs text-gray-400 font-bold mt-0.5">{activeTab === 'cursos' ? item.categoria : activeTab === 'categorias' ? `Ordem: ${item.ordem}` : activeTab === 'vagas' ? (item.area || item['àrea']) : activeTab === 'alunos' ? item.idade : 'Banner Home'}</div>
+                                        <div className="text-xs text-gray-400 font-bold mt-0.5">
+                                          {activeTab === 'cursos' 
+                                            ? (data.categorias.find(c => c.id === item.categoria_id)?.titulo || 'Sem Categoria')
+                                            : activeTab === 'categorias' 
+                                              ? `Ordem: ${item.ordem}` 
+                                              : activeTab === 'vagas' 
+                                                ? (item.area || item['àrea']) 
+                                                : activeTab === 'alunos' 
+                                                  ? item.idade 
+                                                  : 'Banner Home'}
+                                        </div>
                                       </div>
                                     </div>
                                   </td>
                                   <td className="px-8 py-6">
                                     <div className="max-w-[240px]">
                                       <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
-                                        {item.resumo || item.subtitulo || item.descricao || item.requisitos || item.local || item.empresa}
+                                        {item.descricao_curta || item.resumo || item.subtitulo || item.descricao || item.requisitos || item.local || item.empresa}
                                       </div>
-                                      {activeTab === 'vagas' && <div className="text-orange-600 font-black text-[10px] mt-1 uppercase tracking-wider">{item.valor_bolsa}</div>}
+                                      {(activeTab === 'vagas' || activeTab === 'cursos') && (
+                                        <div className="flex items-center space-x-2 mt-1">
+                                          <div className="text-orange-600 font-black text-[10px] uppercase tracking-wider">{item.valor_bolsa || item.carga_horaria}</div>
+                                          {activeTab === 'cursos' && (
+                                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${item.ativo ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                              {item.ativo ? 'Ativo' : 'Inativo'}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
                                     </div>
                                   </td>
                                   <td className="px-8 py-6 text-right">
