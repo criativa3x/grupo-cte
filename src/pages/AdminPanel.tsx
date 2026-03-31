@@ -5,7 +5,7 @@ import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, L
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -19,12 +19,14 @@ export default function AdminPanel() {
     categorias: any[];
     vagas: any[];
     alunos: any[];
+    parceiros: any[];
   }>({
     banners: [],
     cursos: [],
     categorias: [],
     vagas: [],
     alunos: [],
+    parceiros: [],
   });
 
   // Form States
@@ -34,6 +36,8 @@ export default function AdminPanel() {
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
   const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
+  const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
+  const [parceiroFile, setParceiroFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -48,12 +52,13 @@ export default function AdminPanel() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes] = await Promise.all([
+      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
+        supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
       ]);
 
       setData({
@@ -62,6 +67,7 @@ export default function AdminPanel() {
         categorias: categoriasRes.data || [],
         vagas: vagasRes.data || [],
         alunos: alunosRes.data || [],
+        parceiros: parceirosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching all data:', error);
@@ -79,6 +85,7 @@ export default function AdminPanel() {
         categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
+        parceiros: 'parceiros',
       };
       
       const tableName = tableMap[activeTab];
@@ -86,7 +93,7 @@ export default function AdminPanel() {
 
       let query = supabase.from(tableName).select('*');
       
-      if (activeTab === 'categorias') {
+      if (activeTab === 'categorias' || activeTab === 'parceiros') {
         query = query.order('ordem', { ascending: true });
       } else {
         query = query.order('created_at', { ascending: false });
@@ -115,6 +122,7 @@ export default function AdminPanel() {
         categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
+        parceiros: 'parceiros',
       };
 
       const formMap: Partial<Record<Tab, any>> = {
@@ -123,6 +131,7 @@ export default function AdminPanel() {
         categorias: categoriaForm,
         vagas: vagaForm,
         alunos: alunoForm,
+        parceiros: parceiroForm,
       };
 
       const tableName = tableMap[activeTab];
@@ -147,6 +156,25 @@ export default function AdminPanel() {
           .getPublicUrl(filePath);
 
         finalFormData.imagem_url = publicUrl;
+      }
+
+      // Handle Partner Logo Upload
+      if (activeTab === 'parceiros' && parceiroFile) {
+        const fileExt = parceiroFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `parceiros/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('categorias_imagens')
+          .upload(filePath, parceiroFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('categorias_imagens')
+          .getPublicUrl(filePath);
+
+        finalFormData.logo_url = publicUrl;
       }
 
       if (editingId) {
@@ -181,6 +209,8 @@ export default function AdminPanel() {
     setCategoriaFile(null);
     setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
+    setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
+    setParceiroFile(null);
   };
 
   const handleEdit = (item: any) => {
@@ -225,6 +255,12 @@ export default function AdminPanel() {
         empresa: item.empresa || '',
         imagem_url: item.imagem_url || item.foto || item.foto_url || ''
       });
+    } else if (activeTab === 'parceiros') {
+      setParceiroForm({
+        nome: item.nome || '',
+        ordem: item.ordem || 0,
+        logo_url: item.logo_url || ''
+      });
     }
   };
 
@@ -248,21 +284,26 @@ export default function AdminPanel() {
         categorias: 'categorias',
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
+        parceiros: 'parceiros',
       };
 
       const tableName = tableMap[activeTab];
       if (!tableName) return;
 
-      // If deleting a category, we might want to delete its image from storage too
-      if (activeTab === 'categorias') {
-        const itemToDelete = data.categorias.find(c => c.id === id);
-        if (itemToDelete && itemToDelete.imagem_url) {
+      // If deleting a category or partner, we might want to delete its image from storage too
+      if (activeTab === 'categorias' || activeTab === 'parceiros') {
+        const dataKey = activeTab === 'categorias' ? 'categorias' : 'parceiros';
+        const itemToDelete = data[dataKey].find(c => c.id === id);
+        const imageUrl = activeTab === 'categorias' ? itemToDelete?.imagem_url : itemToDelete?.logo_url;
+        const prefix = activeTab === 'categorias' ? 'categorias/' : 'parceiros/';
+
+        if (itemToDelete && imageUrl) {
           try {
-            const urlParts = itemToDelete.imagem_url.split('/');
+            const urlParts = imageUrl.split('/');
             const fileName = urlParts[urlParts.length - 1];
             await supabase.storage
               .from('categorias_imagens')
-              .remove([`categorias/${fileName}`]);
+              .remove([`${prefix}${fileName}`]);
           } catch (storageError) {
             console.error('Error deleting image from storage:', storageError);
           }
@@ -289,6 +330,7 @@ export default function AdminPanel() {
     if (activeTab === 'categorias') return data.categorias;
     if (activeTab === 'vagas') return data.vagas;
     if (activeTab === 'alunos') return data.alunos;
+    if (activeTab === 'parceiros') return data.parceiros;
     return [];
   };
 
@@ -367,6 +409,13 @@ export default function AdminPanel() {
             label="Aparência do Site" 
             active={activeTab === 'aparencia'} 
             onClick={() => setActiveTab('aparencia')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Layers size={20} />} 
+            label="Parceiros" 
+            active={activeTab === 'parceiros'} 
+            onClick={() => setActiveTab('parceiros')} 
             isOpen={isSidebarOpen}
           />
         </nav>
@@ -489,6 +538,135 @@ export default function AdminPanel() {
                     <h3 className="text-xl font-black text-blue-950 mb-6">Atividades Recentes</h3>
                     <div className="space-y-4">
                       <p className="text-gray-400 font-medium italic">Nenhuma atividade recente para exibir.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === 'parceiros' ? (
+                <div className="space-y-10">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                      <h2 className="text-3xl font-black text-blue-950">Empresas Parceiras</h2>
+                      <p className="text-gray-500 font-medium">Gerencie as logos que aparecem no carrossel da Home.</p>
+                    </div>
+                    <button 
+                      onClick={resetForm}
+                      className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-orange-600/20 transition-all flex items-center justify-center space-x-3"
+                    >
+                      <Plus size={20} />
+                      <span>Adicionar Parceiro</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <div className="lg:col-span-1">
+                      <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 sticky top-28">
+                        <h3 className="text-xl font-black text-blue-950 mb-8">{editingId ? 'Editar Parceiro' : 'Novo Parceiro'}</h3>
+                        <form onSubmit={handleSave} className="space-y-6">
+                          <FormInput 
+                            label="Nome da Empresa" 
+                            value={parceiroForm.nome} 
+                            onChange={(val: string) => setParceiroForm({...parceiroForm, nome: val})} 
+                            placeholder="Ex: Google"
+                          />
+                          <FormInput 
+                            label="Ordem de Exibição" 
+                            type="number"
+                            value={parceiroForm.ordem} 
+                            onChange={(val: string) => setParceiroForm({...parceiroForm, ordem: parseInt(val) || 0})} 
+                            placeholder="Ex: 1"
+                          />
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Logo da Empresa</label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => setParceiroFile(e.target.files?.[0] || null)}
+                              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                            />
+                            {parceiroForm.logo_url && !parceiroFile && (
+                              <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
+                                <img src={parceiroForm.logo_url} alt="Preview" className="h-10 w-auto object-contain" />
+                              </div>
+                            )}
+                          </div>
+                          <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="w-full bg-blue-950 hover:bg-blue-900 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-950/10 flex items-center justify-center space-x-3"
+                          >
+                            {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                            <span>{editingId ? 'Atualizar Parceiro' : 'Salvar Parceiro'}</span>
+                          </button>
+                          {editingId && (
+                            <button 
+                              type="button"
+                              onClick={resetForm}
+                              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-4 rounded-2xl transition-all"
+                            >
+                              Cancelar Edição
+                            </button>
+                          )}
+                        </form>
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-2">
+                      <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left">
+                            <thead>
+                              <tr className="bg-gray-50/50 border-b border-gray-100">
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Logo</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Empresa</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Ordem</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {data.parceiros.map((item) => (
+                                <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                                  <td className="px-8 py-6">
+                                    <div className="w-16 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-2 border border-gray-100">
+                                      <img src={item.logo_url} alt={item.nome} className="max-h-full max-w-full object-contain" />
+                                    </div>
+                                  </td>
+                                  <td className="px-8 py-6">
+                                    <span className="font-bold text-blue-950">{item.nome}</span>
+                                  </td>
+                                  <td className="px-8 py-6">
+                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-black text-xs">
+                                      {item.ordem}
+                                    </span>
+                                  </td>
+                                  <td className="px-8 py-6 text-right">
+                                    <div className="flex items-center justify-end space-x-2">
+                                      <button 
+                                        onClick={() => handleEdit(item)}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                      >
+                                        <Pencil size={18} />
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDelete(item.id)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      >
+                                        <Trash2 size={18} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                              {data.parceiros.length === 0 && (
+                                <tr>
+                                  <td colSpan={4} className="px-8 py-12 text-center text-gray-400 font-medium">
+                                    Nenhum parceiro cadastrado.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

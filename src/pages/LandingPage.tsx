@@ -21,6 +21,7 @@ export default function LandingPage() {
     alunos_contratados: [] as any[],
     categorias: [] as any[],
     depoimentos: [] as any[],
+    parceiros: [] as any[],
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
@@ -52,6 +53,21 @@ export default function LandingPage() {
     }
   ];
 
+  const partnerLogos = content.parceiros.length > 0 
+    ? content.parceiros.map(p => ({ name: p.nome, url: p.logo_url }))
+    : (loading ? [] : [
+        { name: "Google", url: "https://logo.clearbit.com/google.com" },
+        { name: "Microsoft", url: "https://logo.clearbit.com/microsoft.com" },
+        { name: "Amazon", url: "https://logo.clearbit.com/amazon.com" },
+        { name: "Meta", url: "https://logo.clearbit.com/meta.com" },
+        { name: "Apple", url: "https://logo.clearbit.com/apple.com" },
+        { name: "Netflix", url: "https://logo.clearbit.com/netflix.com" },
+        { name: "IBM", url: "https://logo.clearbit.com/ibm.com" },
+        { name: "Intel", url: "https://logo.clearbit.com/intel.com" },
+        { name: "Coca-Cola", url: "https://logo.clearbit.com/cocacola.com" },
+        { name: "Nike", url: "https://logo.clearbit.com/nike.com" },
+      ]);
+
   useEffect(() => {
     fetchContent();
   }, []);
@@ -68,13 +84,14 @@ export default function LandingPage() {
   const fetchContent = async () => {
     try {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
-      const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes] = await Promise.all([
+      const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes, parceirosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('depoimentos').select('*').order('created_at', { ascending: false }),
+        supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
       ]);
 
       setContent({
@@ -84,6 +101,7 @@ export default function LandingPage() {
         alunos_contratados: alunosRes.data || [],
         categorias: categoriasRes.data || [],
         depoimentos: depoimentosRes.data || [],
+        parceiros: parceirosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching content:', error);
@@ -349,7 +367,100 @@ export default function LandingPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">Conectamos jovens talentos às empresas que buscam renovação e energia.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {/* Mobile Carousel (Breakpoint < md) */}
+          <div className="md:hidden">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={20}
+              slidesPerView={1}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              pagination={{ clickable: true, el: '.vacancies-pagination' }}
+              className="pb-12"
+            >
+              {(content.vagas.length > 0 ? content.vagas.slice(0, 5) : [1, 2, 3]).map((vaga, idx) => (
+                <SwiperSlide key={vaga.id || idx}>
+                  {content.vagas.length > 0 ? (
+                    <div className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-50 group flex flex-col h-full">
+                      <div className="p-8 flex flex-col items-center flex-1">
+                        <div className="relative mb-6">
+                          <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md border-4 border-white">
+                            {getAreaIcon(vaga.area || vaga['àrea'])}
+                          </div>
+                        </div>
+                        <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
+                          VAGA DE ESTÁGIO
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+                        {vaga.resumo && (
+                          <p className="text-gray-700 text-center mb-6 font-medium line-clamp-3 text-sm">
+                            {vaga.resumo}
+                          </p>
+                        )}
+                        <div className="w-full text-left mb-6">
+                          <h4 className="text-sm font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
+                          <ul className="space-y-1 text-gray-700 text-sm">
+                            {vaga.requisitos ? (
+                              vaga.requisitos.split('\n').filter(line => line.trim()).map((req, i) => (
+                                <li key={i} className="flex items-start">
+                                  <span className="mr-2">•</span>
+                                  <span>{req}</span>
+                                </li>
+                              ))
+                            ) : (
+                              <>
+                                <li className="flex items-start"><span className="mr-2">•</span><span>Sexo: {vaga.sexo || 'Masculino'}</span></li>
+                                <li className="flex items-start"><span className="mr-2">•</span><span>Idade: {vaga.idade || 'A partir de 14 anos'}</span></li>
+                                <li className="flex items-start"><span className="mr-2">•</span><span>Horário: {vaga.horario || 'Manhã ou tarde'}</span></li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                        <div className="w-full space-y-3 mb-8">
+                          <div className="flex items-center gap-3 text-gray-800 text-sm">
+                            <div className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
+                              <DollarSign className="h-4 w-4 text-white" />
+                            </div>
+                            <div><span className="font-bold mr-1">Bolsa:</span><span>{vaga.valor_bolsa}</span></div>
+                          </div>
+                          <div className="flex items-center gap-3 text-gray-800 text-sm">
+                            <div className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
+                              <MapPin className="h-4 w-4 text-white" />
+                            </div>
+                            <div><span className="font-bold mr-1">Local:</span><span>{vaga.local}</span></div>
+                          </div>
+                        </div>
+                        <a 
+                          href={vaga.link_candidatura} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
+                        >
+                          Candidatar-se
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-50 animate-pulse flex flex-col h-full">
+                      <div className="p-8 flex flex-col items-center flex-1">
+                        <div className="w-20 h-20 rounded-full bg-[#1a233e]/10 mb-6"></div>
+                        <div className="h-6 w-32 bg-gray-200 rounded-full mb-4"></div>
+                        <div className="h-8 w-48 bg-gray-200 rounded mb-6"></div>
+                        <div className="w-full space-y-3 mb-6">
+                          <div className="h-4 w-full bg-gray-200 rounded"></div>
+                          <div className="h-4 w-full bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="h-12 w-full bg-gray-200 rounded-xl mt-auto"></div>
+                      </div>
+                    </div>
+                  )}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="vacancies-pagination flex justify-center mt-2"></div>
+          </div>
+
+          {/* Desktop Grid (Breakpoint >= md) */}
+          <div className="hidden md:grid md:grid-cols-3 gap-10">
             {content.vagas.length > 0 ? (
               content.vagas.slice(0, 3).map((vaga) => (
                 <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group flex flex-col h-full">
@@ -704,6 +815,44 @@ export default function LandingPage() {
               </motion.a>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 6.5 Empresas Parceiras */}
+      <section className="py-20 bg-gray-50 border-y border-gray-100 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <h3 className="text-center text-gray-700 font-semibold uppercase tracking-widest text-lg md:text-xl mb-16 mt-4">
+            Empresas que contratam nossos talentos
+          </h3>
+          
+          <Swiper
+            modules={[Autoplay]}
+            spaceBetween={40}
+            slidesPerView={2}
+            loop={true}
+            speed={5000}
+            autoplay={{
+              delay: 0,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              640: { slidesPerView: 3 },
+              768: { slidesPerView: 4 },
+              1024: { slidesPerView: 6 },
+            }}
+            className="swiper-linear"
+          >
+            {partnerLogos.map((logo, index) => (
+              <SwiperSlide key={index} className="flex items-center justify-center">
+                <img 
+                  src={logo.url} 
+                  alt={logo.name} 
+                  className="h-8 md:h-10 w-auto grayscale opacity-100 hover:grayscale-0 hover:scale-105 transition-all duration-500 cursor-pointer object-contain"
+                  referrerPolicy="no-referrer"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 

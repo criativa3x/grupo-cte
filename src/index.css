@@ -21,3 +21,17 @@
   opacity: 1 !important;
 }
 
+.vacancies-pagination .swiper-pagination-bullet {
+  background: #ea580c !important;
+  opacity: 0.3 !important;
+}
+
+.vacancies-pagination .swiper-pagination-bullet-active {
+  background: #ea580c !important;
+  opacity: 1 !important;
+}
+
+.swiper-linear .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+
