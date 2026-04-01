@@ -14,9 +14,68 @@ import {
   Linkedin,
   MapPin,
   Mail,
-  Phone
+  Phone,
+  Briefcase,
+  ChevronDown
 } from 'lucide-react';
 import { motion } from 'motion/react';
+
+const FAQ = () => {
+  const faqs = [
+    {
+      question: "Os certificados são reconhecidos?",
+      answer: "Sim, nossos certificados são válidos em todo o território nacional e enriquecem seu currículo."
+    },
+    {
+      question: "Como funciona o encaminhamento para estágios?",
+      answer: "Temos parcerias com diversas empresas da região. Nossos alunos de destaque são recomendados diretamente para vagas compatíveis com o curso."
+    },
+    {
+      question: "Preciso ter conhecimento prévio?",
+      answer: "Não! Nossos cursos são desenhados para você aprender do zero ao nível profissional."
+    }
+  ];
+
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <section className="py-20 bg-white border-t border-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-black text-blue-950 mb-4">Dúvidas Frequentes</h2>
+          <p className="text-gray-500 font-medium">Tudo o que você precisa saber para começar sua jornada.</p>
+        </div>
+        
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div key={index} className="border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <button 
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span className="text-lg font-bold text-blue-950">{faq.question}</span>
+                <ChevronDown 
+                  className={`text-orange-600 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`} 
+                  size={24} 
+                />
+              </button>
+              <motion.div
+                initial={false}
+                animate={{ height: openIndex === index ? 'auto' : 0, opacity: openIndex === index ? 1 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="p-6 pt-0 text-gray-600 font-medium leading-relaxed border-t border-gray-50">
+                  {faq.answer}
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 export default function CourseDetails() {
   const { slug } = useParams<{ slug: string }>();
@@ -181,12 +240,15 @@ export default function CourseDetails() {
 
             {/* Mercado de Trabalho Section */}
             {course.mercado_trabalho && (
-              <section className="bg-gray-50 p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100">
-                <h2 className="text-3xl font-black text-blue-950 mb-6 flex items-center space-x-3">
-                  <span className="w-2 h-8 bg-orange-600 rounded-full" />
+              <section className="bg-blue-50 p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-blue-100 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-600/10 transition-colors" />
+                <h2 className="text-3xl font-black text-blue-950 mb-6 flex items-center space-x-4">
+                  <div className="bg-blue-600 text-white p-2 rounded-xl shadow-lg shadow-blue-600/20">
+                    <Briefcase size={24} />
+                  </div>
                   <span>Mercado de Trabalho</span>
                 </h2>
-                <div className="prose prose-lg max-w-none text-gray-600 font-medium leading-relaxed whitespace-pre-wrap">
+                <div className="prose prose-lg max-w-none text-gray-700 font-medium leading-relaxed whitespace-pre-wrap relative z-10">
                   {course.mercado_trabalho}
                 </div>
               </section>
@@ -206,12 +268,12 @@ export default function CourseDetails() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start space-x-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-md transition-all group"
+                    className="flex items-start space-x-4 p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all group"
                   >
-                    <div className="mt-1 bg-orange-100 text-orange-600 p-1 rounded-lg group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                      <CheckCircle2 size={18} />
+                    <div className="mt-1 bg-green-500 text-white p-1 rounded-full shadow-lg shadow-green-500/20 group-hover:scale-110 transition-transform">
+                      <CheckCircle2 size={16} />
                     </div>
-                    <span className="text-gray-700 font-bold leading-tight">{topico}</span>
+                    <span className="text-gray-800 font-bold leading-tight">{topico}</span>
                   </motion.div>
                 ))}
               </div>
@@ -296,6 +358,9 @@ export default function CourseDetails() {
           </div>
         </div>
       </main>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Footer (Simplified) */}
       <footer className="bg-blue-950 text-white pt-20 pb-10">
