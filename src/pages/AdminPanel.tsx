@@ -52,8 +52,8 @@ export default function AdminPanel() {
     carga_horaria: '', 
     imagem_url: '', 
     video_url: '',
-    topicos: [] as string[], 
-    instrumentos_aprendizagem: [] as string[],
+    topicos: '', 
+    instrumentos_aprendizagem: '',
     ativo: true 
   });
   const [cursoFile, setCursoFile] = useState<File | null>(null);
@@ -164,6 +164,21 @@ export default function AdminPanel() {
       if (!tableName) return;
 
       let finalFormData = { ...formMap[activeTab] };
+
+      // Process Cursos Textareas into Arrays
+      if (activeTab === 'cursos') {
+        const cleanList = (text: string) => {
+          return text
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .map(line => line.replace(/^(#\d+|\d+[-.)\]]?)\s*/, ''))
+            .filter(line => line.length > 0);
+        };
+
+        finalFormData.topicos = cleanList(cursoForm.topicos);
+        finalFormData.instrumentos_aprendizagem = cleanList(cursoForm.instrumentos_aprendizagem);
+      }
 
       // Handle Category Image Upload
       if (activeTab === 'categorias' && categoriaFile) {
@@ -278,8 +293,8 @@ export default function AdminPanel() {
       carga_horaria: '', 
       imagem_url: '', 
       video_url: '',
-      topicos: [], 
-      instrumentos_aprendizagem: [],
+      topicos: '', 
+      instrumentos_aprendizagem: '',
       ativo: true 
     });
     setCursoFile(null);
@@ -313,8 +328,8 @@ export default function AdminPanel() {
         carga_horaria: item.carga_horaria || '',
         imagem_url: item.imagem_url || '',
         video_url: item.video_url || '',
-        topicos: item.topicos || [],
-        instrumentos_aprendizagem: item.instrumentos_aprendizagem || [],
+        topicos: Array.isArray(item.topicos) ? item.topicos.join('\n') : '',
+        instrumentos_aprendizagem: Array.isArray(item.instrumentos_aprendizagem) ? item.instrumentos_aprendizagem.join('\n') : '',
         ativo: item.ativo !== undefined ? item.ativo : true
       });
     } else if (activeTab === 'categorias') {
@@ -887,94 +902,23 @@ export default function AdminPanel() {
                                 )}
                               </div>
 
-                              <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Tópicos do Curso</label>
-                                  <button 
-                                    type="button"
-                                    onClick={() => setCursoForm({...cursoForm, topicos: [...cursoForm.topicos, '']})}
-                                    className="flex items-center space-x-1 text-orange-600 hover:text-orange-700 transition-colors"
-                                  >
-                                    <PlusCircle size={16} />
-                                    <span className="text-xs font-bold">Adicionar Módulo</span>
-                                  </button>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  {cursoForm.topicos.map((topico, index) => (
-                                    <div key={index} className="flex items-center space-x-2">
-                                      <input 
-                                        type="text"
-                                        value={topico}
-                                        onChange={(e) => {
-                                          const newTopicos = [...cursoForm.topicos];
-                                          newTopicos[index] = e.target.value;
-                                          setCursoForm({...cursoForm, topicos: newTopicos});
-                                        }}
-                                        placeholder={`Tópico ${index + 1}`}
-                                        className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-sm"
-                                      />
-                                      <button 
-                                        type="button"
-                                        onClick={() => {
-                                          const newTopicos = cursoForm.topicos.filter((_, i) => i !== index);
-                                          setCursoForm({...cursoForm, topicos: newTopicos});
-                                        }}
-                                        className="text-red-400 hover:text-red-600 transition-colors"
-                                      >
-                                        <MinusCircle size={20} />
-                                      </button>
-                                    </div>
-                                  ))}
-                                  {cursoForm.topicos.length === 0 && (
-                                    <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">Nenhum tópico adicionado.</p>
-                                  )}
-                                </div>
+                              <div className="space-y-2">
+                                <FormTextArea 
+                                  label="Tópicos do Curso" 
+                                  value={cursoForm.topicos} 
+                                  onChange={(v) => setCursoForm({...cursoForm, topicos: v})} 
+                                  placeholder="Cole os itens aqui, um por linha. O sistema irá separá-los automaticamente."
+                                />
+                                <p className="text-[10px] text-gray-400 font-bold italic">Dica: O sistema remove automaticamente números e prefixos como #01 ou 1.</p>
                               </div>
 
-                              <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Instrumentos de Aprendizagem</label>
-                                  <button 
-                                    type="button"
-                                    onClick={() => setCursoForm({...cursoForm, instrumentos_aprendizagem: [...cursoForm.instrumentos_aprendizagem, '']})}
-                                    className="flex items-center space-x-1 text-orange-600 hover:text-orange-700 transition-colors"
-                                  >
-                                    <PlusCircle size={16} />
-                                    <span className="text-xs font-bold">Adicionar Item</span>
-                                  </button>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  {cursoForm.instrumentos_aprendizagem.map((item, index) => (
-                                    <div key={index} className="flex items-center space-x-2">
-                                      <input 
-                                        type="text"
-                                        value={item}
-                                        onChange={(e) => {
-                                          const newItems = [...cursoForm.instrumentos_aprendizagem];
-                                          newItems[index] = e.target.value;
-                                          setCursoForm({...cursoForm, instrumentos_aprendizagem: newItems});
-                                        }}
-                                        placeholder={`Item ${index + 1} (ex: 48 Aulas)`}
-                                        className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-sm"
-                                      />
-                                      <button 
-                                        type="button"
-                                        onClick={() => {
-                                          const newItems = cursoForm.instrumentos_aprendizagem.filter((_, i) => i !== index);
-                                          setCursoForm({...cursoForm, instrumentos_aprendizagem: newItems});
-                                        }}
-                                        className="text-red-400 hover:text-red-600 transition-colors"
-                                      >
-                                        <MinusCircle size={20} />
-                                      </button>
-                                    </div>
-                                  ))}
-                                  {cursoForm.instrumentos_aprendizagem.length === 0 && (
-                                    <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">Nenhum instrumento adicionado.</p>
-                                  )}
-                                </div>
+                              <div className="space-y-2">
+                                <FormTextArea 
+                                  label="Instrumentos de Aprendizagem" 
+                                  value={cursoForm.instrumentos_aprendizagem} 
+                                  onChange={(v) => setCursoForm({...cursoForm, instrumentos_aprendizagem: v})} 
+                                  placeholder="Cole os itens aqui, um por linha. O sistema irá separá-los automaticamente."
+                                />
                               </div>
                             </>
                           )}
@@ -1252,15 +1196,15 @@ function FormInput({ label, value, onChange, placeholder, type = "text", require
   );
 }
 
-function FormTextArea({ label, value, onChange, placeholder }: any) {
+function FormTextArea({ label, value, onChange, placeholder, required = true }: any) {
   return (
     <div className="space-y-2">
       <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{label}</label>
       <textarea
-        required
+        required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium h-24 resize-none placeholder:text-gray-300"
+        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium h-32 resize-none placeholder:text-gray-300"
         placeholder={placeholder}
       />
     </div>
