@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { motion } from 'motion/react';
 import { ChevronLeft, GraduationCap, Clock, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -95,6 +97,8 @@ export default function CategoryDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       {/* Hero Header */}
       <header className="bg-blue-950 pt-32 pb-20 relative overflow-hidden">
         {/* Decorative elements */}
@@ -204,23 +208,7 @@ export default function CategoryDetails() {
         )}
       </main>
 
-      {/* Footer CTA */}
-      <section className="bg-orange-600 py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-8">Não encontrou o que procurava?</h2>
-          <p className="text-orange-100 text-xl mb-12 max-w-2xl mx-auto font-medium">
-            Entre em contato conosco e tire suas dúvidas sobre nossos cursos e modalidades.
-          </p>
-          <a 
-            href="https://wa.me/557133334444" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center bg-white text-orange-600 font-black px-12 py-5 rounded-full text-xl shadow-2xl hover:scale-105 transition-transform"
-          >
-            Falar com um Consultor
-          </a>
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 }

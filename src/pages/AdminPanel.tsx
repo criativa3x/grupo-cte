@@ -51,6 +51,7 @@ export default function AdminPanel() {
     mercado_trabalho: '',
     carga_horaria: '', 
     imagem_url: '', 
+    video_url: '',
     topicos: [] as string[], 
     instrumentos_aprendizagem: [] as string[],
     ativo: true 
@@ -276,6 +277,7 @@ export default function AdminPanel() {
       mercado_trabalho: '',
       carga_horaria: '', 
       imagem_url: '', 
+      video_url: '',
       topicos: [], 
       instrumentos_aprendizagem: [],
       ativo: true 
@@ -310,6 +312,7 @@ export default function AdminPanel() {
         mercado_trabalho: item.mercado_trabalho || '',
         carga_horaria: item.carga_horaria || '',
         imagem_url: item.imagem_url || '',
+        video_url: item.video_url || '',
         topicos: item.topicos || [],
         instrumentos_aprendizagem: item.instrumentos_aprendizagem || [],
         ativo: item.ativo !== undefined ? item.ativo : true
@@ -839,6 +842,13 @@ export default function AdminPanel() {
                               <FormTextArea label="Descrição Curta" value={cursoForm.descricao_curta} onChange={(v) => setCursoForm({...cursoForm, descricao_curta: v})} />
                               <FormTextArea label="Descrição Completa" value={cursoForm.descricao_completa} onChange={(v) => setCursoForm({...cursoForm, descricao_completa: v})} />
                               <FormTextArea label="Mercado de Trabalho" value={cursoForm.mercado_trabalho} onChange={(v) => setCursoForm({...cursoForm, mercado_trabalho: v})} placeholder="Fale sobre as oportunidades no mercado..." />
+                              <FormInput 
+                                label="URL do Vídeo (Opcional - YouTube/Vimeo/etc.)" 
+                                value={cursoForm.video_url} 
+                                onChange={(v: string) => setCursoForm({...cursoForm, video_url: v})} 
+                                placeholder="https://www.youtube.com/embed/..."
+                                required={false}
+                              />
                               
                               <div className="grid grid-cols-2 gap-4">
                                 <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="Ex: 40 horas" />
@@ -1226,13 +1236,13 @@ function StatCard({ title, value, icon, color }: any) {
   );
 }
 
-function FormInput({ label, value, onChange, placeholder, type = "text" }: any) {
+function FormInput({ label, value, onChange, placeholder, type = "text", required = true }: any) {
   return (
     <div className="space-y-2">
       <label className="text-xs font-black text-gray-400 uppercase tracking-widest">{label}</label>
       <input
         type={type}
-        required
+        required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium placeholder:text-gray-300"

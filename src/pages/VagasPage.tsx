@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Menu, X, MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 
 export default function VagasPage() {
@@ -32,33 +34,24 @@ export default function VagasPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <img 
-                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-                alt="Grupo CTE Logo" 
-                className="h-10 w-auto"
-                referrerPolicy="no-referrer"
-              />
-            </Link>
+      <Header />
 
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Início</Link>
-              <Link to="/#cursos" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Cursos</Link>
-              <Link to="/vagas" className="text-orange-600 font-bold">Vagas de Estágio</Link>
-            </nav>
-
-            <div className="md:hidden">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600">
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
+      {/* Hero Section */}
+      <section className="bg-blue-950 py-20 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20px_20px,white_2px,transparent_0)] bg-[length:40px_40px]"></div>
         </div>
-      </header>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+            <ChevronLeft className="mr-2 h-5 w-5" />
+            Voltar para a Home
+          </Link>
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-6">Oportunidades de Estágio</h1>
+          <p className="text-xl text-blue-100 max-w-2xl font-medium">
+            Encontre a vaga ideal para iniciar sua jornada profissional com o Grupo CTE.
+          </p>
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section className="bg-blue-950 py-20 relative overflow-hidden">
@@ -187,18 +180,7 @@ export default function VagasPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-blue-950 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <img 
-            src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-            alt="Grupo CTE Logo" 
-            className="h-12 w-auto mx-auto mb-8 brightness-0 invert"
-            referrerPolicy="no-referrer"
-          />
-          <p className="text-blue-200 mb-4">© 2026 Grupo CTE - Centro de Treinamento e Estágio. Todos os direitos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

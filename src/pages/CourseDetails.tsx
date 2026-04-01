@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { 
   Clock, 
   ChevronRight, 
@@ -9,12 +11,6 @@ import {
   ArrowLeft, 
   Loader2, 
   AlertCircle,
-  Facebook,
-  Instagram,
-  Linkedin,
-  MapPin,
-  Mail,
-  Phone,
   Briefcase,
   ChevronDown
 } from 'lucide-react';
@@ -79,6 +75,7 @@ const FAQ = () => {
 
 export default function CourseDetails() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -150,25 +147,7 @@ export default function CourseDetails() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans">
-      {/* Header (Simplified Navbar) */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/">
-              <img 
-                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-                alt="Grupo CTE Logo" 
-                className="h-10 w-auto"
-                referrerPolicy="no-referrer"
-              />
-            </Link>
-            <Link to="/" className="text-blue-950 font-bold hover:text-orange-600 transition-colors flex items-center space-x-1">
-              <ArrowLeft size={18} />
-              <span>Voltar</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-blue-950 text-white py-16 md:py-24 relative overflow-hidden">
@@ -177,6 +156,14 @@ export default function CourseDetails() {
         <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <button 
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center space-x-2 text-white/80 hover:text-white mb-8 transition-colors text-sm font-bold group"
+          >
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            <span>Voltar</span>
+          </button>
+
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,19 +199,39 @@ export default function CourseDetails() {
           
           {/* Left Column: Details */}
           <div className="lg:col-span-2 space-y-12">
-            {/* Course Image */}
+            {/* Course Media (Video or Image) */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white"
+              className="rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white bg-white aspect-video"
             >
-              <img 
-                src={course.imagem_url} 
-                alt={course.titulo}
-                className="w-full h-auto object-cover aspect-video"
-                referrerPolicy="no-referrer"
-              />
+              {course.video_url ? (
+                <iframe
+                  src={(() => {
+                    let url = course.video_url;
+                    if (url.includes('youtube.com/watch?v=')) {
+                      url = url.replace('watch?v=', 'embed/');
+                    } else if (url.includes('youtu.be/')) {
+                      url = url.replace('youtu.be/', 'youtube.com/embed/');
+                    } else if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+                      url = url.replace('vimeo.com/', 'player.vimeo.com/video/');
+                    }
+                    return url;
+                  })()}
+                  title={course.titulo}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <img 
+                  src={course.imagem_url} 
+                  alt={course.titulo}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              )}
             </motion.div>
 
             {/* About Section */}
@@ -342,9 +349,9 @@ export default function CourseDetails() {
                 <h4 className="text-lg font-black mb-4 relative z-10">Por que o Grupo CTE?</h4>
                 <ul className="space-y-4 relative z-10">
                   {[
+                    'Aulas Presenciais Práticas',
+                    'Flexibilidade de Horário',
                     'Certificado Reconhecido',
-                    'Professores Atuantes',
-                    'Foco no Mercado',
                     'Encaminhamento para Estágio'
                   ].map((item, i) => (
                     <li key={i} className="flex items-center space-x-3 text-sm font-medium text-gray-300">
@@ -362,61 +369,7 @@ export default function CourseDetails() {
       {/* FAQ Section */}
       <FAQ />
 
-      {/* Footer (Simplified) */}
-      <footer className="bg-blue-950 text-white pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="col-span-1 md:col-span-2">
-              <img 
-                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-                alt="Grupo CTE Logo" 
-                className="h-12 w-auto mb-8 brightness-0 invert"
-                referrerPolicy="no-referrer"
-              />
-              <p className="text-gray-400 text-lg leading-relaxed max-w-md">
-                Transformando vidas através da educação e do encaminhamento profissional. O seu futuro começa aqui.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-black mb-8">Contato</h4>
-              <ul className="space-y-4">
-                <li className="flex items-center space-x-3 text-gray-400">
-                  <Phone size={18} className="text-orange-600" />
-                  <span>(00) 0000-0000</span>
-                </li>
-                <li className="flex items-center space-x-3 text-gray-400">
-                  <Mail size={18} className="text-orange-600" />
-                  <span>contato@grupocte.com.br</span>
-                </li>
-                <li className="flex items-center space-x-3 text-gray-400">
-                  <MapPin size={18} className="text-orange-600" />
-                  <span>Endereço da Unidade, Cidade - UF</span>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-xl font-black mb-8">Siga-nos</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
-                  <Facebook size={20} />
-                </a>
-                <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
-                  <Instagram size={20} />
-                </a>
-                <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
-                  <Linkedin size={20} />
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-white/10 pt-8 text-center text-gray-500 text-sm font-medium">
-            <p>&copy; {new Date().getFullYear()} Grupo CTE. Todos os direitos reservados.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

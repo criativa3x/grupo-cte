@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
@@ -166,62 +168,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen font-sans text-gray-800">
-      {/* 1. Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center">
-              <img 
-                src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-                alt="Grupo CTE Logo" 
-                className="h-12 w-auto"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="#inicio" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Início</a>
-              <a href="#cursos" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Cursos</a>
-              <a href="#estagios" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Estágios</a>
-              <a href="#quem-somos" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Quem Somos</a>
-            </nav>
-
-            {/* CTA Button - High Prominence */}
-            <div className="hidden md:flex items-center">
-              <a href="#contato" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-[0_4px_20px_rgba(234,88,12,0.4)] hover:scale-105 active:scale-95">
-                Fale com um Consultor
-              </a>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 hover:text-orange-600 focus:outline-none"
-              >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a href="#inicio" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Início</a>
-              <a href="#cursos" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Cursos</a>
-              <a href="#estagios" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Estágios</a>
-              <a href="#quem-somos" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Quem Somos</a>
-              <a href="#contato" className="block w-full text-center mt-4 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-full font-medium transition-colors">
-                Fale com um Consultor
-              </a>
-            </div>
-          </div>
-        )}
-      </header>
+      <Header />
 
       {/* 2. Hero Section - Rich Banner Slider */}
       <section id="inicio" className="relative min-h-[85vh] flex items-center overflow-hidden bg-blue-950">
@@ -856,80 +803,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 7. Footer */}
-      <footer className="bg-blue-950 text-gray-300 pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
-            {/* Column 1 */}
-            <div>
-              <span className="text-3xl font-black text-white mb-8 block tracking-tighter">Grupo CTE</span>
-              <p className="text-gray-400 mb-8 text-lg leading-relaxed font-medium">
-                Sua porta de entrada para o mercado de trabalho. Capacitação de excelência e oportunidades reais de estágio desde 1994.
-              </p>
-              <div className="flex space-x-5">
-                <a href="#" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all hover:-translate-y-1">
-                  <Facebook className="h-6 w-6" />
-                </a>
-                <a href="#" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all hover:-translate-y-1">
-                  <Instagram className="h-6 w-6" />
-                </a>
-                <a href="#" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all hover:-translate-y-1">
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Column 2 */}
-            <div>
-              <h4 className="text-xl font-black text-white mb-8 uppercase tracking-widest">Links Úteis</h4>
-              <ul className="space-y-4 font-semibold">
-                <li><a href="#" className="hover:text-orange-500 transition-colors flex items-center"><ChevronRight className="h-5 w-5 mr-2 text-orange-600" /> Portal do Aluno</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors flex items-center"><ChevronRight className="h-5 w-5 mr-2 text-orange-600" /> Webmail Corporativo</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors flex items-center"><ChevronRight className="h-5 w-5 mr-2 text-orange-600" /> Sistema Sponte</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors flex items-center"><ChevronRight className="h-5 w-5 mr-2 text-orange-600" /> Painel de Vagas</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors flex items-center"><ChevronRight className="h-5 w-5 mr-2 text-orange-600" /> Trabalhe Conosco</a></li>
-              </ul>
-            </div>
-
-            {/* Column 3 */}
-            <div>
-              <h4 className="text-xl font-black text-white mb-8 uppercase tracking-widest">Contato e Localização</h4>
-              <ul className="space-y-6 font-semibold">
-                <li className="flex items-start">
-                  <div className="w-10 h-10 rounded-xl bg-orange-600/20 flex items-center justify-center mr-4 flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-orange-500" />
-                  </div>
-                  <span className="text-lg">Av. Comercial, 123 - Centro<br />Camaçari - BA, 42800-000</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-10 h-10 rounded-xl bg-orange-600/20 flex items-center justify-center mr-4 flex-shrink-0">
-                    <Phone className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <span className="text-lg">(71) 3333-4444</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-10 h-10 rounded-xl bg-orange-600/20 flex items-center justify-center mr-4 flex-shrink-0">
-                    <Mail className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <span className="text-lg">contato@grupocte.com.br</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center text-gray-500 font-bold text-sm">
-            <p className="mb-4 md:mb-0">
-              &copy; {new Date().getFullYear()} Grupo CTE. Todos os direitos reservados.
-            </p>
-            <div className="flex space-x-8">
-              <a href="/admin" className="hover:text-white transition-colors">Admin</a>
-              <a href="#" className="hover:text-white transition-colors">Privacidade</a>
-              <a href="#" className="hover:text-white transition-colors">Termos</a>
-              <a href="#" className="hover:text-white transition-colors">Cookies</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
