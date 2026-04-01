@@ -48,9 +48,11 @@ export default function AdminPanel() {
     categoria_id: '', 
     descricao_curta: '', 
     descricao_completa: '', 
+    mercado_trabalho: '',
     carga_horaria: '', 
     imagem_url: '', 
     topicos: [] as string[], 
+    instrumentos_aprendizagem: [] as string[],
     ativo: true 
   });
   const [cursoFile, setCursoFile] = useState<File | null>(null);
@@ -271,9 +273,11 @@ export default function AdminPanel() {
       categoria_id: '', 
       descricao_curta: '', 
       descricao_completa: '', 
+      mercado_trabalho: '',
       carga_horaria: '', 
       imagem_url: '', 
       topicos: [], 
+      instrumentos_aprendizagem: [],
       ativo: true 
     });
     setCursoFile(null);
@@ -303,9 +307,11 @@ export default function AdminPanel() {
         categoria_id: item.categoria_id || '',
         descricao_curta: item.descricao_curta || '',
         descricao_completa: item.descricao_completa || '',
+        mercado_trabalho: item.mercado_trabalho || '',
         carga_horaria: item.carga_horaria || '',
         imagem_url: item.imagem_url || '',
         topicos: item.topicos || [],
+        instrumentos_aprendizagem: item.instrumentos_aprendizagem || [],
         ativo: item.ativo !== undefined ? item.ativo : true
       });
     } else if (activeTab === 'categorias') {
@@ -832,6 +838,7 @@ export default function AdminPanel() {
                               </div>
                               <FormTextArea label="Descrição Curta" value={cursoForm.descricao_curta} onChange={(v) => setCursoForm({...cursoForm, descricao_curta: v})} />
                               <FormTextArea label="Descrição Completa" value={cursoForm.descricao_completa} onChange={(v) => setCursoForm({...cursoForm, descricao_completa: v})} />
+                              <FormTextArea label="Mercado de Trabalho" value={cursoForm.mercado_trabalho} onChange={(v) => setCursoForm({...cursoForm, mercado_trabalho: v})} placeholder="Fale sobre as oportunidades no mercado..." />
                               
                               <div className="grid grid-cols-2 gap-4">
                                 <FormInput label="Carga Horária" value={cursoForm.carga_horaria} onChange={(v) => setCursoForm({...cursoForm, carga_horaria: v})} placeholder="Ex: 40 horas" />
@@ -911,6 +918,51 @@ export default function AdminPanel() {
                                   ))}
                                   {cursoForm.topicos.length === 0 && (
                                     <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">Nenhum tópico adicionado.</p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Instrumentos de Aprendizagem</label>
+                                  <button 
+                                    type="button"
+                                    onClick={() => setCursoForm({...cursoForm, instrumentos_aprendizagem: [...cursoForm.instrumentos_aprendizagem, '']})}
+                                    className="flex items-center space-x-1 text-orange-600 hover:text-orange-700 transition-colors"
+                                  >
+                                    <PlusCircle size={16} />
+                                    <span className="text-xs font-bold">Adicionar Item</span>
+                                  </button>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  {cursoForm.instrumentos_aprendizagem.map((item, index) => (
+                                    <div key={index} className="flex items-center space-x-2">
+                                      <input 
+                                        type="text"
+                                        value={item}
+                                        onChange={(e) => {
+                                          const newItems = [...cursoForm.instrumentos_aprendizagem];
+                                          newItems[index] = e.target.value;
+                                          setCursoForm({...cursoForm, instrumentos_aprendizagem: newItems});
+                                        }}
+                                        placeholder={`Item ${index + 1} (ex: 48 Aulas)`}
+                                        className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium text-sm"
+                                      />
+                                      <button 
+                                        type="button"
+                                        onClick={() => {
+                                          const newItems = cursoForm.instrumentos_aprendizagem.filter((_, i) => i !== index);
+                                          setCursoForm({...cursoForm, instrumentos_aprendizagem: newItems});
+                                        }}
+                                        className="text-red-400 hover:text-red-600 transition-colors"
+                                      >
+                                        <MinusCircle size={20} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                  {cursoForm.instrumentos_aprendizagem.length === 0 && (
+                                    <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">Nenhum instrumento adicionado.</p>
                                   )}
                                 </div>
                               </div>

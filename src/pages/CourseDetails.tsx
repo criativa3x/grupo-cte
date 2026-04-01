@@ -179,6 +179,19 @@ export default function CourseDetails() {
               </div>
             </section>
 
+            {/* Mercado de Trabalho Section */}
+            {course.mercado_trabalho && (
+              <section className="bg-gray-50 p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100">
+                <h2 className="text-3xl font-black text-blue-950 mb-6 flex items-center space-x-3">
+                  <span className="w-2 h-8 bg-orange-600 rounded-full" />
+                  <span>Mercado de Trabalho</span>
+                </h2>
+                <div className="prose prose-lg max-w-none text-gray-600 font-medium leading-relaxed whitespace-pre-wrap">
+                  {course.mercado_trabalho}
+                </div>
+              </section>
+            )}
+
             {/* Topics Section */}
             <section className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100">
               <h2 className="text-3xl font-black text-blue-950 mb-8 flex items-center space-x-3">
@@ -203,6 +216,33 @@ export default function CourseDetails() {
                 ))}
               </div>
             </section>
+
+            {/* Course Structure Section */}
+            {course.instrumentos_aprendizagem && Array.isArray(course.instrumentos_aprendizagem) && course.instrumentos_aprendizagem.length > 0 && (
+              <section className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100">
+                <h2 className="text-3xl font-black text-blue-950 mb-8 flex items-center space-x-3">
+                  <span className="w-2 h-8 bg-orange-600 rounded-full" />
+                  <span>Estrutura do Curso</span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {course.instrumentos_aprendizagem.map((item: string, index: number) => (
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-center space-x-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-md transition-all group"
+                    >
+                      <div className="bg-green-100 text-green-600 p-1 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        <CheckCircle2 size={18} />
+                      </div>
+                      <span className="text-gray-700 font-bold leading-tight">{item}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Right Column: Sticky Card */}
