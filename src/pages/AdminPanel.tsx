@@ -53,7 +53,6 @@ export default function AdminPanel() {
     imagem_url: '', 
     video_url: '',
     topicos: '', 
-    instrumentos_aprendizagem: '',
     ativo: true 
   });
   const [cursoFile, setCursoFile] = useState<File | null>(null);
@@ -177,7 +176,6 @@ export default function AdminPanel() {
         };
 
         finalFormData.topicos = cleanList(cursoForm.topicos);
-        finalFormData.instrumentos_aprendizagem = cleanList(cursoForm.instrumentos_aprendizagem);
       }
 
       // Handle Category Image Upload
@@ -294,7 +292,6 @@ export default function AdminPanel() {
       imagem_url: '', 
       video_url: '',
       topicos: '', 
-      instrumentos_aprendizagem: '',
       ativo: true 
     });
     setCursoFile(null);
@@ -329,7 +326,6 @@ export default function AdminPanel() {
         imagem_url: item.imagem_url || '',
         video_url: item.video_url || '',
         topicos: Array.isArray(item.topicos) ? item.topicos.join('\n') : '',
-        instrumentos_aprendizagem: Array.isArray(item.instrumentos_aprendizagem) ? item.instrumentos_aprendizagem.join('\n') : '',
         ativo: item.ativo !== undefined ? item.ativo : true
       });
     } else if (activeTab === 'categorias') {
@@ -910,15 +906,6 @@ export default function AdminPanel() {
                                   placeholder="Cole os itens aqui, um por linha. O sistema irá separá-los automaticamente."
                                 />
                                 <p className="text-[10px] text-gray-400 font-bold italic">Dica: O sistema remove automaticamente números e prefixos como #01 ou 1.</p>
-                              </div>
-
-                              <div className="space-y-2">
-                                <FormTextArea 
-                                  label="Instrumentos de Aprendizagem" 
-                                  value={cursoForm.instrumentos_aprendizagem} 
-                                  onChange={(v) => setCursoForm({...cursoForm, instrumentos_aprendizagem: v})} 
-                                  placeholder="Cole os itens aqui, um por linha. O sistema irá separá-los automaticamente."
-                                />
                               </div>
                             </>
                           )}
