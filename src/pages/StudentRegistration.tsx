@@ -66,15 +66,23 @@ export default function StudentRegistration() {
 
     setLoading(true);
     try {
+      // Ensure empty date is sent as null to avoid Supabase errors
+      const dataToSubmit = {
+        ...formData,
+        data_nascimento: formData.data_nascimento || null
+      };
+
       const { error } = await supabase
         .from('curriculos_estagiarios')
-        .insert([formData]);
+        .insert([dataToSubmit]);
 
       if (error) throw error;
       setSuccess(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error submitting resume:', err);
-      alert('Erro ao enviar currículo. Por favor, tente novamente.');
+      // More descriptive error for debugging
+      const errorMessage = err.message || 'Erro desconhecido';
+      alert(`Erro ao enviar currículo: ${errorMessage}. Por favor, tente novamente.`);
     } finally {
       setLoading(false);
     }

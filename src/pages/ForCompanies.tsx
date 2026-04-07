@@ -58,9 +58,10 @@ export default function ForCompanies() {
         telefone_whatsapp: '',
         tipo_vaga: ''
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error submitting form:', err);
-      alert('Erro ao enviar solicitação. Tente novamente.');
+      const errorMessage = err.message || 'Erro desconhecido';
+      alert(`Erro ao enviar solicitação: ${errorMessage}. Tente novamente.`);
     } finally {
       setLoading(false);
     }
