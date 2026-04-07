@@ -17,6 +17,16 @@ export default function Footer() {
               Transformando vidas através da educação e do encaminhamento profissional. O seu futuro começa aqui.
             </p>
           </div>
+
+          <div>
+            <h4 className="text-xl font-black text-white mb-8">Links Úteis</h4>
+            <ul className="space-y-4">
+              <li><a href="/quero-estagiar" className="hover:text-orange-600 transition-colors">Quero Estagiar</a></li>
+              <li><a href="/para-empresas" className="hover:text-orange-600 transition-colors">Para Empresas</a></li>
+              <li><a href="/vagas" className="hover:text-orange-600 transition-colors">Vagas Abertas</a></li>
+              <li><a href="/#cursos" className="hover:text-orange-600 transition-colors">Nossos Cursos</a></li>
+            </ul>
+          </div>
           
           <div>
             <h4 className="text-xl font-black text-white mb-8">Contato</h4>

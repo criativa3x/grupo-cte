@@ -9,6 +9,8 @@ import LandingPage from './pages/LandingPage';
 import VagasPage from './pages/VagasPage';
 import CourseDetails from './pages/CourseDetails';
 import CategoryDetails from './pages/CategoryDetails';
+import ForStudents from './pages/ForStudents';
+import ForCompanies from './pages/ForCompanies';
 import AdminPanel from './pages/AdminPanel';
 import LoginPage from './pages/LoginPage';
 import { supabase } from './lib/supabase';
@@ -54,6 +56,8 @@ export default function App() {
         <Route path="/vagas" element={<VagasPage />} />
         <Route path="/cursos/:slug" element={<CourseDetails />} />
         <Route path="/categorias/:id" element={<CategoryDetails />} />
+        <Route path="/quero-estagiar" element={<ForStudents />} />
+        <Route path="/para-empresas" element={<ForCompanies />} />
         <Route path="/login" element={<LoginPage />} />
         <Route 
           path="/admin/*" 

@@ -25,7 +25,9 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8">
             <Link to="/#inicio" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Início</Link>
             <Link to="/#cursos" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Cursos</Link>
-            <Link to="/#estagios" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Estágios</Link>
+            <Link to="/quero-estagiar" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Quero Estagiar</Link>
+            <Link to="/para-empresas" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Para Empresas</Link>
+            <Link to="/vagas" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Vagas</Link>
             <Link to="/#quem-somos" className="text-gray-700 hover:text-orange-600 font-semibold transition-colors">Quem Somos</Link>
           </nav>
 
@@ -54,7 +56,9 @@ export default function Header() {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link to="/#inicio" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Início</Link>
             <Link to="/#cursos" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Cursos</Link>
-            <Link to="/#estagios" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Estágios</Link>
+            <Link to="/quero-estagiar" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Quero Estagiar</Link>
+            <Link to="/para-empresas" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Para Empresas</Link>
+            <Link to="/vagas" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Vagas</Link>
             <Link to="/#quem-somos" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Quem Somos</Link>
             <a href="/#contato" className="block w-full text-center mt-4 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-full font-medium transition-colors">
               Fale com um Consultor
