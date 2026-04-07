@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { motion } from 'motion/react';
@@ -57,13 +58,19 @@ export default function ForStudents() {
               Conectando jovens talentos às melhores oportunidades do mercado. Comece sua jornada hoje mesmo.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl shadow-orange-600/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center space-x-3">
+              <Link 
+                to="/cadastro-estagiario"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl shadow-orange-600/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center space-x-3"
+              >
                 <span>Cadastrar meu Currículo</span>
                 <ChevronRight size={20} />
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center">
+              </Link>
+              <Link 
+                to="/vagas"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center"
+              >
                 Ver Vagas Abertas
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -156,9 +163,12 @@ export default function ForStudents() {
               <p className="text-xl text-orange-50 font-medium mb-12 max-w-2xl mx-auto">
                 Não deixe seu futuro para depois. Cadastre-se agora e tenha acesso às melhores vagas de estágio da região.
               </p>
-              <button className="bg-white text-orange-600 px-12 py-6 rounded-2xl font-black text-xl shadow-xl transition-all hover:scale-105 active:scale-95">
+              <Link 
+                to="/cadastro-estagiario"
+                className="bg-white text-orange-600 px-12 py-6 rounded-2xl font-black text-xl shadow-xl transition-all hover:scale-105 active:scale-95 inline-block"
+              >
                 Cadastrar Currículo Agora
-              </button>
+              </Link>
             </div>
           </div>
         </div>

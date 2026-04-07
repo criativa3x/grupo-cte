@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -16,7 +16,7 @@ const generateSlug = (text: string) => {
     .trim();
 };
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -31,6 +31,8 @@ export default function AdminPanel() {
     vagas: any[];
     alunos: any[];
     parceiros: any[];
+    curriculos: any[];
+    solicitacoes: any[];
   }>({
     banners: [],
     cursos: [],
@@ -38,7 +40,12 @@ export default function AdminPanel() {
     vagas: [],
     alunos: [],
     parceiros: [],
+    curriculos: [],
+    solicitacoes: [],
   });
+
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
@@ -77,13 +84,15 @@ export default function AdminPanel() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes] = await Promise.all([
+      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes, curriculosRes, solicitacoesRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
+        supabase.from('curriculos_estagiarios').select('*').order('created_at', { ascending: false }),
+        supabase.from('solicitacoes_empresas').select('*').order('created_at', { ascending: false }),
       ]);
 
       setData({
@@ -93,6 +102,8 @@ export default function AdminPanel() {
         vagas: vagasRes.data || [],
         alunos: alunosRes.data || [],
         parceiros: parceirosRes.data || [],
+        curriculos: curriculosRes.data || [],
+        solicitacoes: solicitacoesRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching all data:', error);
@@ -111,6 +122,8 @@ export default function AdminPanel() {
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
         parceiros: 'parceiros',
+        banco_talentos: 'curriculos_estagiarios',
+        solicitacoes_empresas: 'solicitacoes_empresas',
       };
       
       const tableName = tableMap[activeTab];
@@ -128,7 +141,11 @@ export default function AdminPanel() {
 
       if (error) throw error;
       
-      const dataKey = activeTab === 'aparencia' ? 'banners' : activeTab === 'alunos' ? 'alunos' : activeTab;
+      const dataKey = activeTab === 'aparencia' ? 'banners' : 
+                      activeTab === 'alunos' ? 'alunos' : 
+                      activeTab === 'banco_talentos' ? 'curriculos' : 
+                      activeTab === 'solicitacoes_empresas' ? 'solicitacoes' : 
+                      activeTab;
       setData((prev) => ({ ...prev, [dataKey]: result || [] }));
     } catch (error) {
       console.error('Error fetching tab data:', error);
@@ -501,6 +518,20 @@ export default function AdminPanel() {
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
+            icon={<Users size={20} />} 
+            label="Banco de Talentos" 
+            active={activeTab === 'banco_talentos'} 
+            onClick={() => setActiveTab('banco_talentos')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Briefcase size={20} />} 
+            label="Solicitações Empresas" 
+            active={activeTab === 'solicitacoes_empresas'} 
+            onClick={() => setActiveTab('solicitacoes_empresas')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
             icon={<Palette size={20} />} 
             label="Aparência do Site" 
             active={activeTab === 'aparencia'} 
@@ -627,6 +658,18 @@ export default function AdminPanel() {
                       value={data.alunos.length} 
                       icon={<Star className="text-yellow-600" />} 
                       color="bg-yellow-50"
+                    />
+                    <StatCard 
+                      title="Currículos" 
+                      value={data.curriculos.length} 
+                      icon={<Users className="text-indigo-600" />} 
+                      color="bg-indigo-50"
+                    />
+                    <StatCard 
+                      title="Solicitações" 
+                      value={data.solicitacoes.length} 
+                      icon={<Briefcase className="text-rose-600" />} 
+                      color="bg-rose-50"
                     />
                   </div>
 
@@ -763,6 +806,105 @@ export default function AdminPanel() {
                           </table>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === 'banco_talentos' || activeTab === 'solicitacoes_empresas' ? (
+                <div className="space-y-8">
+                  <div className="flex flex-col">
+                    <h2 className="text-3xl font-black text-blue-950">
+                      {activeTab === 'banco_talentos' ? 'Banco de Talentos' : 'Solicitações de Empresas'}
+                    </h2>
+                    <p className="text-gray-500 font-medium mt-1">
+                      {activeTab === 'banco_talentos' 
+                        ? 'Visualize os currículos cadastrados pelos estudantes.' 
+                        : 'Gerencie as solicitações de estagiários enviadas pelas empresas.'}
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="bg-gray-50/50 border-b border-gray-100">
+                            {activeTab === 'banco_talentos' ? (
+                              <>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Nome</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Escolaridade</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Aluno CTE?</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
+                              </>
+                            ) : (
+                              <>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Razão Social</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Responsável</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Vaga</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
+                              </>
+                            )}
+                            <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {activeTab === 'banco_talentos' ? (
+                            data.curriculos.map((item) => (
+                              <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                                <td className="px-8 py-6 font-bold text-blue-950">{item.nome_completo}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">{item.escolaridade}</td>
+                                <td className="px-8 py-6">
+                                  {item.ja_aluno_cte === 'Sim' ? (
+                                    <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">Sim</span>
+                                  ) : (
+                                    <span className="text-gray-400 text-xs font-bold">Não</span>
+                                  )}
+                                </td>
+                                <td className="px-8 py-6 text-gray-400 text-xs font-medium">
+                                  {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                                </td>
+                                <td className="px-8 py-6 text-right">
+                                  <button 
+                                    onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
+                                    className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white transition-all"
+                                  >
+                                    Ver Currículo
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            data.solicitacoes.map((item) => (
+                              <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                                <td className="px-8 py-6 font-bold text-blue-950">{item.razao_social}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">{item.contato_nome}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">{item.tipo_vaga}</td>
+                                <td className="px-8 py-6 text-gray-400 text-xs font-medium">
+                                  {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                                </td>
+                                <td className="px-8 py-6 text-right">
+                                  <button 
+                                    onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
+                                    className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white transition-all"
+                                  >
+                                    Ver Detalhes
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                          {((activeTab === 'banco_talentos' && data.curriculos.length === 0) || 
+                            (activeTab === 'solicitacoes_empresas' && data.solicitacoes.length === 0)) && (
+                            <tr>
+                              <td colSpan={6} className="px-8 py-12 text-center text-gray-400 font-medium">
+                                Nenhum registro encontrado.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -1137,6 +1279,130 @@ export default function AdminPanel() {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Details Modal */}
+      <AnimatePresence>
+        {isModalOpen && selectedItem && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-blue-950/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden relative z-10"
+            >
+              <div className="p-8 md:p-12">
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <span className="text-orange-600 font-black text-xs uppercase tracking-[0.2em] mb-2 block">
+                      {activeTab === 'banco_talentos' ? 'Currículo do Estudante' : 'Solicitação de Empresa'}
+                    </span>
+                    <h2 className="text-3xl font-black text-blue-950">
+                      {selectedItem.nome_completo || selectedItem.razao_social}
+                    </h2>
+                  </div>
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <XCircle size={24} className="text-gray-400" />
+                  </button>
+                </div>
+
+                <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
+                  {activeTab === 'banco_talentos' ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-8">
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contato</h4>
+                          <p className="font-bold text-blue-950">{selectedItem.telefone_whatsapp}</p>
+                          <p className="text-gray-500 font-medium">{selectedItem.email}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Localização</h4>
+                          <p className="font-bold text-blue-950">{selectedItem.cidade}</p>
+                          <p className="text-gray-500 font-medium">{selectedItem.bairro}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-8">
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Escolaridade</h4>
+                          <p className="font-bold text-blue-950">{selectedItem.escolaridade}</p>
+                          <p className="text-gray-500 font-medium">{selectedItem.instituicao_ensino}</p>
+                          <p className="text-xs text-gray-400 font-bold mt-1">Turno: {selectedItem.turno_estudo}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Grupo CTE</h4>
+                          <p className="font-bold text-blue-950">Já é aluno? {selectedItem.ja_aluno_cte}</p>
+                          {selectedItem.curso_cte && (
+                            <p className="text-gray-500 font-medium">Curso: {selectedItem.curso_cte}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Áreas de Interesse</h4>
+                        <p className="font-bold text-blue-950">{selectedItem.areas_interesse}</p>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Resumo / Experiência</h4>
+                        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 italic text-gray-600 font-medium leading-relaxed">
+                          {selectedItem.resumo_experiencia || 'Nenhum resumo fornecido.'}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-8">
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Empresa</h4>
+                          <p className="font-bold text-blue-950">{selectedItem.razao_social}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Responsável</h4>
+                          <p className="font-bold text-blue-950">{selectedItem.contato_nome}</p>
+                          <p className="text-gray-500 font-medium">{selectedItem.telefone_whatsapp}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Vaga Solicitada</h4>
+                        <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                          <p className="text-xl font-black text-blue-950">{selectedItem.tipo_vaga}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Data da Solicitação</h4>
+                        <p className="font-bold text-blue-950">
+                          {new Date(selectedItem.created_at).toLocaleString('pt-BR')}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-gray-100 flex justify-end">
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-blue-950 text-white px-8 py-4 rounded-2xl font-black hover:bg-blue-900 transition-all"
+                  >
+                    Fechar Detalhes
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
