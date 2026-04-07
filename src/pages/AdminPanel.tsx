@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
 import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
@@ -165,6 +166,8 @@ export default function AdminPanel() {
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
         parceiros: 'parceiros',
+        banco_talentos: 'curriculos_estagiarios',
+        solicitacoes_empresas: 'solicitacoes_empresas',
       };
 
       const formMap: Partial<Record<Tab, any>> = {
@@ -431,9 +434,20 @@ export default function AdminPanel() {
         .eq('id', id);
 
       if (error) throw error;
-      fetchTabData();
-    } catch (error) {
+
+      // Update local state immediately for instant feedback
+      if (activeTab === 'banco_talentos') {
+        setData(prev => ({ ...prev, curriculos: prev.curriculos.filter(c => c.id !== id) }));
+      } else if (activeTab === 'solicitacoes_empresas') {
+        setData(prev => ({ ...prev, solicitacoes: prev.solicitacoes.filter(s => s.id !== id) }));
+      } else {
+        fetchTabData();
+      }
+
+      toast.success('Registro excluído com sucesso!');
+    } catch (error: any) {
       console.error('Error deleting data:', error);
+      toast.error(`Erro ao excluir: ${error.message || 'Verifique suas permissões no Supabase.'}`);
     } finally {
       setLoading(false);
     }
@@ -449,6 +463,7 @@ export default function AdminPanel() {
 
       if (error) throw error;
       
+      toast.success('Status atualizado com sucesso!');
       // Update local state
       if (activeTab === 'banco_talentos') {
         setData({
@@ -921,7 +936,25 @@ export default function AdminPanel() {
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.nome_completo}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
                                 <td className="px-8 py-6">
-                                  {getStatusBadge(item.status, 'estudante')}
+                                  <select 
+                                    value={item.status || 'Novo'}
+                                    onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                                    className={`
+                                      text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border-none outline-none cursor-pointer transition-all appearance-none text-center
+                                      ${item.status === 'Novo' ? 'bg-blue-100 text-blue-600' : 
+                                        item.status === 'Em Análise' ? 'bg-orange-100 text-orange-600' : 
+                                        item.status === 'Contatado' ? 'bg-yellow-100 text-yellow-600' : 
+                                        item.status === 'Encaminhado' ? 'bg-purple-100 text-purple-600' : 
+                                        item.status === 'Contratado' ? 'bg-green-100 text-green-600' : 
+                                        'bg-gray-100 text-gray-600'}
+                                    `}
+                                  >
+                                    <option value="Novo">Novo</option>
+                                    <option value="Em Análise">Em Análise</option>
+                                    <option value="Contatado">Contatado</option>
+                                    <option value="Encaminhado">Encaminhado</option>
+                                    <option value="Contratado">Contratado</option>
+                                  </select>
                                 </td>
                                 <td className="px-8 py-6">
                                   {item.ja_aluno_cte === 'Sim' ? (
@@ -967,7 +1000,23 @@ export default function AdminPanel() {
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.contato_nome}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
                                 <td className="px-8 py-6">
-                                  {getStatusBadge(item.status, 'empresa')}
+                                  <select 
+                                    value={item.status || 'Pendente'}
+                                    onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                                    className={`
+                                      text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border-none outline-none cursor-pointer transition-all appearance-none text-center
+                                      ${item.status === 'Pendente' ? 'bg-blue-100 text-blue-600' : 
+                                        item.status === 'Em Contato' ? 'bg-yellow-100 text-yellow-600' : 
+                                        item.status === 'Fechado' ? 'bg-green-100 text-green-600' : 
+                                        item.status === 'Cancelado' ? 'bg-gray-100 text-gray-600' : 
+                                        'bg-gray-100 text-gray-600'}
+                                    `}
+                                  >
+                                    <option value="Pendente">Pendente</option>
+                                    <option value="Em Contato">Em Contato</option>
+                                    <option value="Fechado">Fechado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                  </select>
                                 </td>
                                 <td className="px-8 py-6 text-gray-400 text-xs font-medium">
                                   {new Date(item.created_at).toLocaleDateString('pt-BR')}

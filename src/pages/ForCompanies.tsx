@@ -36,6 +36,16 @@ export default function ForCompanies() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log('Enviando solicitação de empresa:', {
+      razao_social: formData.razao_social,
+      nome_empresa: formData.razao_social,
+      contato_nome: formData.contato_nome,
+      nome_responsavel: formData.contato_nome,
+      telefone_whatsapp: formData.telefone_whatsapp,
+      telefone: formData.telefone_whatsapp,
+      tipo_vaga: formData.tipo_vaga,
+      status: 'Pendente'
+    });
     
     try {
       const { error } = await supabase
@@ -43,8 +53,11 @@ export default function ForCompanies() {
         .insert([
           {
             razao_social: formData.razao_social,
+            nome_empresa: formData.razao_social, // Alias
             contato_nome: formData.contato_nome,
+            nome_responsavel: formData.contato_nome, // Alias para a coluna que deu erro
             telefone_whatsapp: formData.telefone_whatsapp,
+            telefone: formData.telefone_whatsapp, // Alias
             tipo_vaga: formData.tipo_vaga,
             status: 'Pendente'
           }

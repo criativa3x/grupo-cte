@@ -65,17 +65,20 @@ export default function StudentRegistration() {
     }
 
     setLoading(true);
+    const { data_nascimento, telefone_whatsapp, ...rest } = formData;
+    const dataToSubmit = {
+      ...rest,
+      nome: formData.nome_completo, // Alias
+      telefone_whatsapp,
+      telefone: telefone_whatsapp, // Alias
+      whatsapp: telefone_whatsapp, // Alias
+      data_nascimento: data_nascimento || null,
+      status: 'Novo'
+    };
+    
+    console.log('Enviando currículo:', dataToSubmit);
+    
     try {
-      // Ensure empty date is sent as null and map potential column name mismatches
-      const { data_nascimento, telefone_whatsapp, ...rest } = formData;
-      const dataToSubmit = {
-        ...rest,
-        telefone_whatsapp,
-        telefone: telefone_whatsapp, // Map to 'telefone' as well just in case
-        data_nascimento: data_nascimento || null,
-        status: 'Novo'
-      };
-
       const { error } = await supabase
         .from('curriculos_estagiarios')
         .insert([dataToSubmit]);

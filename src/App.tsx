@@ -14,6 +14,7 @@ import ForCompanies from './pages/ForCompanies';
 import StudentRegistration from './pages/StudentRegistration';
 import AdminPanel from './pages/AdminPanel';
 import LoginPage from './pages/LoginPage';
+import { Toaster } from 'sonner';
 import { supabase } from './lib/supabase';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -52,6 +53,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Router>
+      <Toaster position="top-right" richColors />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/vagas" element={<VagasPage />} />
