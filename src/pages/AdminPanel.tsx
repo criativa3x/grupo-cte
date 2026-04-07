@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -388,7 +388,7 @@ export default function AdminPanel() {
     }
   };
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    if (!confirm('Tem certeza que deseja excluir permanentemente este registro?')) return;
     setLoading(true);
     try {
       const tableMap: Partial<Record<Tab, string>> = {
@@ -398,6 +398,8 @@ export default function AdminPanel() {
         vagas: 'vagas_estagio',
         alunos: 'alunos_contratados',
         parceiros: 'parceiros',
+        banco_talentos: 'curriculos_estagiarios',
+        solicitacoes_empresas: 'solicitacoes_empresas',
       };
 
       const tableName = tableMap[activeTab];
@@ -435,6 +437,71 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const table = activeTab === 'banco_talentos' ? 'curriculos_estagiarios' : 'solicitacoes_empresas';
+    try {
+      const { error } = await supabase
+        .from(table)
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      // Update local state
+      if (activeTab === 'banco_talentos') {
+        setData({
+          ...data,
+          curriculos: data.curriculos.map(c => c.id === id ? { ...c, status: newStatus } : c)
+        });
+      } else {
+        setData({
+          ...data,
+          solicitacoes: data.solicitacoes.map(s => s.id === id ? { ...s, status: newStatus } : s)
+        });
+      }
+
+      if (selectedItem && selectedItem.id === id) {
+        setSelectedItem({ ...selectedItem, status: newStatus });
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Erro ao atualizar status.');
+    }
+  };
+
+  const getStatusBadge = (status: string, type: 'estudante' | 'empresa') => {
+    const defaultStatus = type === 'estudante' ? 'Novo' : 'Pendente';
+    const s = status || defaultStatus;
+
+    if (type === 'estudante') {
+      switch (s) {
+        case 'Novo': return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Novo</span>;
+        case 'Em Análise': return <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Em Análise</span>;
+        case 'Contatado': return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Contatado</span>;
+        case 'Encaminhado': return <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Encaminhado</span>;
+        case 'Contratado': return <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Contratado</span>;
+        default: return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">{s}</span>;
+      }
+    } else {
+      switch (s) {
+        case 'Pendente': return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Pendente</span>;
+        case 'Em Contato': return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Em Contato</span>;
+        case 'Fechado': return <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Fechado</span>;
+        case 'Cancelado': return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Cancelado</span>;
+        default: return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">{s}</span>;
+      }
+    }
+  };
+
+  const openWhatsApp = (phone: string, name: string, type: 'estudante' | 'empresa') => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const message = type === 'estudante' 
+      ? `Olá ${name}, vimos seu currículo cadastrado no portal do Grupo CTE...`
+      : `Olá ${name}, recebemos sua solicitação de estagiários pelo portal do Grupo CTE...`;
+    
+    window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const getActiveData = () => {
@@ -831,7 +898,7 @@ export default function AdminPanel() {
                               <>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Nome</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
-                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Escolaridade</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Aluno CTE?</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
                               </>
@@ -840,7 +907,7 @@ export default function AdminPanel() {
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Razão Social</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Responsável</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
-                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Vaga</th>
+                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
                               </>
                             )}
@@ -853,7 +920,9 @@ export default function AdminPanel() {
                               <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.nome_completo}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
-                                <td className="px-8 py-6 text-gray-500 font-medium">{item.escolaridade}</td>
+                                <td className="px-8 py-6">
+                                  {getStatusBadge(item.status, 'estudante')}
+                                </td>
                                 <td className="px-8 py-6">
                                   {item.ja_aluno_cte === 'Sim' ? (
                                     <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">Sim</span>
@@ -865,12 +934,29 @@ export default function AdminPanel() {
                                   {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                 </td>
                                 <td className="px-8 py-6 text-right">
-                                  <button 
-                                    onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
-                                    className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white transition-all"
-                                  >
-                                    Ver Currículo
-                                  </button>
+                                  <div className="flex items-center justify-end space-x-2">
+                                    <button 
+                                      onClick={() => openWhatsApp(item.telefone_whatsapp, item.nome_completo, 'estudante')}
+                                      className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-all"
+                                      title="Contatar via WhatsApp"
+                                    >
+                                      <MessageCircle size={18} />
+                                    </button>
+                                    <button 
+                                      onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
+                                      className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                      title="Ver Detalhes"
+                                    >
+                                      <Eye size={18} />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDelete(item.id)}
+                                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                      title="Excluir"
+                                    >
+                                      <Trash2 size={18} />
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             ))
@@ -880,17 +966,36 @@ export default function AdminPanel() {
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.razao_social}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.contato_nome}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
-                                <td className="px-8 py-6 text-gray-500 font-medium">{item.tipo_vaga}</td>
+                                <td className="px-8 py-6">
+                                  {getStatusBadge(item.status, 'empresa')}
+                                </td>
                                 <td className="px-8 py-6 text-gray-400 text-xs font-medium">
                                   {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                 </td>
                                 <td className="px-8 py-6 text-right">
-                                  <button 
-                                    onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
-                                    className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white transition-all"
-                                  >
-                                    Ver Detalhes
-                                  </button>
+                                  <div className="flex items-center justify-end space-x-2">
+                                    <button 
+                                      onClick={() => openWhatsApp(item.telefone_whatsapp, item.contato_nome, 'empresa')}
+                                      className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-all"
+                                      title="Contatar via WhatsApp"
+                                    >
+                                      <MessageCircle size={18} />
+                                    </button>
+                                    <button 
+                                      onClick={() => { setSelectedItem(item); setIsModalOpen(true); }}
+                                      className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                      title="Ver Detalhes"
+                                    >
+                                      <Eye size={18} />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDelete(item.id)}
+                                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                      title="Excluir"
+                                    >
+                                      <Trash2 size={18} />
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             ))
@@ -1339,11 +1444,32 @@ export default function AdminPanel() {
                           <p className="text-xs text-gray-400 font-bold mt-1">Turno: {selectedItem.turno_estudo}</p>
                         </div>
                         <div>
-                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Grupo CTE</h4>
-                          <p className="font-bold text-blue-950">Já é aluno? {selectedItem.ja_aluno_cte}</p>
-                          {selectedItem.curso_cte && (
-                            <p className="text-gray-500 font-medium">Curso: {selectedItem.curso_cte}</p>
-                          )}
+                          <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status do Lead</h4>
+                          <select 
+                            value={selectedItem.status || (activeTab === 'banco_talentos' ? 'Novo' : 'Pendente')}
+                            onChange={(e) => handleStatusChange(selectedItem.id, e.target.value)}
+                            className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-bold text-sm text-blue-950"
+                          >
+                            {activeTab === 'banco_talentos' ? (
+                              <>
+                                <option value="Novo">Novo</option>
+                                <option value="Em Análise">Em Análise</option>
+                                <option value="Contatado">Contatado</option>
+                                <option value="Encaminhado">Encaminhado</option>
+                                <option value="Contratado">Contratado</option>
+                              </>
+                            ) : (
+                              <>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em Contato">Em Contato</option>
+                                <option value="Fechado">Fechado</option>
+                                <option value="Cancelado">Cancelado</option>
+                              </>
+                            )}
+                          </select>
+                          <div className="mt-2">
+                            {getStatusBadge(selectedItem.status, activeTab === 'banco_talentos' ? 'estudante' : 'empresa')}
+                          </div>
                         </div>
                       </div>
 

@@ -45,7 +45,8 @@ export default function ForCompanies() {
             razao_social: formData.razao_social,
             contato_nome: formData.contato_nome,
             telefone_whatsapp: formData.telefone_whatsapp,
-            tipo_vaga: formData.tipo_vaga
+            tipo_vaga: formData.tipo_vaga,
+            status: 'Pendente'
           }
         ]);
 

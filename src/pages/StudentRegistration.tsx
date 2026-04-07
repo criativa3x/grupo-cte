@@ -66,10 +66,14 @@ export default function StudentRegistration() {
 
     setLoading(true);
     try {
-      // Ensure empty date is sent as null to avoid Supabase errors
+      // Ensure empty date is sent as null and map potential column name mismatches
+      const { data_nascimento, telefone_whatsapp, ...rest } = formData;
       const dataToSubmit = {
-        ...formData,
-        data_nascimento: formData.data_nascimento || null
+        ...rest,
+        telefone_whatsapp,
+        telefone: telefone_whatsapp, // Map to 'telefone' as well just in case
+        data_nascimento: data_nascimento || null,
+        status: 'Novo'
       };
 
       const { error } = await supabase
