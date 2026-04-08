@@ -374,15 +374,22 @@ export default function StudentRegistration() {
                     <div className="space-y-2">
                       <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
                         <Target size={14} />
-                        <span>Áreas de Interesse para Estágio</span>
+                        <span>{appliedVacancy ? 'Vaga Selecionada' : 'Áreas de Interesse para Estágio'}</span>
                       </label>
-                      <input 
-                        type="text"
-                        value={formData.areas_interesse}
-                        onChange={(e) => setFormData({...formData, areas_interesse: e.target.value})}
-                        placeholder="Ex: Administrativo, Vendas, TI..."
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
-                      />
+                      {appliedVacancy ? (
+                        <div className="w-full px-6 py-4 rounded-2xl bg-gray-100 border border-gray-200 text-blue-950 font-bold flex items-center justify-between">
+                          <span>{appliedVacancy}</span>
+                          <span className="text-[10px] bg-blue-950 text-white px-2 py-1 rounded-md uppercase tracking-tighter">Confirmada</span>
+                        </div>
+                      ) : (
+                        <input 
+                          type="text"
+                          value={formData.areas_interesse}
+                          onChange={(e) => setFormData({...formData, areas_interesse: e.target.value})}
+                          placeholder="Ex: Administrativo, Vendas, TI..."
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-orange-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        />
+                      )}
                     </div>
 
                     <div className="space-y-2">

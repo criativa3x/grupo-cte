@@ -247,8 +247,8 @@ export default function LandingPage() {
                 }}
                 className="flex flex-col sm:flex-row gap-4 md:gap-6"
               >
-                <a href={activeBanner?.link_botao} className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
-                  {activeBanner?.texto_botao}
+                <a href="#cursos" className="inline-flex justify-center items-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all shadow-[0_10px_30px_rgba(234,88,12,0.5)] hover:-translate-y-1">
+                  Ver Cursos
                 </a>
                 <a href="#estagios" className="inline-flex justify-center items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white px-6 py-3 md:px-10 md:py-5 rounded-full font-black text-sm md:text-xl transition-all hover:-translate-y-1">
                   Vagas de Estágio
@@ -591,7 +591,7 @@ export default function LandingPage() {
       </section>
 
       {/* 4. Áreas de Atuação com Imagens Ricas */}
-      <section id="categorias" className="py-24 bg-white">
+      <section id="cursos" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">Escolha a sua área de atuação</h2>
