@@ -110,8 +110,8 @@ export default function CourseDetails() {
   };
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(`Olá, tenho interesse no curso ${course.titulo}`);
-    window.open(`https://wa.me/5500000000000?text=${message}`, '_blank');
+    const message = encodeURIComponent(`Olá! Gostaria de informações sobre o Grupo CTE. (Interesse no curso: ${course.titulo})`);
+    window.open(`https://wa.me/557136210160?text=${message}`, '_blank');
   };
 
   if (loading) {

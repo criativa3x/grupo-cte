@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, MapPin, Mail, Phone } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Mail, Phone } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -32,17 +32,32 @@ export default function Footer() {
           <div>
             <h4 className="text-xl font-black text-white mb-8">Contato</h4>
             <ul className="space-y-4">
-              <li className="flex items-center space-x-3 text-gray-400">
-                <Phone size={18} className="text-orange-600" />
-                <span>(00) 0000-0000</span>
+              <li className="flex items-start space-x-3 text-gray-400">
+                <Phone size={18} className="text-orange-600 mt-1" />
+                <div className="flex flex-col space-y-1">
+                  <a 
+                    href="https://wa.me/557136210160?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE." 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-orange-600 transition-colors"
+                  >
+                    (71) 3621-0160
+                  </a>
+                  <span className="text-sm">99975-6746 / 98158-6484</span>
+                </div>
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Mail size={18} className="text-orange-600" />
-                <span>contato@grupocte.com.br</span>
+                <a href="mailto:contato@grupocte.com.br" className="hover:text-orange-600 transition-colors">
+                  contato@grupocte.com.br
+                </a>
               </li>
-              <li className="flex items-center space-x-3 text-gray-400">
-                <MapPin size={18} className="text-orange-600" />
-                <span>Endereço da Unidade, Cidade - UF</span>
+              <li className="flex items-start space-x-3 text-gray-400">
+                <MapPin size={18} className="text-orange-600 mt-1 shrink-0" />
+                <span className="text-sm leading-relaxed">
+                  Rua Duque de Caxias, 88, Centro,<br />
+                  Camaçari BA, 42800-031, Brasil
+                </span>
               </li>
             </ul>
           </div>
@@ -50,14 +65,11 @@ export default function Footer() {
           <div>
             <h4 className="text-xl font-black text-white mb-8">Siga-nos</h4>
             <div className="flex space-x-4">
-              <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
+              <a href="https://www.facebook.com/ctegrupo" target="_blank" rel="noopener noreferrer" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
+              <a href="https://www.instagram.com/grupocte/" target="_blank" rel="noopener noreferrer" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
                 <Instagram size={20} />
-              </a>
-              <a href="#" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
-                <Linkedin size={20} />
               </a>
             </div>
           </div>

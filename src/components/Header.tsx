@@ -33,7 +33,12 @@ export default function Header() {
 
           {/* CTA Button - High Prominence */}
           <div className="hidden md:flex items-center">
-            <a href="/#contato" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-[0_4px_20px_rgba(234,88,12,0.4)] hover:scale-105 active:scale-95">
+            <a 
+              href="https://wa.me/557136210160?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE." 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-[0_4px_20px_rgba(234,88,12,0.4)] hover:scale-105 active:scale-95"
+            >
               Fale com um Consultor
             </a>
           </div>
@@ -60,7 +65,12 @@ export default function Header() {
             <Link to="/para-empresas" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Para Empresas</Link>
             <Link to="/vagas" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Vagas</Link>
             <Link to="/quem-somos" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md">Quem Somos</Link>
-            <a href="/#contato" className="block w-full text-center mt-4 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-full font-medium transition-colors">
+            <a 
+              href="https://wa.me/557136210160?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE." 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center mt-4 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-full font-medium transition-colors"
+            >
               Fale com um Consultor
             </a>
           </div>
