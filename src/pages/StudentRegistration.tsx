@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { 
   User, 
@@ -27,6 +27,9 @@ type Step = 1 | 2 | 3;
 
 export default function StudentRegistration() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const appliedVacancy = searchParams.get('vaga');
+  
   const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -78,7 +81,8 @@ export default function StudentRegistration() {
       telefone: telefone_whatsapp, // Alias
       whatsapp: telefone_whatsapp, // Alias
       data_nascimento: data_nascimento || null,
-      status: 'Novo'
+      status: 'Novo',
+      vaga_aplicada: appliedVacancy || 'Geral'
     };
     
     console.log('Enviando currículo:', dataToSubmit);
@@ -116,6 +120,19 @@ export default function StudentRegistration() {
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             <span>Voltar</span>
           </Link>
+        )}
+
+        {/* Applied Vacancy Badge */}
+        {appliedVacancy && !success && (
+          <div className="mb-6 bg-blue-950 text-white p-4 rounded-2xl flex items-center space-x-3 shadow-lg animate-pulse">
+            <div className="bg-orange-600 p-2 rounded-lg">
+              <Target size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400">Candidatura para a oportunidade:</p>
+              <p className="font-bold text-lg">{appliedVacancy}</p>
+            </div>
+          </div>
         )}
 
         {success ? (

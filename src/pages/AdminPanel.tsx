@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -17,7 +17,7 @@ const generateSlug = (text: string) => {
     .trim();
 };
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -25,6 +25,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [vacancyFilter, setVacancyFilter] = useState<string>('Todas');
   const [data, setData] = useState<{
     banners: any[];
     cursos: any[];
@@ -34,6 +35,7 @@ export default function AdminPanel() {
     parceiros: any[];
     curriculos: any[];
     solicitacoes: any[];
+    candidaturas: any[];
   }>({
     banners: [],
     cursos: [],
@@ -43,6 +45,7 @@ export default function AdminPanel() {
     parceiros: [],
     curriculos: [],
     solicitacoes: [],
+    candidaturas: [],
   });
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -96,6 +99,8 @@ export default function AdminPanel() {
         supabase.from('solicitacoes_empresas').select('*').order('created_at', { ascending: false }),
       ]);
 
+      const allCurriculos = curriculosRes.data || [];
+      
       setData({
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
@@ -103,7 +108,8 @@ export default function AdminPanel() {
         vagas: vagasRes.data || [],
         alunos: alunosRes.data || [],
         parceiros: parceirosRes.data || [],
-        curriculos: curriculosRes.data || [],
+        curriculos: allCurriculos.filter(c => !c.vaga_aplicada || c.vaga_aplicada === 'Geral'),
+        candidaturas: allCurriculos.filter(c => c.vaga_aplicada && c.vaga_aplicada !== 'Geral'),
         solicitacoes: solicitacoesRes.data || [],
       });
     } catch (error) {
@@ -124,6 +130,7 @@ export default function AdminPanel() {
         alunos: 'alunos_contratados',
         parceiros: 'parceiros',
         banco_talentos: 'curriculos_estagiarios',
+        candidaturas: 'curriculos_estagiarios',
         solicitacoes_empresas: 'solicitacoes_empresas',
       };
       
@@ -132,6 +139,12 @@ export default function AdminPanel() {
 
       let query = supabase.from(tableName).select('*');
       
+      if (activeTab === 'banco_talentos') {
+        query = query.or('vaga_aplicada.is.null,vaga_aplicada.eq.Geral');
+      } else if (activeTab === 'candidaturas') {
+        query = query.not('vaga_aplicada', 'is', null).not('vaga_aplicada', 'eq', 'Geral');
+      }
+
       if (activeTab === 'categorias' || activeTab === 'parceiros') {
         query = query.order('ordem', { ascending: true });
       } else {
@@ -145,6 +158,7 @@ export default function AdminPanel() {
       const dataKey = activeTab === 'aparencia' ? 'banners' : 
                       activeTab === 'alunos' ? 'alunos' : 
                       activeTab === 'banco_talentos' ? 'curriculos' : 
+                      activeTab === 'candidaturas' ? 'candidaturas' :
                       activeTab === 'solicitacoes_empresas' ? 'solicitacoes' : 
                       activeTab;
       setData((prev) => ({ ...prev, [dataKey]: result || [] }));
@@ -402,6 +416,7 @@ export default function AdminPanel() {
         alunos: 'alunos_contratados',
         parceiros: 'parceiros',
         banco_talentos: 'curriculos_estagiarios',
+        candidaturas: 'curriculos_estagiarios',
         solicitacoes_empresas: 'solicitacoes_empresas',
       };
 
@@ -438,6 +453,8 @@ export default function AdminPanel() {
       // Update local state immediately for instant feedback
       if (activeTab === 'banco_talentos') {
         setData(prev => ({ ...prev, curriculos: prev.curriculos.filter(c => c.id !== id) }));
+      } else if (activeTab === 'candidaturas') {
+        setData(prev => ({ ...prev, candidaturas: prev.candidaturas.filter(c => c.id !== id) }));
       } else if (activeTab === 'solicitacoes_empresas') {
         setData(prev => ({ ...prev, solicitacoes: prev.solicitacoes.filter(s => s.id !== id) }));
       } else {
@@ -454,7 +471,7 @@ export default function AdminPanel() {
   };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
-    const table = activeTab === 'banco_talentos' ? 'curriculos_estagiarios' : 'solicitacoes_empresas';
+    const table = (activeTab === 'banco_talentos' || activeTab === 'candidaturas') ? 'curriculos_estagiarios' : 'solicitacoes_empresas';
     try {
       const { error } = await supabase
         .from(table)
@@ -469,6 +486,11 @@ export default function AdminPanel() {
         setData({
           ...data,
           curriculos: data.curriculos.map(c => c.id === id ? { ...c, status: newStatus } : c)
+        });
+      } else if (activeTab === 'candidaturas') {
+        setData({
+          ...data,
+          candidaturas: data.candidaturas.map(c => c.id === id ? { ...c, status: newStatus } : c)
         });
       } else {
         setData({
@@ -510,11 +532,17 @@ export default function AdminPanel() {
     }
   };
 
-  const openWhatsApp = (phone: string, name: string, type: 'estudante' | 'empresa') => {
+  const openWhatsApp = (phone: string, name: string, type: 'estudante' | 'empresa', vacancy?: string) => {
     const cleanPhone = phone.replace(/\D/g, '');
-    const message = type === 'estudante' 
-      ? `Olá ${name}, vimos seu currículo cadastrado no portal do Grupo CTE...`
-      : `Olá ${name}, recebemos sua solicitação de estagiários pelo portal do Grupo CTE...`;
+    let message = '';
+    
+    if (type === 'estudante') {
+      message = vacancy 
+        ? `Olá ${name}, vimos sua candidatura para a vaga de ${vacancy} no portal do Grupo CTE...`
+        : `Olá ${name}, vimos seu currículo cadastrado no portal do Grupo CTE...`;
+    } else {
+      message = `Olá ${name}, recebemos sua solicitação de estagiários pelo portal do Grupo CTE...`;
+    }
     
     window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -604,6 +632,13 @@ export default function AdminPanel() {
             label="Banco de Talentos" 
             active={activeTab === 'banco_talentos'} 
             onClick={() => setActiveTab('banco_talentos')} 
+            isOpen={isSidebarOpen}
+          />
+          <SidebarItem 
+            icon={<Target size={20} />} 
+            label="Candidaturas" 
+            active={activeTab === 'candidaturas'} 
+            onClick={() => setActiveTab('candidaturas')} 
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
@@ -742,10 +777,16 @@ export default function AdminPanel() {
                       color="bg-yellow-50"
                     />
                     <StatCard 
-                      title="Currículos" 
+                      title="Banco de Talentos" 
                       value={data.curriculos.length} 
                       icon={<Users className="text-indigo-600" />} 
                       color="bg-indigo-50"
+                    />
+                    <StatCard 
+                      title="Candidaturas" 
+                      value={data.candidaturas.length} 
+                      icon={<Target className="text-orange-600" />} 
+                      color="bg-orange-50"
                     />
                     <StatCard 
                       title="Solicitações" 
@@ -891,17 +932,42 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 </div>
-              ) : activeTab === 'banco_talentos' || activeTab === 'solicitacoes_empresas' ? (
+              ) : activeTab === 'banco_talentos' || activeTab === 'candidaturas' || activeTab === 'solicitacoes_empresas' ? (
                 <div className="space-y-8">
-                  <div className="flex flex-col">
-                    <h2 className="text-3xl font-black text-blue-950">
-                      {activeTab === 'banco_talentos' ? 'Banco de Talentos' : 'Solicitações de Empresas'}
-                    </h2>
-                    <p className="text-gray-500 font-medium mt-1">
-                      {activeTab === 'banco_talentos' 
-                        ? 'Visualize os currículos cadastrados pelos estudantes.' 
-                        : 'Gerencie as solicitações de estagiários enviadas pelas empresas.'}
-                    </p>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                      <h2 className="text-3xl font-black text-blue-950">
+                        {activeTab === 'banco_talentos' ? 'Banco de Talentos' : 
+                         activeTab === 'candidaturas' ? 'Candidaturas Específicas' :
+                         'Solicitações de Empresas'}
+                      </h2>
+                      <p className="text-gray-500 font-medium mt-1">
+                        {activeTab === 'banco_talentos' 
+                          ? 'Visualize os currículos cadastrados no banco geral.' 
+                          : activeTab === 'candidaturas'
+                            ? 'Gerencie as candidaturas para vagas específicas.'
+                            : 'Gerencie as solicitações de estagiários enviadas pelas empresas.'}
+                      </p>
+                    </div>
+
+                    {activeTab === 'candidaturas' && (
+                      <div className="flex items-center space-x-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
+                        <div className="flex items-center space-x-2 px-3 text-gray-400">
+                          <Filter size={16} />
+                          <span className="text-xs font-black uppercase tracking-widest">Filtrar Vaga:</span>
+                        </div>
+                        <select 
+                          value={vacancyFilter}
+                          onChange={(e) => setVacancyFilter(e.target.value)}
+                          className="bg-gray-50 border-none rounded-xl text-sm font-bold text-blue-950 focus:ring-2 focus:ring-orange-500 outline-none px-4 py-2 min-w-[200px]"
+                        >
+                          <option value="Todas">Todas as Vagas</option>
+                          {Array.from(new Set(data.candidaturas.map(c => c.vaga_aplicada))).map(vaga => (
+                            <option key={vaga} value={vaga}>{vaga}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
@@ -909,12 +975,14 @@ export default function AdminPanel() {
                       <table className="w-full text-left">
                         <thead>
                           <tr className="bg-gray-50/50 border-b border-gray-100">
-                            {activeTab === 'banco_talentos' ? (
+                            {activeTab === 'banco_talentos' || activeTab === 'candidaturas' ? (
                               <>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Nome</th>
+                                {activeTab === 'candidaturas' && (
+                                  <th className="px-8 py-6 text-xs font-black text-orange-600 uppercase tracking-widest">Vaga</th>
+                                )}
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
-                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Aluno CTE?</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
                               </>
                             ) : (
@@ -930,10 +998,17 @@ export default function AdminPanel() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                          {activeTab === 'banco_talentos' ? (
-                            data.curriculos.map((item) => (
+                          {activeTab === 'banco_talentos' || activeTab === 'candidaturas' ? (
+                            (activeTab === 'banco_talentos' ? data.curriculos : data.candidaturas.filter(c => vacancyFilter === 'Todas' || c.vaga_aplicada === vacancyFilter)).map((item) => (
                               <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.nome_completo}</td>
+                                {activeTab === 'candidaturas' && (
+                                  <td className="px-8 py-6">
+                                    <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider border border-orange-100">
+                                      {item.vaga_aplicada}
+                                    </span>
+                                  </td>
+                                )}
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
                                 <td className="px-8 py-6">
                                   <select 
@@ -956,20 +1031,13 @@ export default function AdminPanel() {
                                     <option value="Contratado">Contratado</option>
                                   </select>
                                 </td>
-                                <td className="px-8 py-6">
-                                  {item.ja_aluno_cte === 'Sim' ? (
-                                    <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">Sim</span>
-                                  ) : (
-                                    <span className="text-gray-400 text-xs font-bold">Não</span>
-                                  )}
-                                </td>
                                 <td className="px-8 py-6 text-gray-400 text-xs font-medium">
                                   {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                 </td>
                                 <td className="px-8 py-6 text-right">
                                   <div className="flex items-center justify-end space-x-2">
                                     <button 
-                                      onClick={() => openWhatsApp(item.telefone_whatsapp, item.nome_completo, 'estudante')}
+                                      onClick={() => openWhatsApp(item.telefone_whatsapp, item.nome_completo, 'estudante', item.vaga_aplicada)}
                                       className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-all"
                                       title="Contatar via WhatsApp"
                                     >
@@ -1050,9 +1118,10 @@ export default function AdminPanel() {
                             ))
                           )}
                           {((activeTab === 'banco_talentos' && data.curriculos.length === 0) || 
+                            (activeTab === 'candidaturas' && data.candidaturas.length === 0) ||
                             (activeTab === 'solicitacoes_empresas' && data.solicitacoes.length === 0)) && (
                             <tr>
-                              <td colSpan={6} className="px-8 py-12 text-center text-gray-400 font-medium">
+                              <td colSpan={7} className="px-8 py-12 text-center text-gray-400 font-medium">
                                 Nenhum registro encontrado.
                               </td>
                             </tr>
@@ -1455,7 +1524,9 @@ export default function AdminPanel() {
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <span className="text-orange-600 font-black text-xs uppercase tracking-[0.2em] mb-2 block">
-                      {activeTab === 'banco_talentos' ? 'Currículo do Estudante' : 'Solicitação de Empresa'}
+                      {activeTab === 'banco_talentos' ? 'Currículo do Estudante' : 
+                       activeTab === 'candidaturas' ? 'Candidatura Específica' :
+                       'Solicitação de Empresa'}
                     </span>
                     <h2 className="text-3xl font-black text-blue-950">
                       {selectedItem.nome_completo || selectedItem.razao_social}
@@ -1470,8 +1541,14 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
-                  {activeTab === 'banco_talentos' ? (
+                  {activeTab === 'banco_talentos' || activeTab === 'candidaturas' ? (
                     <>
+                      {selectedItem.vaga_aplicada && selectedItem.vaga_aplicada !== 'Geral' && (
+                        <div className="mb-8 bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                          <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2">Vaga Aplicada</h4>
+                          <p className="text-2xl font-black text-blue-950">{selectedItem.vaga_aplicada}</p>
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-8">
                         <div>
                           <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contato</h4>
@@ -1495,11 +1572,18 @@ export default function AdminPanel() {
                         <div>
                           <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status do Lead</h4>
                           <select 
-                            value={selectedItem.status || (activeTab === 'banco_talentos' ? 'Novo' : 'Pendente')}
+                            value={selectedItem.status || (activeTab === 'solicitacoes_empresas' ? 'Pendente' : 'Novo')}
                             onChange={(e) => handleStatusChange(selectedItem.id, e.target.value)}
                             className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-bold text-sm text-blue-950"
                           >
-                            {activeTab === 'banco_talentos' ? (
+                            {activeTab === 'solicitacoes_empresas' ? (
+                              <>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em Contato">Em Contato</option>
+                                <option value="Fechado">Fechado</option>
+                                <option value="Cancelado">Cancelado</option>
+                              </>
+                            ) : (
                               <>
                                 <option value="Novo">Novo</option>
                                 <option value="Em Análise">Em Análise</option>
@@ -1507,17 +1591,10 @@ export default function AdminPanel() {
                                 <option value="Encaminhado">Encaminhado</option>
                                 <option value="Contratado">Contratado</option>
                               </>
-                            ) : (
-                              <>
-                                <option value="Pendente">Pendente</option>
-                                <option value="Em Contato">Em Contato</option>
-                                <option value="Fechado">Fechado</option>
-                                <option value="Cancelado">Cancelado</option>
-                              </>
                             )}
                           </select>
                           <div className="mt-2">
-                            {getStatusBadge(selectedItem.status, activeTab === 'banco_talentos' ? 'estudante' : 'empresa')}
+                            {getStatusBadge(selectedItem.status, activeTab === 'solicitacoes_empresas' ? 'empresa' : 'estudante')}
                           </div>
                         </div>
                       </div>
