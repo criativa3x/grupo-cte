@@ -53,11 +53,8 @@ export default function ForCompanies() {
         .insert([
           {
             razao_social: formData.razao_social,
-            nome_empresa: formData.razao_social, // Alias
             contato_nome: formData.contato_nome,
-            nome_responsavel: formData.contato_nome, // Alias para a coluna que deu erro
             telefone_whatsapp: formData.telefone_whatsapp,
-            telefone: formData.telefone_whatsapp, // Alias
             tipo_vaga: formData.tipo_vaga,
             status: 'Pendente'
           }

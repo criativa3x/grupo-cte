@@ -76,10 +76,7 @@ export default function StudentRegistration() {
     const { data_nascimento, telefone_whatsapp, ...rest } = formData;
     const dataToSubmit = {
       ...rest,
-      nome: formData.nome_completo, // Alias
       telefone_whatsapp,
-      telefone: telefone_whatsapp, // Alias
-      whatsapp: telefone_whatsapp, // Alias
       data_nascimento: data_nascimento || null,
       status: 'Novo',
       vaga_aplicada: appliedVacancy || 'Geral'
