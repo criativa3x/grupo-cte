@@ -104,7 +104,7 @@ export default function ForCompanies() {
       <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1920&auto=format&fit=crop" 
+            src="https://res.cloudinary.com/dapsovbs5/image/upload/q_auto/f_auto/v1775654424/8_yusibp.webp" 
             alt="Ambiente Corporativo" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"

@@ -32,7 +32,7 @@ export default function ForStudents() {
       <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1920&auto=format&fit=crop" 
+            src="https://res.cloudinary.com/dapsovbs5/image/upload/q_auto/f_auto/v1775654424/7_sdbckm.webp" 
             alt="Estudantes" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -137,7 +137,7 @@ export default function ForStudents() {
             <div className="relative">
               <div className="aspect-square rounded-[3rem] overflow-hidden border-8 border-white/10 shadow-2xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop" 
+                  src="https://res.cloudinary.com/dapsovbs5/image/upload/q_auto/f_auto/v1775654424/Favicon_Grupo_CTE_c0bcgu.webp" 
                   alt="Trabalho em equipe" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
