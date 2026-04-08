@@ -25,6 +25,7 @@ export default function Footer() {
               <li><a href="/para-empresas" className="hover:text-orange-600 transition-colors">Para Empresas</a></li>
               <li><a href="/vagas" className="hover:text-orange-600 transition-colors">Vagas Abertas</a></li>
               <li><a href="/#cursos" className="hover:text-orange-600 transition-colors">Nossos Cursos</a></li>
+              <li><a href="/quem-somos" className="hover:text-orange-600 transition-colors">Quem Somos</a></li>
             </ul>
           </div>
           

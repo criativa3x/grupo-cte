@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import AboutUs from './pages/AboutUs';
 import VagasPage from './pages/VagasPage';
 import CourseDetails from './pages/CourseDetails';
 import CategoryDetails from './pages/CategoryDetails';
@@ -56,6 +57,7 @@ export default function App() {
       <Toaster position="top-right" richColors />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/quem-somos" element={<AboutUs />} />
         <Route path="/vagas" element={<VagasPage />} />
         <Route path="/cursos/:slug" element={<CourseDetails />} />
         <Route path="/categorias/:id" element={<CategoryDetails />} />

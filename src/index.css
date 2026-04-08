@@ -35,3 +35,39 @@
   transition-timing-function: linear !important;
 }
 
+/* About Us Swiper Styles */
+.about-us-swiper .swiper-button-next,
+.about-us-swiper .swiper-button-prev {
+  color: #ea580c !important;
+  background: rgba(255, 255, 255, 0.8);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.about-us-swiper .swiper-button-next:after,
+.about-us-swiper .swiper-button-prev:after {
+  font-size: 18px !important;
+  font-weight: bold;
+}
+
+.about-us-swiper .swiper-button-next:hover,
+.about-us-swiper .swiper-button-prev:hover {
+  background: #ea580c;
+  color: white !important;
+}
+
+.about-us-swiper .swiper-pagination-bullet {
+  background: #ea580c !important;
+  opacity: 0.5 !important;
+}
+
+.about-us-swiper .swiper-pagination-bullet-active {
+  background: #ea580c !important;
+  opacity: 1 !important;
+  width: 24px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+

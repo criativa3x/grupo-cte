@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, ChevronDown, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target, FileText, Monitor } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -24,6 +24,16 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    cursos: true,
+    empregabilidade: true,
+    site: true,
+    externos: false
+  });
+
+  const toggleGroup = (group: string) => {
+    setExpandedGroups(prev => ({ ...prev, [group]: !prev[group] }));
+  };
   const [editingId, setEditingId] = useState<string | null>(null);
   const [vacancyFilter, setVacancyFilter] = useState<string>('Todas');
   const [data, setData] = useState<{
@@ -591,7 +601,7 @@ export default function AdminPanel() {
           )}
         </div>
         
-        <nav className="flex-1 p-4 space-y-2 mt-4">
+        <nav className="flex-1 p-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar">
           <SidebarItem 
             icon={<BarChart3 size={20} />} 
             label="Dashboard" 
@@ -599,67 +609,124 @@ export default function AdminPanel() {
             onClick={() => setActiveTab('dashboard')} 
             isOpen={isSidebarOpen}
           />
-          <SidebarItem 
+
+          <SidebarGroup 
             icon={<GraduationCap size={20} />} 
             label="Cursos" 
-            active={activeTab === 'cursos'} 
-            onClick={() => setActiveTab('cursos')} 
             isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Layers size={20} />} 
-            label="Categorias" 
-            active={activeTab === 'categorias'} 
-            onClick={() => setActiveTab('categorias')} 
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
+            isExpanded={expandedGroups.cursos}
+            onToggle={() => toggleGroup('cursos')}
+          >
+            <SidebarItem 
+              icon={<GraduationCap size={18} />} 
+              label="Cursos" 
+              active={activeTab === 'cursos'} 
+              onClick={() => setActiveTab('cursos')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<Layers size={18} />} 
+              label="Categorias" 
+              active={activeTab === 'categorias'} 
+              onClick={() => setActiveTab('categorias')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+          </SidebarGroup>
+
+          <SidebarGroup 
             icon={<Briefcase size={20} />} 
-            label="Vagas de Estágio" 
-            active={activeTab === 'vagas'} 
-            onClick={() => setActiveTab('vagas')} 
+            label="Empregabilidade" 
             isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Star size={20} />} 
-            label="Alunos Contratados" 
-            active={activeTab === 'alunos'} 
-            onClick={() => setActiveTab('alunos')} 
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Users size={20} />} 
-            label="Banco de Talentos" 
-            active={activeTab === 'banco_talentos'} 
-            onClick={() => setActiveTab('banco_talentos')} 
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Target size={20} />} 
-            label="Candidaturas" 
-            active={activeTab === 'candidaturas'} 
-            onClick={() => setActiveTab('candidaturas')} 
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Briefcase size={20} />} 
-            label="Solicitações Empresas" 
-            active={activeTab === 'solicitacoes_empresas'} 
-            onClick={() => setActiveTab('solicitacoes_empresas')} 
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
+            isExpanded={expandedGroups.empregabilidade}
+            onToggle={() => toggleGroup('empregabilidade')}
+          >
+            <SidebarItem 
+              icon={<Briefcase size={18} />} 
+              label="Vagas de Estágio" 
+              active={activeTab === 'vagas'} 
+              onClick={() => setActiveTab('vagas')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<Users size={18} />} 
+              label="Banco de Talentos" 
+              active={activeTab === 'banco_talentos'} 
+              onClick={() => setActiveTab('banco_talentos')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<Target size={18} />} 
+              label="Candidaturas" 
+              active={activeTab === 'candidaturas'} 
+              onClick={() => setActiveTab('candidaturas')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<Star size={18} />} 
+              label="Alunos Contratados" 
+              active={activeTab === 'alunos'} 
+              onClick={() => setActiveTab('alunos')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<MessageCircle size={18} />} 
+              label="Solicitações Empresas" 
+              active={activeTab === 'solicitacoes_empresas'} 
+              onClick={() => setActiveTab('solicitacoes_empresas')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+          </SidebarGroup>
+
+          <SidebarGroup 
             icon={<Palette size={20} />} 
-            label="Aparência do Site" 
-            active={activeTab === 'aparencia'} 
-            onClick={() => setActiveTab('aparencia')} 
+            label="Site Institucional" 
+            isOpen={isSidebarOpen}
+            isExpanded={expandedGroups.site}
+            onToggle={() => toggleGroup('site')}
+          >
+            <SidebarItem 
+              icon={<Palette size={18} />} 
+              label="Aparência do Site" 
+              active={activeTab === 'aparencia'} 
+              onClick={() => setActiveTab('aparencia')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<Layers size={18} />} 
+              label="Parceiros" 
+              active={activeTab === 'parceiros'} 
+              onClick={() => setActiveTab('parceiros')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+          </SidebarGroup>
+
+          <div className="pt-4 pb-2 px-4">
+            <p className={`text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ${!isSidebarOpen && 'hidden'}`}>Sistemas Externos</p>
+          </div>
+
+          <SidebarItem 
+            icon={<FileText size={20} />} 
+            label="Gerador de Contratos" 
+            href="https://contrato.grupocte.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
             isOpen={isSidebarOpen}
           />
           <SidebarItem 
-            icon={<Layers size={20} />} 
-            label="Parceiros" 
-            active={activeTab === 'parceiros'} 
-            onClick={() => setActiveTab('parceiros')} 
+            icon={<Monitor size={20} />} 
+            label="Sistema SIG" 
+            href="https://sig.grupocte.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
             isOpen={isSidebarOpen}
           />
         </nav>
@@ -1659,16 +1726,55 @@ export default function AdminPanel() {
   );
 }
 
-function SidebarItem({ icon, label, active, onClick, href, isOpen, className = "" }: any) {
+function SidebarItem({ icon, label, active, onClick, href, isOpen, className = "", target, rel, isSubItem }: any) {
   const content = (
-    <div className={`flex items-center ${isOpen ? 'space-x-3 px-4' : 'justify-center'} py-3.5 rounded-xl transition-all font-bold text-sm ${active ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'hover:bg-white/5 text-gray-400 hover:text-white'} ${className}`}>
-      <div className={`${active ? 'scale-110' : ''} transition-transform`}>{icon}</div>
-      {isOpen && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>{label}</motion.span>}
+    <div className={`flex items-center ${isOpen ? (isSubItem ? 'space-x-3 pl-10 pr-4' : 'space-x-3 px-4') : 'justify-center'} py-3 rounded-xl transition-all font-bold ${isSubItem ? 'text-[13px] opacity-80' : 'text-sm'} ${active ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'hover:bg-white/5 text-gray-400 hover:text-white'} ${className}`}>
+      <div className={`${active ? 'scale-110' : ''} transition-transform flex-shrink-0`}>{icon}</div>
+      {isOpen && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="truncate">{label}</motion.span>}
     </div>
   );
 
-  if (href) return <a href={href} className="block">{content}</a>;
+  if (href) return <a href={href} target={target} rel={rel} className="block">{content}</a>;
   return <button onClick={onClick} className="w-full text-left">{content}</button>;
+}
+
+function SidebarGroup({ icon, label, isOpen, isExpanded, onToggle, children }: any) {
+  return (
+    <div className="space-y-1">
+      <button 
+        onClick={onToggle}
+        className={`w-full flex items-center justify-between py-3 rounded-xl transition-all font-bold text-sm hover:bg-white/5 text-gray-400 hover:text-white ${isOpen ? 'px-4' : 'justify-center'}`}
+      >
+        <div className="flex items-center space-x-3 overflow-hidden">
+          <div className="transition-transform flex-shrink-0">{icon}</div>
+          {isOpen && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="truncate">{label}</motion.span>}
+        </div>
+        {isOpen && (
+          <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex-shrink-0"
+          >
+            <ChevronDown size={14} className="opacity-30" />
+          </motion.div>
+        )}
+      </button>
+      
+      <AnimatePresence initial={false}>
+        {isExpanded && isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden space-y-1"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 function StatCard({ title, value, icon, color }: any) {
