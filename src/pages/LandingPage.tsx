@@ -198,7 +198,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
         </div>
         
-        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32 md:pt-20 md:pb-48">
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-60 md:pt-20 md:pb-48">
           <div className="max-w-3xl">
             {/* Initial Load Animation Wrapper (No key, so it only runs once) */}
             <motion.div
@@ -289,7 +289,7 @@ export default function LandingPage() {
 
         {/* Slider Controls - Dots */}
         {displayBanners.length > 1 && (
-          <div className="absolute bottom-32 md:bottom-40 left-1/2 -translate-x-1/2 flex space-x-3 z-40 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full">
+          <div className="absolute bottom-36 md:bottom-40 left-1/2 -translate-x-1/2 flex space-x-3 z-40 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full">
             {displayBanners.map((_, index) => (
               <button
                 key={index}
