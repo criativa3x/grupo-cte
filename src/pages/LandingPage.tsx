@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
+import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed, Building2 } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -198,7 +198,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(234,88,12,0.15),transparent_50%)]"></div>
         </div>
         
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32 md:pt-20 md:pb-48">
           <div className="max-w-3xl">
             {/* Initial Load Animation Wrapper (No key, so it only runs once) */}
             <motion.div
@@ -289,7 +289,7 @@ export default function LandingPage() {
 
         {/* Slider Controls - Dots */}
         {displayBanners.length > 1 && (
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
+          <div className="absolute bottom-32 md:bottom-40 left-1/2 -translate-x-1/2 flex space-x-3 z-40 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full">
             {displayBanners.map((_, index) => (
               <button
                 key={index}
@@ -304,6 +304,62 @@ export default function LandingPage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* 2.5 Overlapping Cards Section - Quick Access Funnels */}
+      <section className="relative z-20 -mt-16 md:-mt-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Card 1: Estudante */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-start gap-6 border border-gray-100"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0">
+                <GraduationCap className="h-8 w-8 text-orange-600" />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-black text-gray-900 mb-3">Sou Estudante</h3>
+                <p className="text-gray-600 mb-6 font-medium">
+                  Dê o primeiro passo na sua carreira. Cadastre seu currículo e tenha acesso a vagas exclusivas.
+                </p>
+                <Link 
+                  to="/quero-estagiar" 
+                  className="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-full font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-orange-600/20"
+                >
+                  Cadastrar Currículo
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Card 2: Empresa */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-start gap-6 border border-gray-100"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                <Building2 className="h-8 w-8 text-blue-950" />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-black text-gray-900 mb-3">Para Empresas</h3>
+                <p className="text-gray-600 mb-6 font-medium">
+                  Recrute talentos qualificados com isenção de encargos trabalhistas para o seu negócio.
+                </p>
+                <Link 
+                  to="/para-empresas" 
+                  className="inline-flex items-center justify-center bg-blue-950 hover:bg-blue-900 text-white px-8 py-3 rounded-full font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-blue-950/20"
+                >
+                  Solicitar Estagiário
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* 3. Vagas de Estágio Humanizadas - Vitrine */}
