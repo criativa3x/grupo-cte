@@ -886,7 +886,7 @@ export default function AdminPanel() {
                 <p className="text-xs text-gray-500">Administrador Master</p>
               </div>
               <img 
-                src="https://picsum.photos/seed/admin/100/100" 
+                src="https://res.cloudinary.com/dapsovbs5/image/upload/q_auto/f_auto/v1775565377/Favicon_Grupo_CTE_siimdc.webp" 
                 className="w-10 h-10 rounded-full border-2 border-orange-500 object-cover" 
                 alt="Admin"
                 referrerPolicy="no-referrer"
