@@ -58,6 +58,12 @@ export default function AdminPanel() {
     candidaturas: [],
   });
 
+  const newLeadsCount = React.useMemo(() => {
+    const studentLeads = [...data.curriculos, ...data.candidaturas].filter(c => !c.status || c.status === 'Novo').length;
+    const companyLeads = data.solicitacoes.filter(s => !s.status || s.status === 'Pendente').length;
+    return studentLeads + companyLeads;
+  }, [data.curriculos, data.candidaturas, data.solicitacoes]);
+
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -778,7 +784,11 @@ export default function AdminPanel() {
             </div>
             <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
               <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-600 rounded-full border-2 border-white"></span>
+              {newLeadsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  {newLeadsCount}
+                </span>
+              )}
             </button>
             <div className="flex items-center space-x-3 pl-4 border-l border-gray-100">
               <div className="text-right hidden sm:block">
@@ -812,24 +822,12 @@ export default function AdminPanel() {
                   </div>
                   
                   {/* Stats Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatCard 
-                      title="Total de Banners" 
-                      value={data.banners.length} 
-                      icon={<Image className="text-blue-600" />} 
-                      color="bg-blue-50"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <StatCard 
                       title="Cursos Ativos" 
                       value={data.cursos.length} 
                       icon={<GraduationCap className="text-orange-600" />} 
                       color="bg-orange-50"
-                    />
-                    <StatCard 
-                      title="Categorias" 
-                      value={data.categorias.length} 
-                      icon={<Layers className="text-purple-600" />} 
-                      color="bg-purple-50"
                     />
                     <StatCard 
                       title="Vagas Abertas" 
