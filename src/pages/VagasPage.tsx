@@ -12,6 +12,7 @@ export default function VagasPage() {
   const [vagas, setVagas] = useState<any[]>([]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchVagas();
   }, []);
 
@@ -35,23 +36,6 @@ export default function VagasPage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Header />
-
-      {/* Hero Section */}
-      <section className="bg-blue-950 py-20 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20px_20px,white_2px,transparent_0)] bg-[length:40px_40px]"></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
-            <ChevronLeft className="mr-2 h-5 w-5" />
-            Voltar para a Home
-          </Link>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6">Oportunidades de Estágio</h1>
-          <p className="text-xl text-blue-100 max-w-2xl font-medium">
-            Encontre a vaga ideal para iniciar sua jornada profissional com o Grupo CTE.
-          </p>
-        </div>
-      </section>
 
       {/* Hero Section */}
       <section className="bg-blue-950 py-20 relative overflow-hidden">
