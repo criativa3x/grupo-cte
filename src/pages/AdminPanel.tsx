@@ -99,7 +99,8 @@ export default function AdminPanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form States
-  const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
+  const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '' });
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [cursoForm, setCursoForm] = useState({ 
     titulo: '', 
     slug: '', 
@@ -245,6 +246,25 @@ export default function AdminPanel() {
 
       let finalFormData = { ...formMap[activeTab] };
 
+      // Handle Banner Image Upload
+      if (activeTab === 'aparencia' && bannerFile) {
+        const fileExt = bannerFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `banners/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('categorias_imagens')
+          .upload(filePath, bannerFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('categorias_imagens')
+          .getPublicUrl(filePath);
+
+        finalFormData.imagem_url = publicUrl;
+      }
+
       // Process Cursos Textareas into Arrays
       if (activeTab === 'cursos') {
         const cleanList = (text: string) => {
@@ -361,7 +381,8 @@ export default function AdminPanel() {
 
   const resetForm = () => {
     setEditingId(null);
-    setBannerForm({ titulo: '', subtitulo: '', imagem_url: '', texto_botao: '', link_botao: '' });
+    setBannerForm({ titulo: '', subtitulo: '', imagem_url: '' });
+    setBannerFile(null);
     setCursoForm({ 
       titulo: '', 
       slug: '', 
@@ -391,9 +412,7 @@ export default function AdminPanel() {
       setBannerForm({
         titulo: item.titulo || '',
         subtitulo: item.subtitulo || '',
-        imagem_url: item.imagem_url || '',
-        texto_botao: item.texto_botao || '',
-        link_botao: item.link_botao || ''
+        imagem_url: item.imagem_url || ''
       });
     } else if (activeTab === 'cursos') {
       setCursoForm({
@@ -481,8 +500,9 @@ export default function AdminPanel() {
           try {
             const urlParts = imageUrl.split('/');
             const fileName = urlParts[urlParts.length - 1];
+            const bucketName = 'categorias_imagens';
             await supabase.storage
-              .from('categorias_imagens')
+              .from(bucketName)
               .remove([`${prefix}${fileName}`]);
           } catch (storageError) {
             console.error('Error deleting image from storage:', storageError);
@@ -1331,10 +1351,25 @@ export default function AdminPanel() {
                             <>
                               <FormInput label="Título" value={bannerForm.titulo} onChange={(v) => setBannerForm({...bannerForm, titulo: v})} placeholder="Ex: O seu futuro começa aqui" />
                               <FormInput label="Subtítulo" value={bannerForm.subtitulo} onChange={(v) => setBannerForm({...bannerForm, subtitulo: v})} placeholder="Ex: Capacitação e Estágio" />
-                              <FormInput label="URL da Imagem" value={bannerForm.imagem_url} onChange={(v) => setBannerForm({...bannerForm, imagem_url: v})} placeholder="https://..." />
-                              <div className="grid grid-cols-2 gap-4">
-                                <FormInput label="Texto Botão" value={bannerForm.texto_botao} onChange={(v) => setBannerForm({...bannerForm, texto_botao: v})} placeholder="Ver Cursos" />
-                                <FormInput label="Link Botão" value={bannerForm.link_botao} onChange={(v) => setBannerForm({...bannerForm, link_botao: v})} placeholder="#cursos" />
+                              
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Imagem do Banner</label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={(e) => setBannerFile(e.target.files?.[0] || null)}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                />
+                                {(bannerForm.imagem_url || bannerFile) && (
+                                  <div className="mt-4 p-2 bg-gray-50 rounded-2xl border border-gray-100 inline-block">
+                                    <img 
+                                      src={bannerFile ? URL.createObjectURL(bannerFile) : bannerForm.imagem_url} 
+                                      className="w-full max-w-[200px] h-auto rounded-xl object-cover shadow-sm" 
+                                      alt="Preview"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                )}
                               </div>
                             </>
                           )}
