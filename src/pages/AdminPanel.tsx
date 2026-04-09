@@ -24,6 +24,7 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     cursos: true,
     empregabilidade: true,
@@ -62,6 +63,36 @@ export default function AdminPanel() {
     const studentLeads = [...data.curriculos, ...data.candidaturas].filter(c => !c.status || c.status === 'Novo').length;
     const companyLeads = data.solicitacoes.filter(s => !s.status || s.status === 'Pendente').length;
     return studentLeads + companyLeads;
+  }, [data.curriculos, data.candidaturas, data.solicitacoes]);
+
+  const notificationDetails = React.useMemo(() => {
+    const details = [];
+    const bancoTalentosCount = data.curriculos.filter(c => !c.status || c.status === 'Novo').length;
+    const candidaturasCount = data.candidaturas.filter(c => !c.status || c.status === 'Novo').length;
+    const solicitacoesCount = data.solicitacoes.filter(s => !s.status || s.status === 'Pendente').length;
+
+    if (bancoTalentosCount > 0) {
+      details.push({
+        id: 'banco',
+        text: `Você tem ${bancoTalentosCount} novo(s) currículo(s) no Banco de Talentos`,
+        tab: 'banco_talentos' as Tab
+      });
+    }
+    if (candidaturasCount > 0) {
+      details.push({
+        id: 'candidaturas',
+        text: `Você tem ${candidaturasCount} nova(s) candidatura(s) para revisar`,
+        tab: 'candidaturas' as Tab
+      });
+    }
+    if (solicitacoesCount > 0) {
+      details.push({
+        id: 'solicitacoes',
+        text: `Você tem ${solicitacoesCount} nova(s) solicitação(ões) de empresas`,
+        tab: 'solicitacoes_empresas' as Tab
+      });
+    }
+    return details;
   }, [data.curriculos, data.candidaturas, data.solicitacoes]);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -782,14 +813,73 @@ export default function AdminPanel() {
                 className="pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:ring-2 focus:ring-orange-500 outline-none w-64 transition-all"
               />
             </div>
-            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-              <Bell size={20} />
-              {newLeadsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  {newLeadsCount}
-                </span>
-              )}
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <Bell size={20} />
+                {newLeadsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    {newLeadsCount}
+                  </span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {isNotificationsOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setIsNotificationsOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+                    >
+                      <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+                        <h3 className="text-sm font-black text-blue-950 uppercase tracking-wider">Notificações</h3>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notificationDetails.length > 0 ? (
+                          <div className="divide-y divide-gray-50">
+                            {notificationDetails.map((notif) => (
+                              <button
+                                key={notif.id}
+                                onClick={() => {
+                                  setActiveTab(notif.tab);
+                                  setIsNotificationsOpen(false);
+                                }}
+                                className="w-full text-left p-4 hover:bg-orange-50 transition-colors flex items-start space-x-3 group"
+                              >
+                                <div className="mt-1 w-2 h-2 rounded-full bg-orange-600 shrink-0" />
+                                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-950 leading-relaxed">
+                                  {notif.text}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-8 text-center">
+                            <Bell className="mx-auto h-8 w-8 text-gray-200 mb-3" />
+                            <p className="text-sm font-medium text-gray-400">Nenhuma notificação no momento</p>
+                          </div>
+                        )}
+                      </div>
+                      {notificationDetails.length > 0 && (
+                        <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            Clique para gerenciar os leads
+                          </p>
+                        </div>
+                      )}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="flex items-center space-x-3 pl-4 border-l border-gray-100">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold text-blue-950">Admin Grupo CTE</p>
