@@ -112,6 +112,7 @@ export default function AdminPanel() {
     imagem_url: '', 
     video_url: '',
     topicos: '', 
+    ordem: 0,
     ativo: true 
   });
   const [cursoFile, setCursoFile] = useState<File | null>(null);
@@ -138,7 +139,7 @@ export default function AdminPanel() {
     try {
       const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes, curriculosRes, solicitacoesRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
-        supabase.from('cursos').select('*').order('created_at', { ascending: false }),
+        supabase.from('cursos').select('*').order('ordem', { ascending: true }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
@@ -394,6 +395,7 @@ export default function AdminPanel() {
       imagem_url: '', 
       video_url: '',
       topicos: '', 
+      ordem: 0,
       ativo: true 
     });
     setCursoFile(null);
@@ -426,6 +428,7 @@ export default function AdminPanel() {
         imagem_url: item.imagem_url || '',
         video_url: item.video_url || '',
         topicos: Array.isArray(item.topicos) ? item.topicos.join('\n') : '',
+        ordem: item.ordem || 0,
         ativo: item.ativo !== undefined ? item.ativo : true
       });
     } else if (activeTab === 'categorias') {
@@ -1392,6 +1395,13 @@ export default function AdminPanel() {
                                 value={cursoForm.slug} 
                                 onChange={(v) => setCursoForm({...cursoForm, slug: v})} 
                               />
+                              <FormInput 
+                                label="Ordem de Exibição" 
+                                type="number"
+                                value={cursoForm.ordem} 
+                                onChange={(v) => setCursoForm({...cursoForm, ordem: parseInt(v) || 0})} 
+                                placeholder="Ex: 1"
+                              />
                               <div className="space-y-2">
                                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Categoria</label>
                                 <select 
@@ -1620,7 +1630,7 @@ export default function AdminPanel() {
                                         <div className="font-black text-blue-950 text-sm">{item.titulo || item.nome}</div>
                                         <div className="text-xs text-gray-400 font-bold mt-0.5">
                                           {activeTab === 'cursos' 
-                                            ? (data.categorias.find(c => c.id === item.categoria_id)?.titulo || 'Sem Categoria')
+                                            ? `${data.categorias.find(c => c.id === item.categoria_id)?.titulo || 'Sem Categoria'} • Ordem: ${item.ordem || 0}`
                                             : activeTab === 'categorias' 
                                               ? `Ordem: ${item.ordem}` 
                                               : activeTab === 'vagas' 
