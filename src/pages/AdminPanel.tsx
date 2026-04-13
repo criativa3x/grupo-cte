@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, ChevronDown, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target, FileText, Monitor } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, ChevronDown, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target, FileText, Monitor, Database, Mail, Globe, Link2 } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
+import UsefulLinksGrid from '../components/UsefulLinksGrid';
 
 const generateSlug = (text: string) => {
   return text
@@ -17,7 +18,7 @@ const generateSlug = (text: string) => {
     .trim();
 };
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas' | 'links_uteis';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -764,7 +765,7 @@ export default function AdminPanel() {
               isSubItem
             />
             <SidebarItem 
-              icon={<Layers size={18} />} 
+              icon={<Palette size={18} />} 
               label="Parceiros" 
               active={activeTab === 'parceiros'} 
               onClick={() => setActiveTab('parceiros')} 
@@ -773,26 +774,14 @@ export default function AdminPanel() {
             />
           </SidebarGroup>
 
-          <div className="pt-4 pb-2 px-4">
-            <p className={`text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ${!isSidebarOpen && 'hidden'}`}>Sistemas Externos</p>
-          </div>
+          <SidebarItem 
+            icon={<Link2 size={20} />} 
+            label="Links Úteis" 
+            active={activeTab === 'links_uteis'} 
+            onClick={() => setActiveTab('links_uteis')} 
+            isOpen={isSidebarOpen}
+          />
 
-          <SidebarItem 
-            icon={<FileText size={20} />} 
-            label="Gerador de Contratos" 
-            href="https://contrato.grupocte.com.br"
-            target="_blank"
-            rel="noopener noreferrer"
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem 
-            icon={<Monitor size={20} />} 
-            label="Sistema SIG" 
-            href="https://sig.grupocte.com.br"
-            target="_blank"
-            rel="noopener noreferrer"
-            isOpen={isSidebarOpen}
-          />
         </nav>
 
         <div className="p-4 border-t border-white/5 space-y-2">
@@ -984,6 +973,15 @@ export default function AdminPanel() {
                       <p className="text-gray-400 font-medium italic">Nenhuma atividade recente para exibir.</p>
                     </div>
                   </div>
+                </div>
+              ) : activeTab === 'links_uteis' ? (
+                <div className="space-y-10">
+                  <div className="flex flex-col">
+                    <h2 className="text-3xl font-black text-blue-950">Central de Sistemas</h2>
+                    <p className="text-gray-500 font-medium mt-1">Acesso rápido aos sistemas utilizados pela equipe do Grupo CTE.</p>
+                  </div>
+
+                  <UsefulLinksGrid />
                 </div>
               ) : activeTab === 'parceiros' ? (
                 <div className="space-y-10">

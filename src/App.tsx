@@ -13,6 +13,7 @@ import CategoryDetails from './pages/CategoryDetails';
 import ForStudents from './pages/ForStudents';
 import ForCompanies from './pages/ForCompanies';
 import StudentRegistration from './pages/StudentRegistration';
+import UsefulLinksPage from './pages/UsefulLinksPage';
 import AdminPanel from './pages/AdminPanel';
 import LoginPage from './pages/LoginPage';
 import { Toaster } from 'sonner';
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="/quero-estagiar" element={<ForStudents />} />
         <Route path="/para-empresas" element={<ForCompanies />} />
         <Route path="/cadastro-estagiario" element={<StudentRegistration />} />
+        <Route path="/links-uteis" element={<UsefulLinksPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route 
           path="/admin/*" 

@@ -64,7 +64,7 @@ export default function Footer() {
 
           <div>
             <h4 className="text-xl font-black text-white mb-8">Siga-nos</h4>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mb-8">
               <a href="https://www.facebook.com/ctegrupo" target="_blank" rel="noopener noreferrer" className="bg-white/5 hover:bg-orange-600 p-3 rounded-xl transition-all">
                 <Facebook size={20} />
               </a>
@@ -72,6 +72,9 @@ export default function Footer() {
                 <Instagram size={20} />
               </a>
             </div>
+            <a href="/links-uteis" className="text-xs text-gray-500 hover:text-orange-600 transition-colors font-bold uppercase tracking-widest">
+              Portal do Colaborador
+            </a>
           </div>
         </div>
         
