@@ -101,7 +101,7 @@ export default function LandingPage() {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes, parceirosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
-        supabase.from('cursos').select('*').order('created_at', { ascending: false }),
+        supabase.from('cursos').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
@@ -817,7 +817,9 @@ export default function LandingPage() {
             {/* CTA Button - Mural de Sucesso */}
             <div className="flex justify-center mt-12 mb-8">
               <motion.a 
-                href="#cursos"
+                href="https://wa.me/5571981586484?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE."
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-[0_10px_30px_rgba(234,88,12,0.4)] transition-all hover:-translate-y-1 flex items-center group"

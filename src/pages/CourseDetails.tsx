@@ -111,7 +111,7 @@ export default function CourseDetails() {
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(`Olá! Gostaria de informações sobre o Grupo CTE. (Interesse no curso: ${course.titulo})`);
-    window.open(`https://wa.me/557136210160?text=${message}`, '_blank');
+    window.open(`https://wa.me/5571981586484?text=${message}`, '_blank');
   };
 
   if (loading) {

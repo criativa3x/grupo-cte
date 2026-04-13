@@ -193,7 +193,7 @@ export default function AdminPanel() {
         query = query.not('vaga_aplicada', 'is', null).not('vaga_aplicada', 'eq', 'Geral');
       }
 
-      if (activeTab === 'categorias' || activeTab === 'parceiros') {
+      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'cursos') {
         query = query.order('ordem', { ascending: true });
       } else {
         query = query.order('created_at', { ascending: false });

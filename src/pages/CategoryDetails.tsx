@@ -52,7 +52,7 @@ export default function CategoryDetails() {
           .select('*')
           .eq('categoria_id', id)
           .eq('ativo', true)
-          .order('titulo');
+          .order('ordem', { ascending: true });
 
         if (coursesError) throw coursesError;
         setCourses(coursesData || []);
