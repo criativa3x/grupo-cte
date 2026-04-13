@@ -37,6 +37,7 @@ export default function AdminPanel() {
   };
   const [editingId, setEditingId] = useState<string | null>(null);
   const [vacancyFilter, setVacancyFilter] = useState<string>('Todas');
+  const [courseCategoryFilter, setCourseCategoryFilter] = useState<string>('Todas');
   const [data, setData] = useState<{
     banners: any[];
     cursos: any[];
@@ -619,7 +620,10 @@ export default function AdminPanel() {
 
   const getActiveData = () => {
     if (activeTab === 'aparencia') return data.banners;
-    if (activeTab === 'cursos') return data.cursos;
+    if (activeTab === 'cursos') {
+      if (courseCategoryFilter === 'Todas') return data.cursos;
+      return data.cursos.filter(c => c.categoria_id === courseCategoryFilter);
+    }
     if (activeTab === 'categorias') return data.categorias;
     if (activeTab === 'vagas') return data.vagas;
     if (activeTab === 'alunos') return data.alunos;
@@ -1576,6 +1580,21 @@ export default function AdminPanel() {
                             <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
                           </div>
                           <div className="flex items-center space-x-2">
+                            {activeTab === 'cursos' && (
+                              <div className="flex items-center space-x-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 mr-2">
+                                <Filter size={14} className="text-gray-400 ml-2" />
+                                <select 
+                                  value={courseCategoryFilter}
+                                  onChange={(e) => setCourseCategoryFilter(e.target.value)}
+                                  className="bg-transparent border-none text-[11px] font-black uppercase tracking-wider text-blue-950 focus:ring-0 outline-none cursor-pointer pr-8"
+                                >
+                                  <option value="Todas">Todas Categorias</option>
+                                  {data.categorias.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.titulo}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
                             {activeTab === 'categorias' && (
                               <button 
                                 onClick={resetForm}
