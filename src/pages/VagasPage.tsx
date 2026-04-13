@@ -142,14 +142,12 @@ export default function VagasPage() {
                     </div>
 
                     {/* Botão */}
-                    <a 
-                      href={vaga.link_candidatura} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                    <Link 
+                      to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
                       className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
                     >
                       Candidatar-se
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))}
