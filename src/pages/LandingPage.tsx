@@ -380,7 +380,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">As melhores oportunidades de Estágio</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">Conectamos jovens talentos às empresas que buscam renovação e energia.</p>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">Conectamos jovens talentos às empresas que buscam inovação e resultados.</p>
           </div>
 
           {/* Mobile Carousel (Breakpoint < md) */}

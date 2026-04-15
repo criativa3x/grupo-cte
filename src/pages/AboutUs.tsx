@@ -104,7 +104,7 @@ export default function AboutUs() {
               className="space-y-6"
             >
               <h2 className="text-3xl md:text-4xl font-black text-blue-950 mb-8">Sobre o Grupo CTE</h2>
-              <div className="space-y-6 text-gray-600 text-lg leading-relaxed font-medium">
+              <div className="space-y-6 text-gray-600 text-lg leading-relaxed font-medium text-justify">
                 <p>
                   Há mais de três décadas, o Grupo CTE nasceu com o propósito de ser a ponte entre o potencial dos jovens e as necessidades do mercado de trabalho. Fundado em 1994, iniciamos nossa jornada focados em capacitação profissional de excelência, acreditando que a educação é a ferramenta mais poderosa de transformação social.
                 </p>

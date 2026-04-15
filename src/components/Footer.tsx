@@ -41,9 +41,9 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="hover:text-orange-600 transition-colors"
                   >
-                    98158-6484
+                    71 98158-6484
                   </a>
-                  <span className="text-sm">99975-6746</span>
+                  <span className="text-sm">71 99975-6746</span>
                 </div>
               </li>
               <li className="flex items-center space-x-3 text-gray-400">

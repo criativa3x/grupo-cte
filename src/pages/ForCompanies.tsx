@@ -81,17 +81,17 @@ export default function ForCompanies() {
   const benefits = [
     {
       title: 'Sem vínculo empregatício',
-      description: 'O estágio não gera encargos trabalhistas, facilitando a contratação.',
+      description: 'Não gera encargos trabalhistas, tornando a contratação mais simples e acessível.',
       icon: <ShieldCheck className="text-blue-600" size={32} />
     },
     {
       title: 'Isenção de encargos',
-      description: 'Sua empresa fica isenta de 13º salário, FGTS e aviso prévio.',
+      description: 'Sem custos com 13º salário, FGTS e aviso prévio.',
       icon: <TrendingUp className="text-blue-600" size={32} />
     },
     {
-      title: 'Formação sob medida',
-      description: 'Prepare o estagiário de acordo com a cultura e necessidades da sua empresa.',
+      title: 'Capacitação Personalizada',
+      description: 'Preparar o estagiário de acordo com a cultura e necessidades da sua empresa.',
       icon: <Users className="text-blue-600" size={32} />
     }
   ];
