@@ -1694,9 +1694,23 @@ export default function AdminPanel() {
                                 >
                                   <td className="px-8 py-6">
                                     <div className="flex items-center space-x-4">
-                                      <div className="w-16 h-12 rounded-xl bg-[#1a233e] overflow-hidden flex-shrink-0 border border-gray-100 flex items-center justify-center">
+                                      <div className="w-12 h-12 rounded-xl bg-white overflow-hidden flex-shrink-0 border border-gray-100 flex items-center justify-center">
                                         {activeTab === 'vagas' ? (
-                                          getAreaIcon(item.area || item['àrea'], "h-6 w-6")
+                                          (() => {
+                                            const partner = data.parceiros.find(p => p.id === item.parceiro_id);
+                                            return partner?.logo_url ? (
+                                              <img 
+                                                src={partner.logo_url} 
+                                                className="w-full h-full object-contain p-1.5" 
+                                                alt={partner.nome}
+                                                referrerPolicy="no-referrer"
+                                              />
+                                            ) : (
+                                              <div className="w-full h-full bg-[#1a233e] flex items-center justify-center">
+                                                <Briefcase className="h-5 w-5 text-white" />
+                                              </div>
+                                            );
+                                          })()
                                         ) : (
                                           <img 
                                             src={item.imagem_url || item.thumbnail_url || `https://picsum.photos/seed/${item.id}/200/200`} 
