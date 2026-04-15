@@ -165,7 +165,7 @@ export default function AdminPanel() {
             solicitacoes: [newRecord, ...prev.solicitacoes]
           }));
           toast.info('Nova solicitação de empresa!', {
-            description: `Empresa: ${newRecord.nome_empresa}`,
+            description: `Empresa: ${newRecord.razao_social || 'Não informada'}`,
             action: {
               label: 'Ver',
               onClick: () => setActiveTab('solicitacoes_empresas')
