@@ -120,7 +120,7 @@ export default function AdminPanel() {
   const [cursoFile, setCursoFile] = useState<File | null>(null);
   const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
-  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
+  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
   const [alunoFile, setAlunoFile] = useState<File | null>(null);
   const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
@@ -403,7 +403,7 @@ export default function AdminPanel() {
     setCursoFile(null);
     setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
     setCategoriaFile(null);
-    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', link_candidatura: '' });
+    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
     setAlunoFile(null);
     setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
@@ -446,8 +446,7 @@ export default function AdminPanel() {
         area: item.area || item['àrea'] || '',
         local: item.local || '',
         valor_bolsa: item.valor_bolsa || '',
-        requisitos: item.requisitos || item.descricao || '',
-        link_candidatura: item.link_candidatura || ''
+        requisitos: item.requisitos || item.descricao || ''
       });
     } else if (activeTab === 'alunos') {
       setAlunoForm({
@@ -1523,7 +1522,6 @@ export default function AdminPanel() {
                               </div>
                               <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v: string) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
                               <FormTextArea label="Requisitos" value={vagaForm.requisitos} onChange={(v: string) => setVagaForm({...vagaForm, requisitos: v})} placeholder="Liste os requisitos da vaga..." />
-                              <FormInput label="Link Candidatura" value={vagaForm.link_candidatura} onChange={(v: string) => setVagaForm({...vagaForm, link_candidatura: v})} />
                             </>
                           )}
 
