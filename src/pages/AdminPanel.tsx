@@ -1548,11 +1548,6 @@ export default function AdminPanel() {
 
                           {activeTab === 'vagas' && (
                             <>
-                              <div className="flex justify-center mb-6">
-                                <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md border-4 border-white">
-                                  {getAreaIcon(vagaForm.area)}
-                                </div>
-                              </div>
                               <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v: string) => setVagaForm({...vagaForm, titulo: v})} />
                               <FormTextArea label="Resumo da Vaga" value={vagaForm.resumo} onChange={(v: string) => setVagaForm({...vagaForm, resumo: v})} placeholder="Breve resumo da oportunidade..." />
                               <div className="grid grid-cols-2 gap-4">
