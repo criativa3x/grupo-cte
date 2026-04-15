@@ -19,13 +19,20 @@ export default function VagasPage() {
   const fetchVagas = async () => {
     try {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
-      const { data, error } = await supabase
-        .from('vagas_estagio')
-        .select('*, parceiros(*)')
-        .order('created_at', { ascending: false });
+      const [vagasRes, parceirosRes] = await Promise.all([
+        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('parceiros').select('*')
+      ]);
 
-      if (error) throw error;
-      setVagas(data || []);
+      if (vagasRes.error) throw vagasRes.error;
+      
+      const partners = parceirosRes.data || [];
+      const joinedVagas = (vagasRes.data || []).map(vaga => ({
+        ...vaga,
+        parceiros: partners.find(p => p.id === vaga.parceiro_id)
+      }));
+
+      setVagas(joinedVagas);
     } catch (error) {
       console.error('Error fetching vacancies:', error);
     } finally {
@@ -67,11 +74,20 @@ export default function VagasPage() {
               {vagas.map((vaga) => (
                 <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group flex flex-col h-full">
                   <div className="p-8 flex flex-col items-center flex-1">
-                    {/* Top: Ícone circular centralizado */}
-                    <div className="relative mb-6">
-                      <div className="w-24 h-24 rounded-full bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
-                        {getAreaIcon(vaga.area || vaga['àrea'])}
-                      </div>
+                    {/* Top: Logo da empresa ou ícone fallback */}
+                    <div className="relative mb-6 w-full flex justify-center items-center h-16">
+                      {vaga.parceiros?.logo_url ? (
+                        <img 
+                          src={vaga.parceiros.logo_url} 
+                          alt={vaga.parceiros.nome} 
+                          className="h-full w-auto max-w-full object-contain"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-2xl bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
+                          <Briefcase className="h-8 w-8 text-white" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Tag Condicional (Badge) */}
@@ -139,22 +155,6 @@ export default function VagasPage() {
                           <span>{vaga.local}</span>
                         </div>
                       </div>
-                      {vaga.parceiros && (
-                        <div className="flex items-center gap-3 text-gray-800 text-base pt-4 border-t border-gray-100 mt-2">
-                          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-white">
-                            <img 
-                              src={vaga.parceiros.logo_url} 
-                              alt={vaga.parceiros.nome} 
-                              className="w-full h-full object-contain"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Empresa</span>
-                            <span className="font-bold text-blue-950 leading-none">{vaga.parceiros.nome}</span>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     {/* Botão */}
