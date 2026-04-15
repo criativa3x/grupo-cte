@@ -131,6 +131,56 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
+    const channel = supabase
+      .channel('admin-notifications')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'curriculos_estagiarios' },
+        (payload) => {
+          const newRecord = payload.new;
+          setData(prev => {
+            const isCandidatura = newRecord.vaga_aplicada && newRecord.vaga_aplicada !== 'Geral';
+            if (isCandidatura) {
+              return { ...prev, candidaturas: [newRecord, ...prev.candidaturas] };
+            } else {
+              return { ...prev, curriculos: [newRecord, ...prev.curriculos] };
+            }
+          });
+          toast.info('Nova candidatura recebida!', {
+            description: `Candidato: ${newRecord.nome_completo}`,
+            action: {
+              label: 'Ver',
+              onClick: () => setActiveTab(newRecord.vaga_aplicada && newRecord.vaga_aplicada !== 'Geral' ? 'candidaturas' : 'banco_talentos')
+            }
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'solicitacoes_empresas' },
+        (payload) => {
+          const newRecord = payload.new;
+          setData(prev => ({
+            ...prev,
+            solicitacoes: [newRecord, ...prev.solicitacoes]
+          }));
+          toast.info('Nova solicitação de empresa!', {
+            description: `Empresa: ${newRecord.nome_empresa}`,
+            action: {
+              label: 'Ver',
+              onClick: () => setActiveTab('solicitacoes_empresas')
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
     if (activeTab !== 'dashboard') {
       fetchTabData();
     }
