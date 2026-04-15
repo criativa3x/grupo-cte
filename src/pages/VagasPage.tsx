@@ -21,7 +21,7 @@ export default function VagasPage() {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const { data, error } = await supabase
         .from('vagas_estagio')
-        .select('*')
+        .select('*, parceiros(*)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -139,6 +139,22 @@ export default function VagasPage() {
                           <span>{vaga.local}</span>
                         </div>
                       </div>
+                      {vaga.parceiros && (
+                        <div className="flex items-center gap-3 text-gray-800 text-base pt-4 border-t border-gray-100 mt-2">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-white">
+                            <img 
+                              src={vaga.parceiros.logo_url} 
+                              alt={vaga.parceiros.nome} 
+                              className="w-full h-full object-contain"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Empresa</span>
+                            <span className="font-bold text-blue-950 leading-none">{vaga.parceiros.nome}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Botão */}

@@ -120,7 +120,7 @@ export default function AdminPanel() {
   const [cursoFile, setCursoFile] = useState<File | null>(null);
   const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
-  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '' });
+  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
   const [alunoFile, setAlunoFile] = useState<File | null>(null);
   const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
@@ -403,7 +403,7 @@ export default function AdminPanel() {
     setCursoFile(null);
     setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
     setCategoriaFile(null);
-    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '' });
+    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
     setAlunoFile(null);
     setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
@@ -446,7 +446,8 @@ export default function AdminPanel() {
         area: item.area || item['àrea'] || '',
         local: item.local || '',
         valor_bolsa: item.valor_bolsa || '',
-        requisitos: item.requisitos || item.descricao || ''
+        requisitos: item.requisitos || item.descricao || '',
+        parceiro_id: item.parceiro_id || ''
       });
     } else if (activeTab === 'alunos') {
       setAlunoForm({
@@ -1519,6 +1520,20 @@ export default function AdminPanel() {
                                   </select>
                                 </div>
                                 <FormInput label="Local" value={vagaForm.local} onChange={(v: string) => setVagaForm({...vagaForm, local: v})} />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Empresa Parceira *</label>
+                                <select 
+                                  required
+                                  value={vagaForm.parceiro_id}
+                                  onChange={(e) => setVagaForm({...vagaForm, parceiro_id: e.target.value})}
+                                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
+                                >
+                                  <option value="">Selecione a Empresa...</option>
+                                  {data.parceiros.map(p => (
+                                    <option key={p.id} value={p.id}>{p.nome}</option>
+                                  ))}
+                                </select>
                               </div>
                               <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v: string) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
                               <FormTextArea label="Requisitos" value={vagaForm.requisitos} onChange={(v: string) => setVagaForm({...vagaForm, requisitos: v})} placeholder="Liste os requisitos da vaga..." />

@@ -102,7 +102,7 @@ export default function LandingPage() {
       const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes, parceirosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('ordem', { ascending: true }),
-        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('vagas_estagio').select('*, parceiros(*)').order('created_at', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('depoimentos').select('*').order('created_at', { ascending: false }),
@@ -444,6 +444,22 @@ export default function LandingPage() {
                             </div>
                             <div><span className="font-bold mr-1">Local:</span><span>{vaga.local}</span></div>
                           </div>
+                          {vaga.parceiros && (
+                            <div className="flex items-center gap-3 text-gray-800 text-sm pt-2 border-t border-gray-100 mt-2">
+                              <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-white">
+                                <img 
+                                  src={vaga.parceiros.logo_url} 
+                                  alt={vaga.parceiros.nome} 
+                                  className="w-full h-full object-contain"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Empresa</span>
+                                <span className="font-bold text-blue-950 leading-none">{vaga.parceiros.nome}</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <Link 
                           to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
@@ -551,6 +567,22 @@ export default function LandingPage() {
                           <span>{vaga.local}</span>
                         </div>
                       </div>
+                      {vaga.parceiros && (
+                        <div className="flex items-center gap-3 text-gray-800 text-base pt-4 border-t border-gray-100 mt-2">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-white">
+                            <img 
+                              src={vaga.parceiros.logo_url} 
+                              alt={vaga.parceiros.nome} 
+                              className="w-full h-full object-contain"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Empresa</span>
+                            <span className="font-bold text-blue-950 leading-none">{vaga.parceiros.nome}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Botão */}
