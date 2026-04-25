@@ -461,6 +461,34 @@ export default function LandingPage() {
                             <div><span className="font-bold mr-1">Local:</span><span>{vaga.local}</span></div>
                           </div>
                         </div>
+
+                        {/* Prazo de Candidatura */}
+                        {vaga.prazo_candidatura && String(vaga.prazo_candidatura).length > 2 && (
+                          <div className="w-full text-center mb-4 px-2">
+                            <div className="bg-orange-50/50 py-2.5 rounded-xl border border-orange-100 flex items-center justify-center gap-2 shadow-sm">
+                              <span className="text-lg">⏳</span>
+                              <span className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                                Inscrições até: 
+                              </span>
+                              <span className="font-extrabold text-orange-700 text-sm">
+                                {(() => {
+                                  try {
+                                    const val = String(vaga.prazo_candidatura);
+                                    const parts = val.split(/[-T/ ]/);
+                                    if (parts.length >= 3) {
+                                      if (parts[0].length === 4) return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                      return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                    }
+                                    return val;
+                                  } catch (e) {
+                                    return 'Consulte';
+                                  }
+                                })()}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
                         <Link 
                           to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
                           className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
@@ -578,10 +606,37 @@ export default function LandingPage() {
                       </div>
                     </div>
 
+                    {/* Prazo de Candidatura */}
+                    {vaga.prazo_candidatura && String(vaga.prazo_candidatura).length > 2 && (
+                      <div className="w-full text-center mt-auto mb-4 px-2">
+                        <div className="bg-orange-50/50 py-2.5 rounded-xl border border-orange-100 flex items-center justify-center gap-2 shadow-sm">
+                          <span className="text-lg">⏳</span>
+                          <span className="text-gray-600 text-xs font-bold uppercase tracking-widest">
+                            Inscrições até: 
+                          </span>
+                          <span className="font-extrabold text-orange-700 text-sm">
+                            {(() => {
+                              try {
+                                const val = String(vaga.prazo_candidatura);
+                                const parts = val.split(/[-T/ ]/);
+                                if (parts.length >= 3) {
+                                  if (parts[0].length === 4) return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                  return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                }
+                                return val;
+                              } catch (e) {
+                                return 'Consulte';
+                              }
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Botão */}
                     <Link 
                       to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
-                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
                     >
                       Candidatar-se
                     </Link>

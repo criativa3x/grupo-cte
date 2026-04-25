@@ -158,23 +158,28 @@ export default function VagasPage() {
                     </div>
 
                     {/* Prazo de Candidatura */}
-                    {vaga.prazo_candidatura && String(vaga.prazo_candidatura).trim() !== '' && (
-                      <div className="w-full text-center mt-auto mb-4 px-2">
-                        <div className="bg-gray-50 py-2 rounded-lg border border-gray-100 flex items-center justify-center gap-2">
-                          <span className="text-base">⏳</span>
-                          <span className="text-gray-500 text-sm font-medium uppercase tracking-wider">
+                    {vaga.prazo_candidatura && String(vaga.prazo_candidatura).length > 2 && (
+                      <div className="w-full text-center mb-4 px-2">
+                        <div className="bg-orange-50/50 py-2.5 rounded-xl border border-orange-100 flex items-center justify-center gap-2 shadow-sm">
+                          <span className="text-lg">⏳</span>
+                          <span className="text-gray-600 text-xs font-bold uppercase tracking-widest">
                             Inscrições até: 
                           </span>
-                          <span className="font-bold text-gray-700 text-sm">
+                          <span className="font-extrabold text-orange-700 text-sm">
                             {(() => {
                               try {
-                                const date = new Date(vaga.prazo_candidatura);
-                                if (isNaN(date.getTime())) return '';
-                                // Adicionar offset para evitar problemas de timezone
-                                const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-                                return adjustedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                                const val = String(vaga.prazo_candidatura);
+                                // Tenta extrair DD/MM de formatos ISO (YYYY-MM-DD) ou similares
+                                const parts = val.split(/[-T/ ]/);
+                                if (parts.length >= 3) {
+                                  // Se começar com ano (YYYY-MM-DD)
+                                  if (parts[0].length === 4) return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                  // Se começar com dia (DD/MM/YYYY)
+                                  return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                                }
+                                return val;
                               } catch (e) {
-                                return '';
+                                return 'Consulte';
                               }
                             })()}
                           </span>
@@ -185,7 +190,7 @@ export default function VagasPage() {
                     {/* Botão */}
                     <Link 
                       to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
-                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
                     >
                       Candidatar-se
                     </Link>
