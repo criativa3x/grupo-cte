@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed } from 'lucide-react';
+import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed, Calendar } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 
 export default function VagasPage() {
@@ -155,6 +155,17 @@ export default function VagasPage() {
                           <span>{vaga.local}</span>
                         </div>
                       </div>
+                      {vaga.prazo_candidatura && (
+                        <div className="flex items-center gap-3 text-gray-800 text-base">
+                          <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
+                            <Calendar className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <span className="font-bold mr-1">Inscrições até:</span>
+                            <span>{new Date(vaga.prazo_candidatura).toLocaleDateString('pt-BR')}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Botão */}

@@ -164,7 +164,7 @@ export default function AdminPanel() {
   const [cursoFile, setCursoFile] = useState<File | null>(null);
   const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
-  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '' });
+  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
   const [alunoFile, setAlunoFile] = useState<File | null>(null);
   const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
@@ -531,7 +531,7 @@ export default function AdminPanel() {
     setCursoFile(null);
     setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
     setCategoriaFile(null);
-    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '' });
+    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
     setAlunoFile(null);
     setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
@@ -575,7 +575,8 @@ export default function AdminPanel() {
         local: item.local || '',
         valor_bolsa: item.valor_bolsa || '',
         requisitos: item.requisitos || item.descricao || '',
-        parceiro_id: item.parceiro_id || ''
+        parceiro_id: item.parceiro_id || '',
+        prazo_candidatura: item.prazo_candidatura || ''
       });
     } else if (activeTab === 'alunos') {
       setAlunoForm({
@@ -1778,7 +1779,10 @@ export default function AdminPanel() {
                                   ))}
                                 </select>
                               </div>
-                              <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v: string) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
+                              <div className="grid grid-cols-2 gap-4">
+                                <FormInput label="Valor da Bolsa" value={vagaForm.valor_bolsa} onChange={(v: string) => setVagaForm({...vagaForm, valor_bolsa: v})} placeholder="R$ 800,00" />
+                                <FormInput label="Prazo de Candidatura" value={vagaForm.prazo_candidatura} onChange={(v: string) => setVagaForm({...vagaForm, prazo_candidatura: v})} type="date" />
+                              </div>
                               <FormTextArea label="Requisitos" value={vagaForm.requisitos} onChange={(v: string) => setVagaForm({...vagaForm, requisitos: v})} placeholder="Liste os requisitos da vaga..." />
                             </>
                           )}
@@ -2266,6 +2270,12 @@ function FormTextArea({ label, value, onChange, placeholder, required = true }: 
 const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref: any) => {
   if (!vacancy) return null;
   
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR');
+  };
+
   return (
     <div 
       ref={ref}
@@ -2276,150 +2286,138 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         flexDirection: 'column', 
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#0F172A', 
+        backgroundColor: '#FFFFFF', 
         position: 'relative',
-        color: 'white',
+        color: '#1a234e',
         fontFamily: 'Inter, sans-serif',
         textAlign: 'center',
         overflow: 'hidden'
       }}
     >
-      {/* Top Header Block */}
+      {/* Header Logo */}
+      <div style={{ padding: '80px 0 40px 0', zIndex: 10 }}>
+        <img 
+          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+          alt="Grupo CTE" 
+          style={{ height: '140px', width: 'auto' }}
+        />
+      </div>
+
+      {/* Orange Banner */}
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '100px 0', 
-        zIndex: 20,
-        boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+        padding: '60px 0', 
+        zIndex: 10,
         marginBottom: '100px'
       }}>
         <div style={{ 
-          fontSize: '64px', 
-          fontWeight: '950', 
-          letterSpacing: '0.3em', 
+          fontSize: '110px', 
+          fontWeight: '900', 
+          letterSpacing: '0.05em', 
           textTransform: 'uppercase',
           color: 'white'
         }}>
-          Vaga de Estágio
+          VAGA DE ESTÁGIO
         </div>
       </div>
 
-      {/* Role Title */}
-      <div style={{ zIndex: 10, marginBottom: '100px', maxWidth: '900px', padding: '0 60px' }}>
+      {/* Company Brand info */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '60px', marginBottom: '100px', width: '100%', textAlign: 'left' }}>
         <div style={{ 
-          fontSize: '110px', 
-          fontWeight: '900', 
-          lineHeight: '1', 
-          letterSpacing: '-0.05em',
-          textShadow: '0 15px 40px rgba(0,0,0,0.4)',
-          color: 'white'
+          width: '300px', 
+          height: '300px', 
+          minWidth: '300px',
+          backgroundColor: 'white', 
+          borderRadius: '50%', 
+          padding: '40px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          boxShadow: '0 0 0 4px #1a234e',
+          overflow: 'hidden'
         }}>
-          {vacancy.titulo}
+          {partner?.logo_url ? (
+            <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          ) : (
+            <div style={{ fontSize: '32px', fontWeight: '900', textAlign: 'center' }}>LOGO EMPRESA</div>
+          )}
+        </div>
+        
+        <div style={{ fontSize: '42px', fontWeight: '500', lineHeight: '1.3', color: '#1a234e' }}>
+          {partner?.nome || 'Empresa Parceira'} abre vaga de Estágio para <span style={{ color: '#EA580C', fontWeight: 'bold' }}>{vacancy.titulo}</span>.
         </div>
       </div>
 
-      {/* Info Cards (Local & Bolsa & Requisitos) */}
-      <div style={{ zIndex: 10, width: '100%', padding: '0 80px', display: 'flex', flexDirection: 'column', gap: '40px', marginBottom: '80px' }}>
-        {/* Local Card */}
-        <div style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
-          borderRadius: '40px', 
-          padding: '40px', 
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>📍 Localização</div>
-          <div style={{ fontSize: '48px', fontWeight: '800' }}>{vacancy.local}</div>
+      {/* Requisitos section */}
+      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
+        <div style={{ fontSize: '48px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '40px' }}>O que você terá:</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '40px' }}>
+          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>📍 {vacancy.local}</div>
+          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>💰 {vacancy.valor_bolsa || 'Consulte'}</div>
         </div>
-
-        {/* Bolsa Card */}
-        <div style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
-          borderRadius: '40px', 
-          padding: '40px', 
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>💰 Bolsa Auxílio</div>
-          <div style={{ fontSize: '48px', fontWeight: '800' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
-        </div>
-
-        {/* Requisitos Card */}
-        <div style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
-          borderRadius: '40px', 
-          padding: '40px', 
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '20px'
-        }}>
-          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>📋 Requisitos</div>
-          <div style={{ 
-            fontSize: '36px', 
-            lineHeight: '1.4', 
-            fontWeight: '600',
-            color: '#CBD5E1',
-            maxWidth: '100%'
-          }}>
-            {vacancy.requisitos}
-          </div>
+        
+        <div style={{ fontSize: '48px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '40px' }}>Requisitos:</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {vacancy.requisitos ? (
+            vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 4).map((req: string, i: number) => (
+              <div key={i} style={{ display: 'flex', fontSize: '38px', fontWeight: '600' }}>
+                <span style={{ marginRight: '20px' }}>•</span>
+                <span>{req}</span>
+              </div>
+            ))
+          ) : (
+            <div style={{ fontSize: '38px', fontWeight: '600' }}>Consulte os detalhes no site.</div>
+          )}
         </div>
       </div>
 
-      {/* Partner & CTE Logos Section */}
-      <div style={{ zIndex: 10, marginTop: 'auto', paddingBottom: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', marginBottom: '80px' }}>
-          {/* Partner Logo */}
-          <div style={{ 
-            width: '200px', 
-            height: '200px', 
-            backgroundColor: 'white', 
-            borderRadius: '40px', 
-            padding: '30px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
-          }}>
-            {partner?.logo_url ? (
-              <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            ) : (
-              <Briefcase size={80} color="#0F172A" />
-            )}
-          </div>
-
-          {/* Grupo CTE Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img 
-              src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-              alt="Grupo CTE" 
-              style={{ height: '100px', width: 'auto', filter: 'brightness(0) invert(1)' }}
-            />
+      {/* Deadline Urgency Section */}
+      {vacancy.prazo_candidatura && (
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '20px', 
+          marginBottom: '60px',
+          backgroundColor: '#FFF7ED',
+          padding: '20px 40px',
+          borderRadius: '30px',
+          border: '2px dashed #EA580C',
+          zIndex: 10
+        }}>
+          <div style={{ fontSize: '48px' }}>⏰</div>
+          <div style={{ fontSize: '40px', fontWeight: '800', color: '#EA580C', textTransform: 'uppercase' }}>
+            Inscrições até: {formatDate(vacancy.prazo_candidatura)}
           </div>
         </div>
+      )}
 
-        {/* CTA Button Block */}
-        <div style={{ 
-          backgroundColor: '#EA580C', 
-          color: 'white', 
-          padding: '40px 60px', 
-          borderRadius: '40px', 
-          width: '90%',
-          boxShadow: '0 20px 50px rgba(234, 88, 12, 0.4)'
-        }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>Candidatar-se</div>
-          <div style={{ fontSize: '36px', fontWeight: 'black' }}>
-            Envie seu currículo por Direct ou para:<br/>
-            <span style={{ fontSize: '42px', color: 'white' }}>vagas@grupocte.com.br</span>
-          </div>
+      {/* CTA Instruction Card */}
+      <div style={{ 
+        width: '90%', 
+        backgroundColor: '#1a234e', 
+        borderRadius: '80px', 
+        padding: '80px 60px', 
+        color: 'white',
+        textAlign: 'left',
+        marginBottom: '100px',
+        zIndex: 10
+      }}>
+        <div style={{ fontSize: '44px', fontWeight: '600', lineHeight: '1.4' }}>
+          Enviar currículo com o título <span style={{ color: '#EA580C' }}>{vacancy.titulo}</span> {vacancy.prazo_candidatura ? `até ${formatDate(vacancy.prazo_candidatura)}` : ''} para o e-mail:
+        </div>
+        <div style={{ fontSize: '56px', fontWeight: '900', marginTop: '20px', color: 'white' }}>
+          vagas@grupocte.com.br
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ marginTop: 'auto', paddingBottom: '100px' }}>
+        <div style={{ fontSize: '42px', fontWeight: '500', color: '#1a234e', marginBottom: '20px' }}>
+          Cursos com oportunidades de estágio.
+        </div>
+        <div style={{ fontSize: '72px', fontWeight: '950', color: '#000000' }}>
+          www.grupocte.com.br
         </div>
       </div>
     </div>
