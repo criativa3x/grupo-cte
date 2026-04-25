@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed, Calendar } from 'lucide-react';
+import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed, Calendar, Search, Filter } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 
 export default function VagasPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [vagas, setVagas] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,6 +42,19 @@ export default function VagasPage() {
     }
   };
 
+  const filteredVagas = vagas.filter(vaga => {
+    const matchesSearch = searchTerm === '' || 
+      vaga.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (vaga.resumo && vaga.resumo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (vaga.local && vaga.local.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesArea = selectedArea === '' || vaga.area === selectedArea;
+    
+    return matchesSearch && matchesArea;
+  });
+
+  const areas = Array.from(new Set(vagas.map(v => v.area).filter(Boolean)));
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Header />
@@ -64,14 +79,52 @@ export default function VagasPage() {
       {/* Vacancies List */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Search and Filter */}
+          <div className="mb-12 bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Pesquisa */}
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input 
+                  type="text" 
+                  placeholder="Pesquisar vagas..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-medium transition-all"
+                />
+              </div>
+
+              {/* Filtro por Área */}
+              <div className="relative">
+                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <select 
+                  value={selectedArea}
+                  onChange={(e) => setSelectedArea(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-medium transition-all appearance-none"
+                >
+                  <option value="">Todas as Áreas</option>
+                  {areas.map((area: any) => (
+                    <option key={area} value={area}>{area}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Resultados info */}
+              <div className="flex items-center justify-center lg:justify-end text-gray-500 font-bold uppercase tracking-widest text-xs">
+                {filteredVagas.length} {filteredVagas.length === 1 ? 'vaga encontrada' : 'vagas encontradas'}
+              </div>
+            </div>
+          </div>
+
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 text-orange-600 animate-spin mb-4" />
               <p className="text-gray-500 font-medium">Carregando vagas...</p>
             </div>
-          ) : vagas.length > 0 ? (
+          ) : filteredVagas.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {vagas.map((vaga) => (
+              {filteredVagas.map((vaga) => (
                 <div key={vaga.id} className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-50 group flex flex-col h-full">
                   <div className="p-8 flex flex-col items-center flex-1">
                     {/* Top: Logo da empresa ou ícone fallback */}

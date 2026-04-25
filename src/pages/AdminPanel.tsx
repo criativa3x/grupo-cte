@@ -40,6 +40,7 @@ export default function AdminPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [vacancyFilter, setVacancyFilter] = useState<string>('Todas');
   const [courseCategoryFilter, setCourseCategoryFilter] = useState<string>('Todas');
+  const [adminSearchTerm, setAdminSearchTerm] = useState('');
   const [data, setData] = useState<{
     banners: any[];
     cursos: any[];
@@ -765,16 +766,44 @@ export default function AdminPanel() {
   };
 
   const getActiveData = () => {
-    if (activeTab === 'aparencia') return data.banners;
-    if (activeTab === 'cursos') {
-      if (courseCategoryFilter === 'Todas') return data.cursos;
-      return data.cursos.filter(c => c.categoria_id === courseCategoryFilter);
+    let baseData: any[] = [];
+    if (activeTab === 'aparencia') baseData = data.banners;
+    else if (activeTab === 'cursos') {
+      if (courseCategoryFilter === 'Todas') baseData = data.cursos;
+      else baseData = data.cursos.filter(c => c.categoria_id === courseCategoryFilter);
     }
-    if (activeTab === 'categorias') return data.categorias;
-    if (activeTab === 'vagas') return data.vagas;
-    if (activeTab === 'alunos') return data.alunos;
-    if (activeTab === 'parceiros') return data.parceiros;
-    return [];
+    else if (activeTab === 'categorias') baseData = data.categorias;
+    else if (activeTab === 'vagas') baseData = data.vagas;
+    else if (activeTab === 'alunos') baseData = data.alunos;
+    else if (activeTab === 'parceiros') baseData = data.parceiros;
+    else if (activeTab === 'banco_talentos') baseData = data.curriculos;
+    else if (activeTab === 'candidaturas') {
+      if (vacancyFilter === 'Todas') baseData = data.candidaturas;
+      else baseData = data.candidaturas.filter(c => c.vaga_aplicada === vacancyFilter);
+    }
+    else if (activeTab === 'solicitacoes_empresas') baseData = data.solicitacoes;
+    else if (activeTab === 'candidatos') baseData = data.candidatos;
+    
+    if (adminSearchTerm.trim() === '') return baseData;
+
+    const term = adminSearchTerm.toLowerCase();
+    return baseData.filter(item => {
+      const name = (item.titulo || item.nome || item.nome_completo || item.razao_social || '').toLowerCase();
+      const company = (item.empresa || '').toLowerCase();
+      const area = (item.area || item['àrea'] || '').toLowerCase();
+      const res = (item.resumo || item.descricao || item.descricao_curta || item.vaga_aplicada || '').toLowerCase();
+      const email = (item.email || '').toLowerCase();
+      const phone = (item.telefone_whatsapp || item.whatsapp || '').toLowerCase();
+      
+      let partnerName = '';
+      if (activeTab === 'candidaturas' && item.vaga_aplicada) {
+        const vacancy = data.vagas.find(v => v.titulo === item.vaga_aplicada);
+        const partner = data.parceiros.find(p => p.id === vacancy?.parceiro_id);
+        partnerName = (partner?.nome || '').toLowerCase();
+      }
+
+      return name.includes(term) || company.includes(term) || area.includes(term) || res.includes(term) || email.includes(term) || phone.includes(term) || partnerName.includes(term);
+    });
   };
 
   return (
@@ -979,6 +1008,8 @@ export default function AdminPanel() {
               <input 
                 type="text" 
                 placeholder="Buscar..." 
+                value={adminSearchTerm}
+                onChange={(e) => setAdminSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:ring-2 focus:ring-orange-500 outline-none w-64 transition-all"
               />
             </div>
@@ -1401,7 +1432,10 @@ export default function AdminPanel() {
                               <>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Nome</th>
                                 {activeTab === 'candidaturas' && (
-                                  <th className="px-8 py-6 text-xs font-black text-orange-600 uppercase tracking-widest">Vaga</th>
+                                  <>
+                                    <th className="px-8 py-6 text-xs font-black text-orange-600 uppercase tracking-widest text-center">Vaga</th>
+                                    <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Empresa</th>
+                                  </>
                                 )}
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Telefone</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
@@ -1421,15 +1455,32 @@ export default function AdminPanel() {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           {activeTab === 'banco_talentos' || activeTab === 'candidaturas' ? (
-                            (activeTab === 'banco_talentos' ? data.curriculos : data.candidaturas.filter(c => vacancyFilter === 'Todas' || c.vaga_aplicada === vacancyFilter)).map((item) => (
+                            getActiveData().map((item) => (
                               <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.nome_completo}</td>
                                 {activeTab === 'candidaturas' && (
-                                  <td className="px-8 py-6">
-                                    <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider border border-orange-100">
-                                      {item.vaga_aplicada}
-                                    </span>
-                                  </td>
+                                  <>
+                                    <td className="px-8 py-6">
+                                      <div className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider border border-orange-100 text-center truncate max-w-[150px]" title={item.vaga_aplicada}>
+                                        {item.vaga_aplicada}
+                                      </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                      <div className="text-xs font-bold text-blue-950 truncate max-w-[150px]" title={
+                                        (() => {
+                                          const vacancy = data.vagas.find(v => v.titulo === item.vaga_aplicada);
+                                          const partner = data.parceiros.find(p => p.id === vacancy?.parceiro_id);
+                                          return partner?.nome || 'Empresa Própria';
+                                        })()
+                                      }>
+                                        {(() => {
+                                          const vacancy = data.vagas.find(v => v.titulo === item.vaga_aplicada);
+                                          const partner = data.parceiros.find(p => p.id === vacancy?.parceiro_id);
+                                          return partner?.nome || 'Empresa Própria';
+                                        })()}
+                                      </div>
+                                    </td>
+                                  </>
                                 )}
                                 <td className="px-8 py-6 text-gray-500 font-medium">
                                   <div className="flex flex-col">
@@ -1491,7 +1542,7 @@ export default function AdminPanel() {
                               </tr>
                             ))
                           ) : (
-                            data.solicitacoes.map((item) => (
+                            getActiveData().map((item) => (
                               <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="px-8 py-6 font-bold text-blue-950">{item.razao_social}</td>
                                 <td className="px-8 py-6 text-gray-500 font-medium">{item.contato_nome}</td>
@@ -1546,9 +1597,9 @@ export default function AdminPanel() {
                               </tr>
                             ))
                           )}
-                          {((activeTab === 'banco_talentos' && data.curriculos.length === 0) || 
-                            (activeTab === 'candidaturas' && data.candidaturas.length === 0) ||
-                            (activeTab === 'solicitacoes_empresas' && data.solicitacoes.length === 0)) && (
+                          {((activeTab === 'banco_talentos' && getActiveData().length === 0) || 
+                            (activeTab === 'candidaturas' && getActiveData().length === 0) ||
+                            (activeTab === 'solicitacoes_empresas' && getActiveData().length === 0)) && (
                             <tr>
                               <td colSpan={7} className="px-8 py-12 text-center text-gray-400 font-medium">
                                 Nenhum registro encontrado.
@@ -2044,9 +2095,21 @@ export default function AdminPanel() {
                   {activeTab === 'banco_talentos' || activeTab === 'candidaturas' ? (
                     <>
                       {selectedItem.vaga_aplicada && selectedItem.vaga_aplicada !== 'Geral' && (
-                        <div className="mb-8 bg-orange-50 p-6 rounded-2xl border border-orange-100">
-                          <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2">Vaga Aplicada</h4>
-                          <p className="text-2xl font-black text-blue-950">{selectedItem.vaga_aplicada}</p>
+                        <div className="mb-8 bg-orange-50 p-6 rounded-2xl border border-orange-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2">Vaga Aplicada</h4>
+                            <p className="text-2xl font-black text-blue-950">{selectedItem.vaga_aplicada}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Empresa</h4>
+                            <p className="text-xl font-black text-blue-950">
+                              {(() => {
+                                const vacancy = data.vagas.find(v => v.titulo === selectedItem.vaga_aplicada);
+                                const partner = data.parceiros.find(p => p.id === vacancy?.parceiro_id);
+                                return partner?.nome || 'Empresa Própria';
+                              })()}
+                            </p>
+                          </div>
                         </div>
                       )}
                       <div className="grid grid-cols-2 gap-8">
