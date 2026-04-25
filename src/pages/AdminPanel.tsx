@@ -298,6 +298,7 @@ export default function AdminPanel() {
 
   const fetchTabData = async () => {
     setLoading(true);
+    console.log('Buscando dados para:', activeTab, 'Termo:', adminSearchTerm);
     try {
       const tableMap: Partial<Record<Tab, string>> = {
         aparencia: 'banners_home',
@@ -317,6 +318,24 @@ export default function AdminPanel() {
 
       let query = supabase.from(tableName).select('*');
       
+      // Pesquisa no servidor se houver termo
+      if (adminSearchTerm.trim() !== '') {
+        const term = `%${adminSearchTerm}%`;
+        if (activeTab === 'vagas') {
+          query = query.or(`titulo.ilike.${term},resumo.ilike.${term},local.ilike.${term}`);
+        } else if (activeTab === 'alunos') {
+          query = query.or(`nome.ilike.${term},empresa.ilike.${term}`);
+        } else if (activeTab === 'banco_talentos' || activeTab === 'candidaturas') {
+          query = query.or(`nome_completo.ilike.${term},email.ilike.${term},telefone_whatsapp.ilike.${term}`);
+        } else if (activeTab === 'solicitacoes_empresas') {
+          query = query.or(`razao_social.ilike.${term},contato_nome.ilike.${term}`);
+        } else if (activeTab === 'candidatos') {
+          query = query.or(`nome.ilike.${term},email.ilike.${term}`);
+        } else if (activeTab === 'cursos') {
+          query = query.ilike('titulo', term);
+        }
+      }
+
       if (activeTab === 'banco_talentos') {
         query = query.or('vaga_aplicada.is.null,vaga_aplicada.eq.Geral');
       } else if (activeTab === 'candidaturas') {
@@ -1403,24 +1422,63 @@ export default function AdminPanel() {
                       </p>
                     </div>
 
-                    {activeTab === 'candidaturas' && (
-                      <div className="flex items-center space-x-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
-                        <div className="flex items-center space-x-2 px-3 text-gray-400">
-                          <Filter size={16} />
-                          <span className="text-xs font-black uppercase tracking-widest">Filtrar Vaga:</span>
-                        </div>
-                        <select 
-                          value={vacancyFilter}
-                          onChange={(e) => setVacancyFilter(e.target.value)}
-                          className="bg-gray-50 border-none rounded-xl text-sm font-bold text-blue-950 focus:ring-2 focus:ring-orange-500 outline-none px-4 py-2 min-w-[200px]"
-                        >
-                          <option value="Todas">Todas as Vagas</option>
-                          {Array.from(new Set(data.candidaturas.map(c => c.vaga_aplicada))).map(vaga => (
-                            <option key={vaga} value={vaga}>{vaga}</option>
-                          ))}
-                        </select>
+                    <div className="flex items-center space-x-4">
+                      {/* Search Input local */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                        <input 
+                          type="text" 
+                          placeholder="Pesquisar por nome..." 
+                          value={adminSearchTerm}
+                          onChange={(e) => setAdminSearchTerm(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && fetchTabData()}
+                          className="pl-9 pr-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold text-blue-950 focus:ring-2 focus:ring-orange-500 outline-none w-48 shadow-sm transition-all"
+                        />
                       </div>
-                    )}
+
+                      {activeTab === 'candidaturas' && (
+                        <div className="flex items-center space-x-2 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
+                          <div className="flex items-center space-x-2 px-3 text-gray-400">
+                            <Filter size={16} />
+                            <span className="text-xs font-black uppercase tracking-widest">Filtrar Vaga:</span>
+                          </div>
+                          <select 
+                            value={vacancyFilter}
+                            onChange={(e) => setVacancyFilter(e.target.value)}
+                            className="bg-gray-50 border-none rounded-xl text-sm font-bold text-blue-950 focus:ring-2 focus:ring-orange-500 outline-none px-4 py-2 min-w-[200px]"
+                          >
+                            <option value="Todas">Todas as Vagas</option>
+                            {Array.from(new Set(data.candidaturas.map(c => c.vaga_aplicada))).map(vaga => (
+                              <option key={vaga} value={vaga}>{vaga}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => {
+                            console.log('Botão de Pesquisa (Leads) clicado!');
+                            fetchTabData();
+                          }}
+                          className="p-3 bg-white hover:bg-orange-50 hover:text-orange-600 text-gray-400 rounded-xl border border-gray-100 shadow-sm transition-all"
+                          title="Realizar Busca"
+                        >
+                          <Search size={18} />
+                        </button>
+                        <button 
+                          onClick={() => {
+                            console.log('Botão de Limpar (Leads) clicado!');
+                            setAdminSearchTerm('');
+                            fetchTabData();
+                          }}
+                          className="p-3 bg-white hover:bg-blue-50 hover:text-blue-600 text-gray-400 rounded-xl border border-gray-100 shadow-sm transition-all"
+                          title="Limpar Filtros"
+                        >
+                          <Filter size={18} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
@@ -1889,8 +1947,21 @@ export default function AdminPanel() {
                             <p className="text-sm text-gray-500 font-medium">Gerencie o conteúdo exibido na Landing Page.</p>
                           </div>
                           <div className="flex items-center space-x-2">
+                            {/* Search Input local para reforço visual */}
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                              <input 
+                                type="text" 
+                                placeholder="Pesquisar..." 
+                                value={adminSearchTerm}
+                                onChange={(e) => setAdminSearchTerm(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && fetchTabData()}
+                                className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-bold focus:ring-2 focus:ring-orange-500 outline-none w-40 transition-all"
+                              />
+                            </div>
+                            
                             {activeTab === 'cursos' && (
-                              <div className="flex items-center space-x-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 mr-2">
+                              <div className="flex items-center space-x-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
                                 <Filter size={14} className="text-gray-400 ml-2" />
                                 <select 
                                   value={courseCategoryFilter}
@@ -1913,10 +1984,25 @@ export default function AdminPanel() {
                                 <span>Nova Categoria</span>
                               </button>
                             )}
-                            <button onClick={fetchTabData} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                            <button 
+                              onClick={() => {
+                                console.log('Botão de Pesquisa clicado!');
+                                fetchTabData();
+                              }} 
+                              className="p-2 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors text-gray-500"
+                              title="Executar Busca"
+                            >
                               <Search size={18} />
                             </button>
-                            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">
+                            <button 
+                              onClick={() => {
+                                console.log('Botão de Filtro clicado!');
+                                setAdminSearchTerm('');
+                                fetchTabData();
+                              }}
+                              className="p-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors text-gray-500"
+                              title="Limpar Filtros"
+                            >
                               <Filter size={18} />
                             </button>
                           </div>
