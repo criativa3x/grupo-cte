@@ -159,11 +159,18 @@ export default function VagasPage() {
 
                     {/* Prazo de Candidatura */}
                     {vaga.prazo_candidatura && (
-                      <div className="text-gray-600 text-sm font-medium mb-3 flex items-center justify-center gap-1.5">
-                        <span>⏳</span>
-                        <span>Inscrições até:</span>
-                        <span className="font-bold">
-                          {new Date(vaga.prazo_candidatura).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                      <div className="w-full text-center mb-4">
+                        <span className="text-gray-500 text-sm font-medium flex items-center justify-center gap-1.5 leading-none">
+                          <span className="text-base">⏳</span>
+                          Inscrições até: 
+                          <span className="font-bold text-gray-700">
+                            {(() => {
+                              const date = new Date(vaga.prazo_candidatura);
+                              // Adicionar offset para evitar problemas de timezone que mostram o dia anterior
+                              date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+                              return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                            })()}
+                          </span>
                         </span>
                       </div>
                     )}
@@ -171,7 +178,7 @@ export default function VagasPage() {
                     {/* Botão */}
                     <Link 
                       to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
-                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-auto"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-2"
                     >
                       Candidatar-se
                     </Link>
