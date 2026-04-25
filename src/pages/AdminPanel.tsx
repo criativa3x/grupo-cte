@@ -175,6 +175,24 @@ export default function AdminPanel() {
           });
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'candidatos' },
+        (payload) => {
+          const newRecord = payload.new;
+          setData(prev => ({
+            ...prev,
+            candidatos: [newRecord, ...prev.candidatos]
+          }));
+          toast.info('Novo currículo recebido (Site)!', {
+            description: `Candidato: ${newRecord.nome}`,
+            action: {
+              label: 'Ver',
+              onClick: () => setActiveTab('candidatos')
+            }
+          });
+        }
+      )
       .subscribe();
 
     return () => {
