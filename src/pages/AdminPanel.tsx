@@ -2277,23 +2277,23 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
   };
 
   const InfoItem = ({ icon, text, label }: { icon: string, text: string, label: string }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '30px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '25px', marginBottom: '20px' }}>
       <div style={{ 
-        width: '80px', 
-        height: '80px', 
+        width: '65px', 
+        height: '65px', 
         backgroundColor: '#E0F2FE', 
         borderRadius: '50%', 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        fontSize: '40px',
+        fontSize: '32px',
         flexShrink: 0
       }}>
         {icon}
       </div>
       <div style={{ textAlign: 'left' }}>
-        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#64748B', textTransform: 'uppercase' }}>{label}</div>
-        <div style={{ fontSize: '38px', fontWeight: '800', color: '#1E293B' }}>{text}</div>
+        <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#64748B', textTransform: 'uppercase' }}>{label}</div>
+        <div style={{ fontSize: '30px', fontWeight: '800', color: '#1E293B' }}>{text}</div>
       </div>
     </div>
   );
@@ -2317,11 +2317,11 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       }}
     >
       {/* 1. Top Logo */}
-      <div style={{ padding: '60px 0 30px 0', zIndex: 10 }}>
+      <div style={{ padding: '50px 0 20px 0', zIndex: 10 }}>
         <img 
           src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
           alt="Grupo CTE" 
-          style={{ height: '120px', width: 'auto' }}
+          style={{ height: '110px', width: 'auto' }}
         />
       </div>
 
@@ -2329,27 +2329,28 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '50px 0', 
+        padding: '40px 0', 
         zIndex: 10,
-        marginBottom: '60px'
+        marginBottom: '40px'
       }}>
         <div style={{ 
-          fontSize: '110px', 
+          fontSize: '85px', 
           fontWeight: '900', 
           letterSpacing: '0.05em', 
           textTransform: 'uppercase',
-          color: 'white'
+          color: 'white',
+          whiteSpace: 'nowrap'
         }}>
           VAGA DE ESTÁGIO
         </div>
       </div>
 
       {/* 3. Company & Role Info */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '60px', marginBottom: '80px', width: '100%', textAlign: 'left' }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '50px', marginBottom: '50px', width: '100%', textAlign: 'left' }}>
         <div style={{ 
-          width: '280px', 
-          height: '280px', 
-          minWidth: '280px',
+          width: '240px', 
+          height: '240px', 
+          minWidth: '240px',
           backgroundColor: 'white', 
           borderRadius: '50%', 
           border: '4px solid #1a234e',
@@ -2357,39 +2358,39 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
           alignItems: 'center', 
           justifyContent: 'center',
           overflow: 'hidden',
-          padding: '20px'
+          padding: '15px'
         }}>
           {partner?.logo_url ? (
             <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : (
-            <div style={{ fontSize: '28px', fontWeight: '900', textAlign: 'center', color: '#1a234e' }}>LOGO<br/>EMPRESA</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', textAlign: 'center', color: '#1a234e' }}>LOGO<br/>EMPRESA</div>
           )}
         </div>
         
-        <div style={{ fontSize: '42px', fontWeight: '500', lineHeight: '1.2', color: '#1E293B' }}>
+        <div style={{ fontSize: '36px', fontWeight: '500', lineHeight: '1.2', color: '#1E293B' }}>
           {partner?.nome || 'Empresa Parceira'} abre vaga de Estágio para <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span>.
         </div>
       </div>
 
       {/* 4. Body Content (Circular Icons) */}
-      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
-        <div style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginBottom: '40px' }}>DETALHES:</div>
+      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '30px' }}>
+        <div style={{ fontSize: '36px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginBottom: '30px' }}>DETALHES:</div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
           <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
           
-          <div style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginTop: '20px', marginBottom: '30px' }}>REQUISITOS:</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', paddingLeft: '20px' }}>
+          <div style={{ fontSize: '36px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginTop: '10px', marginBottom: '20px' }}>REQUISITOS:</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '20px' }}>
             {vacancy.requisitos ? (
               vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 4).map((req: string, i: number) => (
-                <div key={i} style={{ display: 'flex', fontSize: '38px', fontWeight: '700', color: '#1E293B' }}>
+                <div key={i} style={{ display: 'flex', fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>
                   <span style={{ marginRight: '20px', color: '#000' }}>•</span>
                   <span>{req}</span>
                 </div>
               ))
             ) : (
-              <div style={{ fontSize: '38px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
+              <div style={{ fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
             )}
           </div>
         </div>
@@ -2400,17 +2401,17 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         <div style={{ 
           width: '90%', 
           backgroundColor: '#FFF7ED', 
-          borderRadius: '40px', 
-          padding: '30px 50px', 
+          borderRadius: '35px', 
+          padding: '25px 40px', 
           border: '3px dashed #EA580C',
           display: 'flex',
           alignItems: 'center',
-          gap: '30px',
-          margin: '0 auto 40px auto'
+          gap: '20px',
+          margin: '0 auto 30px auto'
         }}>
-          <div style={{ fontSize: '50px' }}>⏰</div>
+          <div style={{ fontSize: '40px' }}>⏰</div>
           <div style={{ 
-            fontSize: '44px', 
+            fontSize: '36px', 
             fontWeight: '900', 
             color: '#EA580C', 
             textTransform: 'uppercase' 
@@ -2424,30 +2425,30 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       <div style={{ 
         width: '90%', 
         backgroundColor: '#1E293B', 
-        borderRadius: '60px', 
-        padding: '50px 50px', 
+        borderRadius: '50px', 
+        padding: '40px 50px', 
         color: 'white',
         textAlign: 'left',
         marginTop: 'auto',
-        marginBottom: '60px',
+        marginBottom: '40px',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '36px', fontWeight: '500', lineHeight: '1.4' }}>
+        <div style={{ fontSize: '32px', fontWeight: '500', lineHeight: '1.4' }}>
           Enviar currículo com o título <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span> para o e-mail:
         </div>
-        <div style={{ fontSize: '54px', fontWeight: '900', marginTop: '10px', color: 'white', textAlign: 'center' }}>
+        <div style={{ fontSize: '48px', fontWeight: '900', marginTop: '10px', color: 'white', textAlign: 'center' }}>
           vagas@grupocte.com.br
         </div>
       </div>
 
       {/* 6. Footer */}
-      <div style={{ paddingBottom: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+      <div style={{ paddingBottom: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
         <img 
           src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
           alt="Grupo CTE" 
-          style={{ height: '100px', width: 'auto', marginBottom: '20px' }}
+          style={{ height: '90px', width: 'auto', marginBottom: '10px' }}
         />
-        <div style={{ fontSize: '64px', fontWeight: '900', color: '#000000' }}>
+        <div style={{ fontSize: '56px', fontWeight: '900', color: '#000000' }}>
           www.grupocte.com.br
         </div>
       </div>
