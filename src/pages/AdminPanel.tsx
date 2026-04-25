@@ -2317,7 +2317,7 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       }}
     >
       {/* 1. Top Logo */}
-      <div style={{ padding: '50px 0 20px 0', zIndex: 10 }}>
+      <div style={{ padding: '60px 0 40px 0', zIndex: 10 }}>
         <img 
           src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
           alt="Grupo CTE" 
@@ -2329,12 +2329,12 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '40px 0', 
+        padding: '35px 0', 
         zIndex: 10,
-        marginBottom: '40px'
+        marginBottom: '50px'
       }}>
         <div style={{ 
-          fontSize: '85px', 
+          fontSize: '70px', 
           fontWeight: '900', 
           letterSpacing: '0.05em', 
           textTransform: 'uppercase',
@@ -2351,14 +2351,12 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
           width: '240px', 
           height: '240px', 
           minWidth: '240px',
-          backgroundColor: 'white', 
-          borderRadius: '50%', 
-          border: '4px solid #1a234e',
+          backgroundColor: 'transparent', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
           overflow: 'hidden',
-          padding: '15px'
+          padding: '0'
         }}>
           {partner?.logo_url ? (
             <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -2402,7 +2400,7 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
           width: '90%', 
           backgroundColor: '#FFF7ED', 
           borderRadius: '35px', 
-          padding: '25px 40px', 
+          padding: '20px 40px', 
           border: '3px dashed #EA580C',
           display: 'flex',
           alignItems: 'center',
@@ -2411,12 +2409,12 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         }}>
           <div style={{ fontSize: '40px' }}>⏰</div>
           <div style={{ 
-            fontSize: '36px', 
-            fontWeight: '900', 
+            fontSize: '30px', 
+            fontWeight: '600', 
             color: '#EA580C', 
             textTransform: 'uppercase' 
           }}>
-            Inscrições até: {formatDate(vacancy.prazo_candidatura)}
+            Inscrições até: <span style={{ fontSize: '38px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
           </div>
         </div>
       )}
@@ -2426,28 +2424,20 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         width: '90%', 
         backgroundColor: '#1E293B', 
         borderRadius: '50px', 
-        padding: '40px 50px', 
+        padding: '30px 40px', 
         color: 'white',
-        textAlign: 'left',
+        textAlign: 'center',
         marginTop: 'auto',
-        marginBottom: '40px',
+        marginBottom: '60px',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '32px', fontWeight: '500', lineHeight: '1.4' }}>
-          Enviar currículo com o título <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span> para o e-mail:
-        </div>
-        <div style={{ fontSize: '48px', fontWeight: '900', marginTop: '10px', color: 'white', textAlign: 'center' }}>
-          vagas@grupocte.com.br
+        <div style={{ fontSize: '28px', fontWeight: '500', lineHeight: '1.4' }}>
+          Enviar currículo com o título <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span> para o e-mail: <span style={{ color: '#EA580C', fontWeight: '900' }}>vagas@grupocte.com.br</span>
         </div>
       </div>
 
       {/* 6. Footer */}
       <div style={{ paddingBottom: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-        <img 
-          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-          alt="Grupo CTE" 
-          style={{ height: '90px', width: 'auto', marginBottom: '10px' }}
-        />
         <div style={{ fontSize: '56px', fontWeight: '900', color: '#000000' }}>
           www.grupocte.com.br
         </div>
