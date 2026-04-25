@@ -1239,7 +1239,14 @@ export default function AdminPanel() {
                                     </span>
                                   </td>
                                 )}
-                                <td className="px-8 py-6 text-gray-500 font-medium">{item.telefone_whatsapp}</td>
+                                <td className="px-8 py-6 text-gray-500 font-medium">
+                                  <div className="flex flex-col">
+                                    <span>{item.telefone_whatsapp}</span>
+                                    {item.telefone_whatsapp_2 && (
+                                      <span className="text-[10px] text-gray-400 font-bold">{item.telefone_whatsapp_2}</span>
+                                    )}
+                                  </div>
+                                </td>
                                 <td className="px-8 py-6">
                                   <select 
                                     value={item.status || 'Novo'}
@@ -1842,6 +1849,9 @@ export default function AdminPanel() {
                         <div>
                           <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contato</h4>
                           <p className="font-bold text-blue-950">{selectedItem.telefone_whatsapp}</p>
+                          {selectedItem.telefone_whatsapp_2 && (
+                            <p className="font-bold text-blue-950">{selectedItem.telefone_whatsapp_2}</p>
+                          )}
                           <p className="text-gray-500 font-medium">{selectedItem.email}</p>
                         </div>
                         <div>

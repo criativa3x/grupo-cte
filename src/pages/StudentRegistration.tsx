@@ -43,6 +43,7 @@ export default function StudentRegistration() {
     nome_completo: '',
     data_nascimento: '',
     telefone_whatsapp: '',
+    telefone_whatsapp_2: '',
     email: '',
     cidade: '',
     bairro: '',
@@ -217,13 +218,26 @@ export default function StudentRegistration() {
                       <div className="space-y-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
                           <Phone size={14} />
-                          <span>Telefone/WhatsApp *</span>
+                          <span>WhatsApp Primário *</span>
                         </label>
                         <input 
                           required
                           type="tel"
                           value={formData.telefone_whatsapp}
                           onChange={(e) => setFormData({...formData, telefone_whatsapp: e.target.value})}
+                          placeholder="(00) 00000-0000"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
+                          <Phone size={14} />
+                          <span>WhatsApp Secundário (Opcional)</span>
+                        </label>
+                        <input 
+                          type="tel"
+                          value={formData.telefone_whatsapp_2}
+                          onChange={(e) => setFormData({...formData, telefone_whatsapp_2: e.target.value})}
                           placeholder="(00) 00000-0000"
                           className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
                         />
@@ -289,7 +303,8 @@ export default function StudentRegistration() {
                         className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
                       >
                         <option value="">Selecione...</option>
-                        <option value="Ensino Médio">Ensino Médio</option>
+                        <option value="Ensino Médio Cursando">Ensino Médio Cursando</option>
+                        <option value="Ensino Médio Completo">Ensino Médio Completo</option>
                         <option value="Cursando Superior">Cursando Superior</option>
                         <option value="Superior Completo">Superior Completo</option>
                         <option value="Técnico">Técnico</option>
@@ -325,6 +340,7 @@ export default function StudentRegistration() {
                         <option value="Vespertino">Vespertino</option>
                         <option value="Noturno">Noturno</option>
                         <option value="Integral">Integral</option>
+                        <option value="Concluído">Concluído</option>
                       </select>
                     </div>
                   </div>

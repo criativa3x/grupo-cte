@@ -48,8 +48,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Mail size={18} className="text-orange-600" />
-                <a href="mailto:contato@grupocte.com.br" className="hover:text-orange-600 transition-colors">
-                  contato@grupocte.com.br
+                <a href="mailto:vagas@grupocte.com.br" className="hover:text-orange-600 transition-colors">
+                  vagas@grupocte.com.br
                 </a>
               </li>
               <li className="flex items-start space-x-3 text-gray-400">
