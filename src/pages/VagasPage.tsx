@@ -158,27 +158,34 @@ export default function VagasPage() {
                     </div>
 
                     {/* Prazo de Candidatura */}
-                    {vaga.prazo_candidatura && (
-                      <div className="w-full text-center mb-4">
-                        <span className="text-gray-500 text-sm font-medium flex items-center justify-center gap-1.5 leading-none">
+                    {vaga.prazo_candidatura && String(vaga.prazo_candidatura).trim() !== '' && (
+                      <div className="w-full text-center mt-auto mb-4 px-2">
+                        <div className="bg-gray-50 py-2 rounded-lg border border-gray-100 flex items-center justify-center gap-2">
                           <span className="text-base">⏳</span>
-                          Inscrições até: 
-                          <span className="font-bold text-gray-700">
+                          <span className="text-gray-500 text-sm font-medium uppercase tracking-wider">
+                            Inscrições até: 
+                          </span>
+                          <span className="font-bold text-gray-700 text-sm">
                             {(() => {
-                              const date = new Date(vaga.prazo_candidatura);
-                              // Adicionar offset para evitar problemas de timezone que mostram o dia anterior
-                              date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-                              return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                              try {
+                                const date = new Date(vaga.prazo_candidatura);
+                                if (isNaN(date.getTime())) return '';
+                                // Adicionar offset para evitar problemas de timezone
+                                const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+                                return adjustedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                              } catch (e) {
+                                return '';
+                              }
                             })()}
                           </span>
-                        </span>
+                        </div>
                       </div>
                     )}
 
                     {/* Botão */}
                     <Link 
                       to={`/cadastro-estagiario?vaga=${encodeURIComponent(vaga.titulo)}`}
-                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 mt-2"
+                      className="w-full bg-[#1a234e] hover:bg-[#2a336e] text-white text-center font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
                     >
                       Candidatar-se
                     </Link>
