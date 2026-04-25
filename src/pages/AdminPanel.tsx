@@ -201,6 +201,17 @@ export default function AdminPanel() {
           });
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'candidatos' },
+        (payload) => {
+          const updatedRecord = payload.new;
+          setData(prev => ({
+            ...prev,
+            candidatos: prev.candidatos.map(c => c.id === updatedRecord.id ? updatedRecord : c)
+          }));
+        }
+      )
       .subscribe();
 
     return () => {
@@ -625,6 +636,19 @@ export default function AdminPanel() {
       toast.error(`Erro ao excluir: ${error.message || 'Verifique suas permissões no Supabase.'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewCandidate = async (id: string, status: string) => {
+    if (status !== 'Novo') return;
+    
+    try {
+      await supabase
+        .from('candidatos')
+        .update({ status: 'Visualizado' })
+        .eq('id', id);
+    } catch (error) {
+      console.error('Error updating candidate status:', error);
     }
   };
 
@@ -1098,7 +1122,16 @@ export default function AdminPanel() {
                               <td className="px-8 py-6 text-gray-400 text-xs font-medium">
                                 {new Date(item.created_at).toLocaleDateString('pt-BR')}
                               </td>
-                              <td className="px-8 py-6 font-bold text-blue-950">{item.nome}</td>
+                              <td className="px-8 py-6 font-bold text-blue-950">
+                                <div className="flex items-center space-x-2">
+                                  <span>{item.nome}</span>
+                                  {item.status === 'Novo' && (
+                                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded-full uppercase tracking-wider">
+                                      Novo
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
                               <td className="px-8 py-6">
                                 <div className="flex flex-col">
                                   <span className="text-sm font-bold text-blue-950">{item.email}</span>
@@ -1110,6 +1143,7 @@ export default function AdminPanel() {
                                   href={item.url_curriculo} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
+                                  onClick={() => handleViewCandidate(item.id, item.status)}
                                   className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
                                 >
                                   <FileText size={14} />

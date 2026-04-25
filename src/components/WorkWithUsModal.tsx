@@ -69,6 +69,7 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
             email: formData.email,
             telefone: formData.telefone,
             url_curriculo: publicUrl,
+            status: 'Novo'
           }
         ]);
 
