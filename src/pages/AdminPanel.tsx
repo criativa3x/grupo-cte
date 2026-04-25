@@ -18,7 +18,7 @@ const generateSlug = (text: string) => {
     .trim();
 };
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas' | 'links_uteis';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas' | 'links_uteis' | 'candidatos';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -49,6 +49,7 @@ export default function AdminPanel() {
     curriculos: any[];
     solicitacoes: any[];
     candidaturas: any[];
+    candidatos: any[];
   }>({
     banners: [],
     cursos: [],
@@ -59,6 +60,7 @@ export default function AdminPanel() {
     curriculos: [],
     solicitacoes: [],
     candidaturas: [],
+    candidatos: [],
   });
 
   const newLeadsCount = React.useMemo(() => {
@@ -189,7 +191,7 @@ export default function AdminPanel() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes, curriculosRes, solicitacoesRes] = await Promise.all([
+      const [bannersRes, cursosRes, categoriasRes, vagasRes, alunosRes, parceirosRes, curriculosRes, solicitacoesRes, candidatosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('ordem', { ascending: true }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
@@ -198,6 +200,7 @@ export default function AdminPanel() {
         supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
         supabase.from('curriculos_estagiarios').select('*').order('created_at', { ascending: false }),
         supabase.from('solicitacoes_empresas').select('*').order('created_at', { ascending: false }),
+        supabase.from('candidatos').select('*').order('created_at', { ascending: false }),
       ]);
 
       const allCurriculos = curriculosRes.data || [];
@@ -212,6 +215,7 @@ export default function AdminPanel() {
         curriculos: allCurriculos.filter(c => !c.vaga_aplicada || c.vaga_aplicada === 'Geral'),
         candidaturas: allCurriculos.filter(c => c.vaga_aplicada && c.vaga_aplicada !== 'Geral'),
         solicitacoes: solicitacoesRes.data || [],
+        candidatos: candidatosRes.data || [],
       });
     } catch (error) {
       console.error('Error fetching all data:', error);
@@ -233,6 +237,7 @@ export default function AdminPanel() {
         banco_talentos: 'curriculos_estagiarios',
         candidaturas: 'curriculos_estagiarios',
         solicitacoes_empresas: 'solicitacoes_empresas',
+        candidatos: 'candidatos',
       };
       
       const tableName = tableMap[activeTab];
@@ -261,6 +266,7 @@ export default function AdminPanel() {
                       activeTab === 'banco_talentos' ? 'curriculos' : 
                       activeTab === 'candidaturas' ? 'candidaturas' :
                       activeTab === 'solicitacoes_empresas' ? 'solicitacoes' : 
+                      activeTab === 'candidatos' ? 'candidatos' :
                       activeTab;
       setData((prev) => ({ ...prev, [dataKey]: result || [] }));
     } catch (error) {
@@ -283,6 +289,7 @@ export default function AdminPanel() {
         parceiros: 'parceiros',
         banco_talentos: 'curriculos_estagiarios',
         solicitacoes_empresas: 'solicitacoes_empresas',
+        candidatos: 'candidatos',
       };
 
       const formMap: Partial<Record<Tab, any>> = {
@@ -539,6 +546,7 @@ export default function AdminPanel() {
         banco_talentos: 'curriculos_estagiarios',
         candidaturas: 'curriculos_estagiarios',
         solicitacoes_empresas: 'solicitacoes_empresas',
+        candidatos: 'candidatos',
       };
 
       const tableName = tableMap[activeTab];
@@ -579,6 +587,8 @@ export default function AdminPanel() {
         setData(prev => ({ ...prev, candidaturas: prev.candidaturas.filter(c => c.id !== id) }));
       } else if (activeTab === 'solicitacoes_empresas') {
         setData(prev => ({ ...prev, solicitacoes: prev.solicitacoes.filter(s => s.id !== id) }));
+      } else if (activeTab === 'candidatos') {
+        setData(prev => ({ ...prev, candidatos: prev.candidatos.filter(c => c.id !== id) }));
       } else {
         fetchTabData();
       }
@@ -794,6 +804,14 @@ export default function AdminPanel() {
               label="Solicitações Empresas" 
               active={activeTab === 'solicitacoes_empresas'} 
               onClick={() => setActiveTab('solicitacoes_empresas')} 
+              isOpen={isSidebarOpen}
+              isSubItem
+            />
+            <SidebarItem 
+              icon={<FileText size={18} />} 
+              label="Currículos (Site)" 
+              active={activeTab === 'candidatos'} 
+              onClick={() => setActiveTab('candidatos')} 
               isOpen={isSidebarOpen}
               isSubItem
             />
@@ -1015,12 +1033,91 @@ export default function AdminPanel() {
                       icon={<Briefcase className="text-rose-600" />} 
                       color="bg-rose-50"
                     />
+                    <StatCard 
+                      title="Currículos Site" 
+                      value={data.candidatos.length} 
+                      icon={<FileText className="text-emerald-600" />} 
+                      color="bg-emerald-50"
+                    />
                   </div>
 
                   <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm">
                     <h3 className="text-xl font-black text-blue-950 mb-6">Atividades Recentes</h3>
                     <div className="space-y-4">
                       <p className="text-gray-400 font-medium italic">Nenhuma atividade recente para exibir.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : activeTab === 'candidatos' ? (
+                <div className="space-y-8">
+                  <div className="flex flex-col">
+                    <h2 className="text-3xl font-black text-blue-950">Currículos Recebidos</h2>
+                    <p className="text-gray-500 font-medium mt-1">Candidatos que enviaram currículo através do "Trabalhe Conosco".</p>
+                  </div>
+
+                  <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="bg-gray-50/50 border-b border-gray-100">
+                            <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Data</th>
+                            <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Nome do Candidato</th>
+                            <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Contato</th>
+                            <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Ação</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {data.candidatos.map((item) => (
+                            <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                              <td className="px-8 py-6 text-gray-400 text-xs font-medium">
+                                {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                              </td>
+                              <td className="px-8 py-6 font-bold text-blue-950">{item.nome}</td>
+                              <td className="px-8 py-6">
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold text-blue-950">{item.email}</span>
+                                  <span className="text-xs text-gray-500 font-medium">{item.telefone}</span>
+                                </div>
+                              </td>
+                              <td className="px-8 py-6 text-right">
+                                <a 
+                                  href={item.url_curriculo} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
+                                >
+                                  <FileText size={14} />
+                                  <span>Ver Currículo</span>
+                                </a>
+                                <button 
+                                  onClick={() => handleDelete(item.id)}
+                                  className="ml-2 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                  title="Excluir"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {data.candidatos.length === 0 && !loading && (
+                            <tr>
+                              <td colSpan={4} className="px-8 py-12 text-center text-gray-400 font-medium">
+                                Nenhum currículo recebido ainda.
+                              </td>
+                            </tr>
+                          )}
+                          {loading && data.candidatos.length === 0 && (
+                            <tr>
+                              <td colSpan={4} className="px-8 py-12 text-center text-gray-400 font-medium">
+                                <div className="flex flex-col items-center justify-center space-y-2">
+                                  <Loader2 className="animate-spin text-orange-600" size={32} />
+                                  <span>Carregando...</span>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
