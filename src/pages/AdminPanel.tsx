@@ -2276,6 +2276,28 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
     return date.toLocaleDateString('pt-BR');
   };
 
+  const InfoItem = ({ icon, text, label }: { icon: string, text: string, label: string }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '30px' }}>
+      <div style={{ 
+        width: '80px', 
+        height: '80px', 
+        backgroundColor: '#E0F2FE', 
+        borderRadius: '50%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        fontSize: '40px',
+        flexShrink: 0
+      }}>
+        {icon}
+      </div>
+      <div style={{ textAlign: 'left' }}>
+        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#64748B', textTransform: 'uppercase' }}>{label}</div>
+        <div style={{ fontSize: '38px', fontWeight: '800', color: '#1E293B' }}>{text}</div>
+      </div>
+    </div>
+  );
+
   return (
     <div 
       ref={ref}
@@ -2294,22 +2316,22 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         overflow: 'hidden'
       }}
     >
-      {/* Header Logo */}
-      <div style={{ padding: '80px 0 40px 0', zIndex: 10 }}>
+      {/* 1. Top Logo */}
+      <div style={{ padding: '60px 0 30px 0', zIndex: 10 }}>
         <img 
           src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
           alt="Grupo CTE" 
-          style={{ height: '140px', width: 'auto' }}
+          style={{ height: '120px', width: 'auto' }}
         />
       </div>
 
-      {/* Orange Banner */}
+      {/* 2. Orange Header Bar */}
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '60px 0', 
+        padding: '50px 0', 
         zIndex: 10,
-        marginBottom: '100px'
+        marginBottom: '60px'
       }}>
         <div style={{ 
           fontSize: '110px', 
@@ -2322,101 +2344,110 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         </div>
       </div>
 
-      {/* Company Brand info */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '60px', marginBottom: '100px', width: '100%', textAlign: 'left' }}>
+      {/* 3. Company & Role Info */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '60px', marginBottom: '80px', width: '100%', textAlign: 'left' }}>
         <div style={{ 
-          width: '300px', 
-          height: '300px', 
-          minWidth: '300px',
+          width: '280px', 
+          height: '280px', 
+          minWidth: '280px',
           backgroundColor: 'white', 
           borderRadius: '50%', 
-          padding: '40px', 
+          border: '4px solid #1a234e',
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          boxShadow: '0 0 0 4px #1a234e',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          padding: '20px'
         }}>
           {partner?.logo_url ? (
             <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : (
-            <div style={{ fontSize: '32px', fontWeight: '900', textAlign: 'center' }}>LOGO EMPRESA</div>
+            <div style={{ fontSize: '28px', fontWeight: '900', textAlign: 'center', color: '#1a234e' }}>LOGO<br/>EMPRESA</div>
           )}
         </div>
         
-        <div style={{ fontSize: '42px', fontWeight: '500', lineHeight: '1.3', color: '#1a234e' }}>
-          {partner?.nome || 'Empresa Parceira'} abre vaga de Estágio para <span style={{ color: '#EA580C', fontWeight: 'bold' }}>{vacancy.titulo}</span>.
+        <div style={{ fontSize: '42px', fontWeight: '500', lineHeight: '1.2', color: '#1E293B' }}>
+          {partner?.nome || 'Empresa Parceira'} abre vaga de Estágio para <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span>.
         </div>
       </div>
 
-      {/* Requisitos section */}
-      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
-        <div style={{ fontSize: '48px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '40px' }}>O que você terá:</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '40px' }}>
-          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>📍 {vacancy.local}</div>
-          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>💰 {vacancy.valor_bolsa || 'Consulte'}</div>
-        </div>
+      {/* 4. Body Content (Circular Icons) */}
+      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
+        <div style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginBottom: '40px' }}>DETALHES:</div>
         
-        <div style={{ fontSize: '48px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '40px' }}>Requisitos:</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          {vacancy.requisitos ? (
-            vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 4).map((req: string, i: number) => (
-              <div key={i} style={{ display: 'flex', fontSize: '38px', fontWeight: '600' }}>
-                <span style={{ marginRight: '20px' }}>•</span>
-                <span>{req}</span>
-              </div>
-            ))
-          ) : (
-            <div style={{ fontSize: '38px', fontWeight: '600' }}>Consulte os detalhes no site.</div>
-          )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
+          <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
+          
+          <div style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginTop: '20px', marginBottom: '30px' }}>REQUISITOS:</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', paddingLeft: '20px' }}>
+            {vacancy.requisitos ? (
+              vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 4).map((req: string, i: number) => (
+                <div key={i} style={{ display: 'flex', fontSize: '38px', fontWeight: '700', color: '#1E293B' }}>
+                  <span style={{ marginRight: '20px', color: '#000' }}>•</span>
+                  <span>{req}</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ fontSize: '38px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Deadline Urgency Section */}
+      {/* Deadline Highlight Block */}
       {vacancy.prazo_candidatura && (
         <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '20px', 
-          marginBottom: '60px',
-          backgroundColor: '#FFF7ED',
-          padding: '20px 40px',
-          borderRadius: '30px',
-          border: '2px dashed #EA580C',
-          zIndex: 10
+          width: '90%', 
+          backgroundColor: '#FFF7ED', 
+          borderRadius: '40px', 
+          padding: '30px 50px', 
+          border: '3px dashed #EA580C',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '30px',
+          margin: '0 auto 40px auto'
         }}>
-          <div style={{ fontSize: '48px' }}>⏰</div>
-          <div style={{ fontSize: '40px', fontWeight: '800', color: '#EA580C', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '50px' }}>⏰</div>
+          <div style={{ 
+            fontSize: '44px', 
+            fontWeight: '900', 
+            color: '#EA580C', 
+            textTransform: 'uppercase' 
+          }}>
             Inscrições até: {formatDate(vacancy.prazo_candidatura)}
           </div>
         </div>
       )}
 
-      {/* CTA Instruction Card */}
+      {/* 5. CTA Box (Dark Blue) */}
       <div style={{ 
         width: '90%', 
-        backgroundColor: '#1a234e', 
-        borderRadius: '80px', 
-        padding: '80px 60px', 
+        backgroundColor: '#1E293B', 
+        borderRadius: '60px', 
+        padding: '50px 50px', 
         color: 'white',
         textAlign: 'left',
-        marginBottom: '100px',
+        marginTop: 'auto',
+        marginBottom: '60px',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '44px', fontWeight: '600', lineHeight: '1.4' }}>
-          Enviar currículo com o título <span style={{ color: '#EA580C' }}>{vacancy.titulo}</span> {vacancy.prazo_candidatura ? `até ${formatDate(vacancy.prazo_candidatura)}` : ''} para o e-mail:
+        <div style={{ fontSize: '36px', fontWeight: '500', lineHeight: '1.4' }}>
+          Enviar currículo com o título <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span> para o e-mail:
         </div>
-        <div style={{ fontSize: '56px', fontWeight: '900', marginTop: '20px', color: 'white' }}>
+        <div style={{ fontSize: '54px', fontWeight: '900', marginTop: '10px', color: 'white', textAlign: 'center' }}>
           vagas@grupocte.com.br
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ marginTop: 'auto', paddingBottom: '100px' }}>
-        <div style={{ fontSize: '42px', fontWeight: '500', color: '#1a234e', marginBottom: '20px' }}>
-          Cursos com oportunidades de estágio.
-        </div>
-        <div style={{ fontSize: '72px', fontWeight: '950', color: '#000000' }}>
+      {/* 6. Footer */}
+      <div style={{ paddingBottom: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+        <img 
+          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+          alt="Grupo CTE" 
+          style={{ height: '100px', width: 'auto', marginBottom: '20px' }}
+        />
+        <div style={{ fontSize: '64px', fontWeight: '900', color: '#000000' }}>
           www.grupocte.com.br
         </div>
       </div>
