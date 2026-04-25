@@ -33,7 +33,7 @@ export default function UsefulLinksGrid() {
     {
       title: 'Webmail',
       subtitle: 'Acesso Webmail',
-      url: 'https://grupocte.com.br:2096/',
+      url: 'https://br1022.hostgator.com.br:2096',
       icon: <Globe className="w-8 h-8" />,
       color: 'bg-indigo-50 text-indigo-600',
       hoverColor: 'hover:border-indigo-200 hover:shadow-indigo-100'
