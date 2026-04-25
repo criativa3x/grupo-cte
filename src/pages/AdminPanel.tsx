@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
-import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, ChevronDown, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target, FileText, Monitor, Database, Mail, Globe, Link2 } from 'lucide-react';
+import { LayoutDashboard, Image, GraduationCap, Briefcase, Save, Trash2, Plus, Loader2, LogOut, Settings, Bell, Search, Filter, ChevronRight, ChevronDown, Menu, Pencil, XCircle, Palette, BarChart3, Star, Headset, UtensilsCrossed, Calculator, Layers, PlusCircle, MinusCircle, Users, MessageCircle, ExternalLink, Eye, Target, FileText, Monitor, Database, Mail, Globe, Link2, Download } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 import UsefulLinksGrid from '../components/UsefulLinksGrid';
+import { toPng } from 'html-to-image';
 
 const generateSlug = (text: string) => {
   return text
@@ -109,6 +110,39 @@ export default function AdminPanel() {
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const storyRef = React.useRef<HTMLDivElement>(null);
+  const [capturingVacancy, setCapturingVacancy] = useState<any>(null);
+
+  const handleDownloadInstagram = async (vacancy: any) => {
+    setCapturingVacancy(vacancy);
+    toast.info('Gerando imagem para Instagram...', { description: 'Aguarde um momento.' });
+    
+    // Give react time to render the hidden component
+    setTimeout(async () => {
+      if (storyRef.current) {
+        try {
+          const dataUrl = await toPng(storyRef.current, {
+            width: 1080,
+            height: 1920,
+            cacheBust: true,
+          });
+          const link = document.createElement('a');
+          link.download = `vaga-instagram-${generateSlug(vacancy.titulo)}.png`;
+          link.href = dataUrl;
+          link.click();
+          toast.success('Imagem baixada com sucesso!');
+        } catch (err) {
+          console.error('Erro ao gerar imagem:', err);
+          toast.error('Erro ao gerar imagem.');
+        } finally {
+          setCapturingVacancy(null);
+        }
+      } else {
+        toast.error('Erro interno: Template não encontrado.');
+        setCapturingVacancy(null);
+      }
+    }, 800);
+  };
 
   // Form States
   const [bannerForm, setBannerForm] = useState({ titulo: '', subtitulo: '', imagem_url: '' });
@@ -1914,6 +1948,15 @@ export default function AdminPanel() {
                                   </td>
                                   <td className="px-8 py-6 text-right">
                                     <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      {activeTab === 'vagas' && (
+                                        <button 
+                                          onClick={() => handleDownloadInstagram(item)}
+                                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                                          title="Baixar Imagem para Instagram"
+                                        >
+                                          <Download size={18} />
+                                        </button>
+                                      )}
                                       <button 
                                         onClick={() => handleEdit(item)}
                                         className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
@@ -2111,6 +2154,15 @@ export default function AdminPanel() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Hidden elements for capture */}
+      <div style={{ position: 'absolute', top: '-10000px', left: '-10000px', pointerEvents: 'none' }}>
+        <InstagramStoryTemplate 
+          ref={storyRef} 
+          vacancy={capturingVacancy} 
+          partner={data.parceiros.find(p => p.id === capturingVacancy?.parceiro_id)}
+        />
+      </div>
     </div>
   );
 }
@@ -2210,3 +2262,88 @@ function FormTextArea({ label, value, onChange, placeholder, required = true }: 
     </div>
   );
 }
+
+const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref: any) => {
+  if (!vacancy) return null;
+  
+  return (
+    <div 
+      ref={ref}
+      style={{ 
+        width: '1080px', 
+        height: '1920px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        backgroundColor: '#0F172A', 
+        position: 'relative',
+        color: 'white',
+        fontFamily: 'Inter, sans-serif'
+      }}
+    >
+      {/* Background Decor */}
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '400px', backgroundColor: '#EA580C', opacity: 0.15, borderRadius: '50%', filter: 'blur(100px)', transform: 'translate(50%, -50%)' }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, width: '600px', height: '600px', backgroundColor: '#2563EB', opacity: 0.15, borderRadius: '50%', filter: 'blur(150px)', transform: 'translate(-50%, 50%)' }} />
+
+      {/* Header */}
+      <div style={{ padding: '100px 80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
+        <img 
+          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+          alt="Logo" 
+          style={{ height: '100px', width: 'auto', filter: 'brightness(0) invert(1)' }}
+        />
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', letterSpacing: '0.1em' }}>OPORTUNIDADE</div>
+          <div style={{ fontSize: '48px', fontWeight: 'black', letterSpacing: '-0.02em' }}>DE ESTÁGIO</div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ flex: 1, padding: '0 80px', display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '40px', marginBottom: '80px' }}>
+          <div style={{ width: '200px', height: '200px', backgroundColor: 'white', borderRadius: '40px', padding: '30px', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
+            {partner?.logo_url ? (
+              <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <div style={{ width: '100%', height: '100%', backgroundColor: '#F1F5F9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Briefcase size={80} color="#0F172A" />
+              </div>
+            )}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Área: {vacancy.area || vacancy['àrea']}</div>
+            <div style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginTop: '10px' }}>{vacancy.titulo}</div>
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '60px', padding: '80px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <div style={{ marginBottom: '60px' }}>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Sobre a Vaga</div>
+            <div style={{ fontSize: '36px', lineHeight: '1.6', color: '#CBD5E1' }}>{vacancy.resumo}</div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px' }}>
+            <div>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Local</div>
+              <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{vacancy.local}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Bolsa</div>
+              <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ padding: '100px 80px', textAlign: 'center', zIndex: 10 }}>
+        <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '30px' }}>Candidate-se em nosso portal:</div>
+        <div style={{ display: 'inline-block', backgroundColor: '#EA580C', color: 'white', padding: '40px 80px', borderRadius: '40px', fontSize: '42px', fontWeight: 'black', boxShadow: '0 20px 40px rgba(234, 88, 12, 0.3)' }}>
+          www.grupocte.com.br
+        </div>
+        <div style={{ marginTop: '60px', color: '#94A3B8', fontSize: '32px' }}>
+          Siga-nos no Instagram: @grupo_cte
+        </div>
+      </div>
+    </div>
+  );
+});
