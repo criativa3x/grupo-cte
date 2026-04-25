@@ -2274,74 +2274,152 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         height: '1920px', 
         display: 'flex', 
         flexDirection: 'column', 
+        alignItems: 'center',
+        justifyContent: 'flex-start',
         backgroundColor: '#0F172A', 
         position: 'relative',
         color: 'white',
-        fontFamily: 'Inter, sans-serif'
+        fontFamily: 'Inter, sans-serif',
+        textAlign: 'center',
+        padding: '160px 80px 100px 80px'
       }}
     >
       {/* Background Decor */}
-      <div style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '400px', backgroundColor: '#EA580C', opacity: 0.15, borderRadius: '50%', filter: 'blur(100px)', transform: 'translate(50%, -50%)' }} />
-      <div style={{ position: 'absolute', bottom: 0, left: 0, width: '600px', height: '600px', backgroundColor: '#2563EB', opacity: 0.15, borderRadius: '50%', filter: 'blur(150px)', transform: 'translate(-50%, 50%)' }} />
+      <div style={{ position: 'absolute', top: '15%', left: '50%', width: '900px', height: '900px', backgroundColor: '#EA580C', opacity: 0.12, borderRadius: '50%', filter: 'blur(160px)', transform: 'translate(-50%, -50%)' }} />
+      <div style={{ position: 'absolute', bottom: '15%', left: '50%', width: '900px', height: '900px', backgroundColor: '#2563EB', opacity: 0.12, borderRadius: '50%', filter: 'blur(160px)', transform: 'translate(-50%, 50%)' }} />
 
-      {/* Header */}
-      <div style={{ padding: '100px 80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
-        <img 
-          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-          alt="Logo" 
-          style={{ height: '100px', width: 'auto', filter: 'brightness(0) invert(1)' }}
-        />
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', letterSpacing: '0.1em' }}>OPORTUNIDADE</div>
-          <div style={{ fontSize: '48px', fontWeight: 'black', letterSpacing: '-0.02em' }}>DE ESTÁGIO</div>
+      {/* Header Badge */}
+      <div style={{ zIndex: 10, marginBottom: '60px' }}>
+        <div style={{ 
+          fontSize: '44px', 
+          fontWeight: '900', 
+          color: '#EA580C', 
+          letterSpacing: '0.25em',
+          textTransform: 'uppercase',
+          backgroundColor: 'rgba(234, 88, 12, 0.15)',
+          padding: '24px 80px',
+          borderRadius: '100px',
+          border: '3px solid rgba(234, 88, 12, 0.3)'
+        }}>
+          Vaga de Estágio
         </div>
       </div>
 
-      {/* Main Content */}
-      <div style={{ flex: 1, padding: '0 80px', display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '40px', marginBottom: '80px' }}>
-          <div style={{ width: '200px', height: '200px', backgroundColor: 'white', borderRadius: '40px', padding: '30px', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
-            {partner?.logo_url ? (
-              <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            ) : (
-              <div style={{ width: '100%', height: '100%', backgroundColor: '#F1F5F9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Briefcase size={80} color="#0F172A" />
-              </div>
-            )}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Área: {vacancy.area || vacancy['àrea']}</div>
-            <div style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginTop: '10px' }}>{vacancy.titulo}</div>
-          </div>
+      {/* Role Title */}
+      <div style={{ zIndex: 10, marginBottom: '100px', maxWidth: '920px' }}>
+        <div style={{ 
+          fontSize: '115px', 
+          fontWeight: '950', 
+          lineHeight: '1.05', 
+          letterSpacing: '-0.05em',
+          textShadow: '0 15px 40px rgba(0,0,0,0.4)',
+          textTransform: 'capitalize'
+        }}>
+          {vacancy.titulo}
         </div>
+      </div>
 
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '60px', padding: '80px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <div style={{ marginBottom: '60px' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Sobre a Vaga</div>
-            <div style={{ fontSize: '36px', lineHeight: '1.6', color: '#CBD5E1' }}>{vacancy.resumo}</div>
+      {/* Partner Brand */}
+      <div style={{ zIndex: 10, marginBottom: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ 
+          width: '240px', 
+          height: '240px', 
+          backgroundColor: 'white', 
+          borderRadius: '60px', 
+          padding: '45px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
+        }}>
+          {partner?.logo_url ? (
+            <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          ) : (
+            <Briefcase size={110} color="#0F172A" />
+          )}
+        </div>
+        <div style={{ marginTop: '40px', fontSize: '38px', fontWeight: 'bold', color: '#CBD5E1', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+          {partner?.nome || 'Empresa Parceira'}
+        </div>
+      </div>
+
+      {/* Info Grid */}
+      <div style={{ zIndex: 10, width: '100%', marginBottom: '60px' }}>
+        <div style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.04)', 
+          borderRadius: '50px', 
+          padding: '70px', 
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '60px'
+        }}>
+          <div>
+            <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '15px', letterSpacing: '0.12em' }}>📍 Local</div>
+            <div style={{ fontSize: '44px', fontWeight: '800' }}>{vacancy.local}</div>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px' }}>
-            <div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Local</div>
-              <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{vacancy.local}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '20px' }}>Bolsa</div>
-              <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
-            </div>
+          <div>
+            <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '15px', letterSpacing: '0.12em' }}>💰 Bolsa</div>
+            <div style={{ fontSize: '44px', fontWeight: '800' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ padding: '100px 80px', textAlign: 'center', zIndex: 10 }}>
-        <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '30px' }}>Candidate-se em nosso portal:</div>
-        <div style={{ display: 'inline-block', backgroundColor: '#EA580C', color: 'white', padding: '40px 80px', borderRadius: '40px', fontSize: '42px', fontWeight: 'black', boxShadow: '0 20px 40px rgba(234, 88, 12, 0.3)' }}>
+      {/* Requisitos Section */}
+      {vacancy.requisitos && (
+        <div style={{ 
+          zIndex: 10, 
+          width: '100%', 
+          marginBottom: '100px',
+          backgroundColor: 'rgba(14, 165, 233, 0.05)', 
+          borderRadius: '50px', 
+          padding: '60px', 
+          border: '1px solid rgba(14, 165, 233, 0.15)',
+          textAlign: 'left'
+        }}>
+          <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#38BDF8', textTransform: 'uppercase', marginBottom: '25px', letterSpacing: '0.12em', textAlign: 'center' }}>
+            📋 Requisitos
+          </div>
+          <div style={{ 
+            fontSize: '36px', 
+            fontWeight: '600', 
+            color: '#E2E8F0', 
+            lineHeight: '1.5',
+            display: '-webkit-box',
+            WebkitLineClamp: '4',
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}>
+            {vacancy.requisitos}
+          </div>
+        </div>
+      )}
+
+      {/* Footer / CTA */}
+      <div style={{ zIndex: 10, marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div style={{ fontSize: '38px', fontWeight: 'bold', color: '#94A3B8', marginBottom: '50px' }}>Candidate-se agora pelo nosso site:</div>
+        <div style={{ 
+          backgroundColor: '#EA580C', 
+          color: 'white', 
+          padding: '45px 120px', 
+          borderRadius: '100px', 
+          fontSize: '52px', 
+          fontWeight: '950', 
+          boxShadow: '0 30px 70px rgba(234, 88, 12, 0.45)',
+          marginBottom: '120px',
+          width: 'fit-content'
+        }}>
           www.grupocte.com.br
         </div>
-        <div style={{ marginTop: '60px', color: '#94A3B8', fontSize: '32px' }}>
-          Siga-nos no Instagram: @grupo_cte
+        
+        {/* CTE Logo with generous padding */}
+        <div style={{ marginBottom: '40px' }}>
+          <img 
+            src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+            alt="Grupo CTE" 
+            style={{ height: '140px', width: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }}
+          />
         </div>
       </div>
     </div>
