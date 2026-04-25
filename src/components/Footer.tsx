@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Facebook, Instagram, MapPin, Mail, Phone } from 'lucide-react';
+import WorkWithUsModal from './WorkWithUsModal';
 
 export default function Footer() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <footer className="bg-blue-950 text-gray-300 pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,6 +29,14 @@ export default function Footer() {
               <li><a href="/vagas" className="hover:text-orange-600 transition-colors">Vagas Abertas</a></li>
               <li><a href="/#cursos" className="hover:text-orange-600 transition-colors">Nossos Cursos</a></li>
               <li><a href="/quem-somos" className="hover:text-orange-600 transition-colors">Quem Somos</a></li>
+              <li>
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="hover:text-orange-600 transition-colors cursor-pointer"
+                >
+                  Trabalhe Conosco
+                </button>
+              </li>
             </ul>
           </div>
           
@@ -52,12 +63,19 @@ export default function Footer() {
                   vagas@grupocte.com.br
                 </a>
               </li>
-              <li className="flex items-start space-x-3 text-gray-400">
-                <MapPin size={18} className="text-orange-600 mt-1 shrink-0" />
-                <span className="text-sm leading-relaxed">
-                  Rua Duque de Caxias, 88, Centro,<br />
-                  Camaçari BA, 42800-031, Brasil
-                </span>
+              <li>
+                <a 
+                  href="https://www.google.com/maps/place/Grupo+CTE+-+Capacita%C3%A7%C3%A3o,+Treinamentos+e+Est%C3%A1gio/@-12.701329,-38.3281836,17z/data=!3m1!4b1!4m6!3m5!1s0x71669daab770027:0x38768e76c3a813a0!8m2!3d-12.701329!4d-38.3256087!16s%2Fg%2F1v41_nq7?entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start space-x-3 text-gray-400 hover:text-orange-600 transition-colors"
+                >
+                  <MapPin size={18} className="text-orange-600 mt-1 shrink-0" />
+                  <span className="text-sm leading-relaxed">
+                    Rua Duque de Caxias, 88, Centro,<br />
+                    Camaçari BA, 42800-031, Brasil
+                  </span>
+                </a>
               </li>
             </ul>
           </div>
@@ -82,6 +100,11 @@ export default function Footer() {
           <p>&copy; {new Date().getFullYear()} Grupo CTE. Todos os direitos reservados.</p>
         </div>
       </div>
+      
+      <WorkWithUsModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </footer>
   );
 }
