@@ -2281,145 +2281,145 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         color: 'white',
         fontFamily: 'Inter, sans-serif',
         textAlign: 'center',
-        padding: '160px 80px 100px 80px'
+        overflow: 'hidden'
       }}
     >
-      {/* Background Decor */}
-      <div style={{ position: 'absolute', top: '15%', left: '50%', width: '900px', height: '900px', backgroundColor: '#EA580C', opacity: 0.12, borderRadius: '50%', filter: 'blur(160px)', transform: 'translate(-50%, -50%)' }} />
-      <div style={{ position: 'absolute', bottom: '15%', left: '50%', width: '900px', height: '900px', backgroundColor: '#2563EB', opacity: 0.12, borderRadius: '50%', filter: 'blur(160px)', transform: 'translate(-50%, 50%)' }} />
-
-      {/* Header Badge */}
-      <div style={{ zIndex: 10, marginBottom: '60px' }}>
+      {/* Top Header Block */}
+      <div style={{ 
+        width: '100%', 
+        backgroundColor: '#EA580C', 
+        padding: '100px 0', 
+        zIndex: 20,
+        boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+        marginBottom: '100px'
+      }}>
         <div style={{ 
-          fontSize: '44px', 
-          fontWeight: '900', 
-          color: '#EA580C', 
-          letterSpacing: '0.25em',
+          fontSize: '64px', 
+          fontWeight: '950', 
+          letterSpacing: '0.3em', 
           textTransform: 'uppercase',
-          backgroundColor: 'rgba(234, 88, 12, 0.15)',
-          padding: '24px 80px',
-          borderRadius: '100px',
-          border: '3px solid rgba(234, 88, 12, 0.3)'
+          color: 'white'
         }}>
           Vaga de Estágio
         </div>
       </div>
 
       {/* Role Title */}
-      <div style={{ zIndex: 10, marginBottom: '100px', maxWidth: '920px' }}>
+      <div style={{ zIndex: 10, marginBottom: '100px', maxWidth: '900px', padding: '0 60px' }}>
         <div style={{ 
-          fontSize: '115px', 
-          fontWeight: '950', 
-          lineHeight: '1.05', 
+          fontSize: '110px', 
+          fontWeight: '900', 
+          lineHeight: '1', 
           letterSpacing: '-0.05em',
           textShadow: '0 15px 40px rgba(0,0,0,0.4)',
-          textTransform: 'capitalize'
+          color: 'white'
         }}>
           {vacancy.titulo}
         </div>
       </div>
 
-      {/* Partner Brand */}
-      <div style={{ zIndex: 10, marginBottom: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {/* Info Cards (Local & Bolsa & Requisitos) */}
+      <div style={{ zIndex: 10, width: '100%', padding: '0 80px', display: 'flex', flexDirection: 'column', gap: '40px', marginBottom: '80px' }}>
+        {/* Local Card */}
         <div style={{ 
-          width: '240px', 
-          height: '240px', 
-          backgroundColor: 'white', 
-          borderRadius: '60px', 
-          padding: '45px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
-        }}>
-          {partner?.logo_url ? (
-            <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-          ) : (
-            <Briefcase size={110} color="#0F172A" />
-          )}
-        </div>
-        <div style={{ marginTop: '40px', fontSize: '38px', fontWeight: 'bold', color: '#CBD5E1', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-          {partner?.nome || 'Empresa Parceira'}
-        </div>
-      </div>
-
-      {/* Info Grid */}
-      <div style={{ zIndex: 10, width: '100%', marginBottom: '60px' }}>
-        <div style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.04)', 
-          borderRadius: '50px', 
-          padding: '70px', 
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+          borderRadius: '40px', 
+          padding: '40px', 
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '60px'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '10px'
         }}>
-          <div>
-            <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '15px', letterSpacing: '0.12em' }}>📍 Local</div>
-            <div style={{ fontSize: '44px', fontWeight: '800' }}>{vacancy.local}</div>
-          </div>
-          <div>
-            <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#EA580C', textTransform: 'uppercase', marginBottom: '15px', letterSpacing: '0.12em' }}>💰 Bolsa</div>
-            <div style={{ fontSize: '44px', fontWeight: '800' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
-          </div>
+          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>📍 Localização</div>
+          <div style={{ fontSize: '48px', fontWeight: '800' }}>{vacancy.local}</div>
         </div>
-      </div>
 
-      {/* Requisitos Section */}
-      {vacancy.requisitos && (
+        {/* Bolsa Card */}
         <div style={{ 
-          zIndex: 10, 
-          width: '100%', 
-          marginBottom: '100px',
-          backgroundColor: 'rgba(14, 165, 233, 0.05)', 
-          borderRadius: '50px', 
-          padding: '60px', 
-          border: '1px solid rgba(14, 165, 233, 0.15)',
-          textAlign: 'left'
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+          borderRadius: '40px', 
+          padding: '40px', 
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '10px'
         }}>
-          <div style={{ fontSize: '30px', fontWeight: 'bold', color: '#38BDF8', textTransform: 'uppercase', marginBottom: '25px', letterSpacing: '0.12em', textAlign: 'center' }}>
-            📋 Requisitos
-          </div>
+          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>💰 Bolsa Auxílio</div>
+          <div style={{ fontSize: '48px', fontWeight: '800' }}>{vacancy.valor_bolsa || 'A combinar'}</div>
+        </div>
+
+        {/* Requisitos Card */}
+        <div style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+          borderRadius: '40px', 
+          padding: '40px', 
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px'
+        }}>
+          <div style={{ fontSize: '32px', color: '#EA580C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>📋 Requisitos</div>
           <div style={{ 
             fontSize: '36px', 
-            fontWeight: '600', 
-            color: '#E2E8F0', 
-            lineHeight: '1.5',
-            display: '-webkit-box',
-            WebkitLineClamp: '4',
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
+            lineHeight: '1.4', 
+            fontWeight: '600',
+            color: '#CBD5E1',
+            maxWidth: '100%'
           }}>
             {vacancy.requisitos}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Footer / CTA */}
-      <div style={{ zIndex: 10, marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-        <div style={{ fontSize: '38px', fontWeight: 'bold', color: '#94A3B8', marginBottom: '50px' }}>Candidate-se agora pelo nosso site:</div>
+      {/* Partner & CTE Logos Section */}
+      <div style={{ zIndex: 10, marginTop: 'auto', paddingBottom: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', marginBottom: '80px' }}>
+          {/* Partner Logo */}
+          <div style={{ 
+            width: '200px', 
+            height: '200px', 
+            backgroundColor: 'white', 
+            borderRadius: '40px', 
+            padding: '30px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+          }}>
+            {partner?.logo_url ? (
+              <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <Briefcase size={80} color="#0F172A" />
+            )}
+          </div>
+
+          {/* Grupo CTE Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img 
+              src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
+              alt="Grupo CTE" 
+              style={{ height: '100px', width: 'auto', filter: 'brightness(0) invert(1)' }}
+            />
+          </div>
+        </div>
+
+        {/* CTA Button Block */}
         <div style={{ 
           backgroundColor: '#EA580C', 
           color: 'white', 
-          padding: '45px 120px', 
-          borderRadius: '100px', 
-          fontSize: '52px', 
-          fontWeight: '950', 
-          boxShadow: '0 30px 70px rgba(234, 88, 12, 0.45)',
-          marginBottom: '120px',
-          width: 'fit-content'
+          padding: '40px 60px', 
+          borderRadius: '40px', 
+          width: '90%',
+          boxShadow: '0 20px 50px rgba(234, 88, 12, 0.4)'
         }}>
-          www.grupocte.com.br
-        </div>
-        
-        {/* CTE Logo with generous padding */}
-        <div style={{ marginBottom: '40px' }}>
-          <img 
-            src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
-            alt="Grupo CTE" 
-            style={{ height: '140px', width: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }}
-          />
+          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>Candidatar-se</div>
+          <div style={{ fontSize: '36px', fontWeight: 'black' }}>
+            Envie seu currículo por Direct ou para:<br/>
+            <span style={{ fontSize: '42px', color: 'white' }}>vagas@grupocte.com.br</span>
+          </div>
         </div>
       </div>
     </div>
