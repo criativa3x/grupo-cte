@@ -155,18 +155,18 @@ export default function VagasPage() {
                           <span>{vaga.local}</span>
                         </div>
                       </div>
-                      {vaga.prazo_candidatura && (
-                        <div className="flex items-center gap-3 text-gray-800 text-base">
-                          <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
-                            <Calendar className="h-5 w-5 text-white" />
-                          </div>
-                          <div>
-                            <span className="font-bold mr-1">Inscrições até:</span>
-                            <span>{new Date(vaga.prazo_candidatura).toLocaleDateString('pt-BR')}</span>
-                          </div>
-                        </div>
-                      )}
                     </div>
+
+                    {/* Prazo de Candidatura */}
+                    {vaga.prazo_candidatura && (
+                      <div className="text-gray-600 text-sm font-medium mb-3 flex items-center justify-center gap-1.5">
+                        <span>⏳</span>
+                        <span>Inscrições até:</span>
+                        <span className="font-bold">
+                          {new Date(vaga.prazo_candidatura).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Botão */}
                     <Link 
