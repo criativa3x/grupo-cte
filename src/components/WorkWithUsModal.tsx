@@ -50,7 +50,10 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
         .from('curriculos')
         .upload(fileName, file);
 
-      if (uploadError) throw new Error(`Erro no upload: ${uploadError.message}`);
+      if (uploadError) {
+        console.error('Erro detalhado do Storage:', uploadError);
+        throw new Error(`Erro no upload: ${uploadError.message}. Verifique as políticas de RLS do bucket "curriculos" no Supabase.`);
+      }
 
       // Step C: Get public URL
       const { data: { publicUrl } } = supabase.storage
@@ -69,7 +72,10 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
           }
         ]);
 
-      if (insertError) throw new Error(`Erro ao salvar dados: ${insertError.message}`);
+      if (insertError) {
+        console.error('Erro detalhado da Tabela:', insertError);
+        throw new Error(`Erro ao salvar dados: ${insertError.message}. Verifique as políticas de RLS da tabela "candidatos" no Supabase.`);
+      }
 
       // Final Step: Success feedback
       toast.success('Currículo enviado com sucesso!');
