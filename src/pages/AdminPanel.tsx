@@ -64,16 +64,17 @@ export default function AdminPanel() {
   });
 
   const newLeadsCount = React.useMemo(() => {
-    const studentLeads = [...data.curriculos, ...data.candidaturas].filter(c => !c.status || c.status === 'Novo').length;
+    const studentLeads = [...data.curriculos, ...data.candidaturas, ...data.candidatos].filter(c => !c.status || c.status === 'Novo').length;
     const companyLeads = data.solicitacoes.filter(s => !s.status || s.status === 'Pendente').length;
     return studentLeads + companyLeads;
-  }, [data.curriculos, data.candidaturas, data.solicitacoes]);
+  }, [data.curriculos, data.candidaturas, data.solicitacoes, data.candidatos]);
 
   const notificationDetails = React.useMemo(() => {
     const details = [];
     const bancoTalentosCount = data.curriculos.filter(c => !c.status || c.status === 'Novo').length;
     const candidaturasCount = data.candidaturas.filter(c => !c.status || c.status === 'Novo').length;
     const solicitacoesCount = data.solicitacoes.filter(s => !s.status || s.status === 'Pendente').length;
+    const candidatosSiteCount = data.candidatos.filter(c => !c.status || c.status === 'Novo').length;
 
     if (bancoTalentosCount > 0) {
       details.push({
@@ -96,8 +97,15 @@ export default function AdminPanel() {
         tab: 'solicitacoes_empresas' as Tab
       });
     }
+    if (candidatosSiteCount > 0) {
+      details.push({
+        id: 'candidatos',
+        text: `Você tem ${candidatosSiteCount} novo(s) currículo(s) do "Trabalhe Conosco"`,
+        tab: 'candidatos' as Tab
+      });
+    }
     return details;
-  }, [data.curriculos, data.candidaturas, data.solicitacoes]);
+  }, [data.curriculos, data.candidaturas, data.solicitacoes, data.candidatos]);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

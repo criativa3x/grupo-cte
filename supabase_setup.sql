@@ -7,8 +7,12 @@ CREATE TABLE IF NOT EXISTS public.candidatos (
     nome TEXT NOT NULL,
     email TEXT NOT NULL,
     telefone TEXT NOT NULL,
-    url_curriculo TEXT NOT NULL
+    url_curriculo TEXT NOT NULL,
+    status TEXT DEFAULT 'Novo'
 );
+
+-- Note: To enable Realtime for this table, run:
+-- ALTER PUBLICATION supabase_realtime ADD TABLE candidatos;
 
 -- 2. Enable RLS on the table
 ALTER TABLE public.candidatos ENABLE ROW LEVEL SECURITY;
@@ -25,7 +29,11 @@ FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow authenticated deletes" ON public.candidatos
 FOR DELETE TO authenticated USING (true);
 
--- 6. STORAGE POLICIES (Run these in the SQL Editor)
+-- 6. Create policy to allow authenticated users to update (Admin Panel)
+CREATE POLICY "Allow authenticated updates" ON public.candidatos
+FOR UPDATE TO authenticated USING (true);
+
+-- 7. STORAGE POLICIES (Run these in the SQL Editor)
 -- Note: Make sure the bucket 'curriculos' exists in Storage and is set to "Public"
 
 -- Allow public uploads to bucket 'curriculos'
