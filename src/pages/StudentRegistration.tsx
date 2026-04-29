@@ -74,10 +74,9 @@ export default function StudentRegistration() {
     }
 
     setLoading(true);
-    const { data_nascimento, telefone_whatsapp, ...rest } = formData;
+    const { data_nascimento, ...rest } = formData;
     const dataToSubmit = {
       ...rest,
-      telefone_whatsapp,
       data_nascimento: data_nascimento || null,
       status: 'Novo',
       vaga_aplicada: appliedVacancy || 'Geral'
@@ -262,19 +261,6 @@ export default function StudentRegistration() {
                       <div className="space-y-2">
                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
                           <MapPin size={14} />
-                          <span>Cidade</span>
-                        </label>
-                        <input 
-                          type="text"
-                          value={formData.cidade}
-                          onChange={(e) => setFormData({...formData, cidade: e.target.value})}
-                          placeholder="Sua cidade"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
-                          <MapPin size={14} />
                           <span>Bairro</span>
                         </label>
                         <input 
@@ -282,6 +268,19 @@ export default function StudentRegistration() {
                           value={formData.bairro}
                           onChange={(e) => setFormData({...formData, bairro: e.target.value})}
                           placeholder="Seu bairro"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center space-x-2">
+                          <MapPin size={14} />
+                          <span>Cidade</span>
+                        </label>
+                        <input 
+                          type="text"
+                          value={formData.cidade}
+                          onChange={(e) => setFormData({...formData, cidade: e.target.value})}
+                          placeholder="Sua cidade"
                           className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
                         />
                       </div>

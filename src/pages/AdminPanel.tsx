@@ -1859,19 +1859,12 @@ export default function AdminPanel() {
                               <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v: string) => setVagaForm({...vagaForm, titulo: v})} />
                               <FormTextArea label="Resumo da Vaga" value={vagaForm.resumo} onChange={(v: string) => setVagaForm({...vagaForm, resumo: v})} placeholder="Breve resumo da oportunidade..." />
                               <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Área</label>
-                                  <select 
-                                    value={vagaForm.area}
-                                    onChange={(e) => setVagaForm({...vagaForm, area: e.target.value})}
-                                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-medium"
-                                  >
-                                    <option value="">Selecione...</option>
-                                    {data.categorias.map(cat => (
-                                      <option key={cat.id} value={cat.titulo}>{cat.titulo}</option>
-                                    ))}
-                                  </select>
-                                </div>
+                                <FormInput 
+                                  label="Área" 
+                                  value={vagaForm.area} 
+                                  onChange={(v: string) => setVagaForm({...vagaForm, area: v})} 
+                                  placeholder="Ex: Tecnologia, Administração..."
+                                />
                                 <FormInput label="Local" value={vagaForm.local} onChange={(v: string) => setVagaForm({...vagaForm, local: v})} />
                               </div>
                               <div className="space-y-2">
