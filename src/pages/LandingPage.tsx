@@ -921,7 +921,7 @@ export default function LandingPage() {
           
           <Swiper
             modules={[Autoplay]}
-            spaceBetween={40}
+            spaceBetween={60}
             slidesPerView={2}
             loop={true}
             speed={5000}
@@ -931,8 +931,7 @@ export default function LandingPage() {
             }}
             breakpoints={{
               640: { slidesPerView: 3 },
-              768: { slidesPerView: 4 },
-              1024: { slidesPerView: 6 },
+              1024: { slidesPerView: 5 },
             }}
             className="swiper-linear"
           >
@@ -941,7 +940,7 @@ export default function LandingPage() {
                 <img 
                   src={logo.url} 
                   alt={logo.name} 
-                  className="h-8 md:h-10 w-auto grayscale opacity-100 hover:grayscale-0 hover:scale-105 transition-all duration-500 cursor-pointer object-contain"
+                  className="h-10 md:h-14 w-auto grayscale opacity-100 hover:grayscale-0 hover:scale-110 transition-all duration-500 cursor-pointer object-contain"
                   referrerPolicy="no-referrer"
                 />
               </SwiperSlide>

@@ -44,7 +44,14 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
     try {
       // Step B: Upload file to storage
       const fileExt = file.name.split('.').pop();
-      const fileName = `public/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      // Sanitizar o nome do arquivo: remover acentos, parênteses e caracteres especiais
+      const sanitizedName = file.name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+        .replace(/[^a-zA-Z0-9.]/g, '_') // Substitui tudo que não for letra, número ou ponto por _
+        .replace(/_{2,}/g, '_'); // Remove underscores duplicados
+        
+      const fileName = `public/${Date.now()}_${sanitizedName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('curriculos')
