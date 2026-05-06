@@ -2504,11 +2504,6 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
             }}>
               {vacancy.titulo}
             </h1>
-            {partner?.nome && (
-              <div style={{ fontSize: '24px', fontWeight: '600', color: '#64748B', marginTop: '5px' }}>
-                {partner.nome}
-              </div>
-            )}
           </div>
         </div>
 
