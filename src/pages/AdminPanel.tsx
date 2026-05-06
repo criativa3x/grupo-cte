@@ -2478,60 +2478,75 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         justifyContent: 'flex-start',
         overflow: 'hidden'
       }}>
-        {/* Group 1: Título da vaga (em destaque) */}
-        <div style={{ padding: '0 80px', marginBottom: '40px', width: '100%' }}>
-          <h1 style={{ 
-            fontSize: '75px', 
-            fontWeight: '900', 
-            color: '#1a234e', 
-            lineHeight: '1.0',
-            textTransform: 'uppercase',
-            textAlign: 'center'
-          }}>
-            {vacancy.titulo}
-          </h1>
-          {partner?.nome && (
-            <div style={{ fontSize: '30px', fontWeight: '600', color: '#64748B', marginTop: '5px' }}>
-              {partner.nome}
+        {/* Group 1: Título da vaga e Logo (Horizontal) */}
+        <div style={{ padding: '0 60px', marginBottom: '30px', width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '40px' }}>
+          {partner?.logo_url && (
+            <div style={{ 
+              width: '180px', 
+              height: '180px', 
+              minWidth: '180px',
+              backgroundColor: 'transparent', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
           )}
+          <div style={{ textAlign: 'left', flex: 1 }}>
+            <h1 style={{ 
+              fontSize: '52px', 
+              fontWeight: '900', 
+              color: '#1a234e', 
+              lineHeight: '1.1',
+              textTransform: 'uppercase'
+            }}>
+              {vacancy.titulo}
+            </h1>
+            {partner?.nome && (
+              <div style={{ fontSize: '24px', fontWeight: '600', color: '#64748B', marginTop: '5px' }}>
+                {partner.nome}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Group 2: Requisitos (lista de requisitos) */}
-        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
+        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '30px' }}>
           <div style={{ 
-            fontSize: '34px', 
+            fontSize: '32px', 
             fontWeight: '900', 
             textTransform: 'uppercase', 
             color: '#EA580C', 
-            marginBottom: '20px',
+            marginBottom: '15px',
             borderLeft: '12px solid #EA580C',
             paddingLeft: '25px'
           }}>
             REQUISITOS:
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', paddingLeft: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '20px' }}>
             {vacancy.requisitos ? (
               vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 5).map((req: string, i: number) => (
-                <div key={i} style={{ display: 'flex', fontSize: '30px', fontWeight: '700', color: '#1E293B', lineHeight: '1.2' }}>
-                  <span style={{ marginRight: '20px', color: '#EA580C' }}>•</span>
+                <div key={i} style={{ display: 'flex', fontSize: '28px', fontWeight: '700', color: '#1E293B', lineHeight: '1.2' }}>
+                  <span style={{ marginRight: '15px', color: '#EA580C' }}>•</span>
                   <span>{req}</span>
                 </div>
               ))
             ) : (
-              <div style={{ fontSize: '28px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
+              <div style={{ fontSize: '26px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
             )}
           </div>
         </div>
 
         {/* Group 3: Detalhes (Área, Local, Valor) */}
-        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
+        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '30px' }}>
           <div style={{ 
-            fontSize: '34px', 
+            fontSize: '32px', 
             fontWeight: '900', 
             textTransform: 'uppercase', 
             color: '#EA580C', 
-            marginBottom: '20px',
+            marginBottom: '15px',
             borderLeft: '12px solid #EA580C',
             paddingLeft: '25px'
           }}>
@@ -2550,21 +2565,21 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
             width: '85%', 
             backgroundColor: '#FFF7ED', 
             borderRadius: '40px', 
-            padding: '25px 50px', 
+            padding: '20px 40px', 
             border: '4px dashed #EA580C',
             display: 'flex',
             alignItems: 'center',
-            gap: '30px',
-            margin: '0 auto 20px auto'
+            gap: '20px',
+            margin: '0 auto 10px auto'
           }}>
-            <div style={{ fontSize: '45px' }}>⏰</div>
+            <div style={{ fontSize: '40px' }}>⏰</div>
             <div style={{ 
-              fontSize: '30px', 
+              fontSize: '28px', 
               fontWeight: '600', 
               color: '#EA580C', 
               textTransform: 'uppercase' 
             }}>
-              Inscrições até: <span style={{ fontSize: '40px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
+              Inscrições até: <span style={{ fontSize: '36px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
             </div>
           </div>
         )}
