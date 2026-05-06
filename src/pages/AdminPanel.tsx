@@ -2451,9 +2451,10 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '35px 0', 
+        padding: '30px 0', 
         zIndex: 10,
-        marginBottom: '60px'
+        marginBottom: '40px',
+        flexShrink: 0
       }}>
         <div style={{ 
           fontSize: '70px', 
@@ -2467,105 +2468,116 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         </div>
       </div>
 
-      {/* Group 1: Título da vaga (em destaque) */}
-      <div style={{ padding: '0 80px', marginBottom: '60px', width: '100%' }}>
-        <h1 style={{ 
-          fontSize: '90px', 
-          fontWeight: '900', 
-          color: '#1a234e', 
-          lineHeight: '1.1',
-          textTransform: 'uppercase',
-          textAlign: 'center'
-        }}>
-          {vacancy.titulo}
-        </h1>
-        {partner?.nome && (
-          <div style={{ fontSize: '32px', fontWeight: '600', color: '#64748B', marginTop: '10px' }}>
-            {partner.nome}
+      {/* Container para o conteúdo central com flex: 1 para empurrar o rodapé */}
+      <div style={{ 
+        flex: '1', 
+        width: '100%', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'flex-start',
+        overflow: 'hidden'
+      }}>
+        {/* Group 1: Título da vaga (em destaque) */}
+        <div style={{ padding: '0 80px', marginBottom: '40px', width: '100%' }}>
+          <h1 style={{ 
+            fontSize: '75px', 
+            fontWeight: '900', 
+            color: '#1a234e', 
+            lineHeight: '1.0',
+            textTransform: 'uppercase',
+            textAlign: 'center'
+          }}>
+            {vacancy.titulo}
+          </h1>
+          {partner?.nome && (
+            <div style={{ fontSize: '30px', fontWeight: '600', color: '#64748B', marginTop: '5px' }}>
+              {partner.nome}
+            </div>
+          )}
+        </div>
+
+        {/* Group 2: Requisitos (lista de requisitos) */}
+        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
+          <div style={{ 
+            fontSize: '34px', 
+            fontWeight: '900', 
+            textTransform: 'uppercase', 
+            color: '#EA580C', 
+            marginBottom: '20px',
+            borderLeft: '12px solid #EA580C',
+            paddingLeft: '25px'
+          }}>
+            REQUISITOS:
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', paddingLeft: '20px' }}>
+            {vacancy.requisitos ? (
+              vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 5).map((req: string, i: number) => (
+                <div key={i} style={{ display: 'flex', fontSize: '30px', fontWeight: '700', color: '#1E293B', lineHeight: '1.2' }}>
+                  <span style={{ marginRight: '20px', color: '#EA580C' }}>•</span>
+                  <span>{req}</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
+            )}
+          </div>
+        </div>
+
+        {/* Group 3: Detalhes (Área, Local, Valor) */}
+        <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '40px' }}>
+          <div style={{ 
+            fontSize: '34px', 
+            fontWeight: '900', 
+            textTransform: 'uppercase', 
+            color: '#EA580C', 
+            marginBottom: '20px',
+            borderLeft: '12px solid #EA580C',
+            paddingLeft: '25px'
+          }}>
+            DETALHES:
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '5px' }}>
+            <InfoItem icon="💼" label="Área" text={vacancy.area || vacancy['àrea'] || 'Não informada'} />
+            <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
+            <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
+          </div>
+        </div>
+
+        {/* Group 4: Data das Inscrições / Prazo de candidatura */}
+        {vacancy.prazo_candidatura && (
+          <div style={{ 
+            width: '85%', 
+            backgroundColor: '#FFF7ED', 
+            borderRadius: '40px', 
+            padding: '25px 50px', 
+            border: '4px dashed #EA580C',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '30px',
+            margin: '0 auto 20px auto'
+          }}>
+            <div style={{ fontSize: '45px' }}>⏰</div>
+            <div style={{ 
+              fontSize: '30px', 
+              fontWeight: '600', 
+              color: '#EA580C', 
+              textTransform: 'uppercase' 
+            }}>
+              Inscrições até: <span style={{ fontSize: '40px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Group 2: Requisitos (lista de requisitos) */}
-      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
-        <div style={{ 
-          fontSize: '36px', 
-          fontWeight: '900', 
-          textTransform: 'uppercase', 
-          color: '#EA580C', 
-          marginBottom: '30px',
-          borderLeft: '12px solid #EA580C',
-          paddingLeft: '25px'
-        }}>
-          REQUISITOS:
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingLeft: '20px' }}>
-          {vacancy.requisitos ? (
-            vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 5).map((req: string, i: number) => (
-              <div key={i} style={{ display: 'flex', fontSize: '32px', fontWeight: '700', color: '#1E293B', lineHeight: '1.3' }}>
-                <span style={{ marginRight: '20px', color: '#EA580C' }}>•</span>
-                <span>{req}</span>
-              </div>
-            ))
-          ) : (
-            <div style={{ fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
-          )}
-        </div>
-      </div>
-
-      {/* Group 3: Detalhes (Área, Local, Valor) */}
-      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
-        <div style={{ 
-          fontSize: '36px', 
-          fontWeight: '900', 
-          textTransform: 'uppercase', 
-          color: '#EA580C', 
-          marginBottom: '30px',
-          borderLeft: '12px solid #EA580C',
-          paddingLeft: '25px'
-        }}>
-          DETALHES:
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '5px' }}>
-          <InfoItem icon="💼" label="Área" text={vacancy.area || vacancy['àrea'] || 'Não informada'} />
-          <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
-          <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
-        </div>
-      </div>
-
-      {/* Group 4: Data das Inscrições / Prazo de candidatura */}
-      {vacancy.prazo_candidatura && (
-        <div style={{ 
-          width: '85%', 
-          backgroundColor: '#FFF7ED', 
-          borderRadius: '40px', 
-          padding: '35px 50px', 
-          border: '4px dashed #EA580C',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '30px',
-          margin: '0 auto'
-        }}>
-          <div style={{ fontSize: '50px' }}>⏰</div>
-          <div style={{ 
-            fontSize: '34px', 
-            fontWeight: '600', 
-            color: '#EA580C', 
-            textTransform: 'uppercase' 
-          }}>
-            Inscrições até: <span style={{ fontSize: '46px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
-          </div>
-        </div>
-      )}
 
       {/* Novo Rodapé (Footer da Imagem) */}
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
-        padding: '60px 40px', 
+        padding: '50px 40px', 
         color: 'white',
         textAlign: 'center',
-        marginTop: 'auto',
+        flexShrink: 0,
         zIndex: 10
       }}>
         <div style={{ fontSize: '38px', fontWeight: '900', lineHeight: '1.4' }}>
