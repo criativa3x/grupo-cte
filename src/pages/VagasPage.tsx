@@ -148,7 +148,7 @@ export default function VagasPage() {
                     </div>
 
                     {/* Título */}
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 text-center leading-[1.15]">{vaga.titulo}</h3>
 
                     {/* Sessão de Requisitos: Alinhado à esquerda */}
                     <div className="w-full text-left mb-8">

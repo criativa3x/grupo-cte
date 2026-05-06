@@ -422,7 +422,7 @@ export default function LandingPage() {
                         <div className="inline-block px-6 py-2 bg-green-100 text-green-800 text-sm font-bold rounded-full mb-6 uppercase tracking-wide">
                           VAGA DE ESTÁGIO
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 text-center leading-[1.15]">{vaga.titulo}</h3>
                         <div className="w-full text-left mb-6">
                           <h4 className="text-sm font-bold text-gray-900 mb-2 uppercase">REQUISITOS:</h4>
                           <ul className="space-y-1 text-gray-700 text-sm">
@@ -540,7 +540,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Título */}
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center leading-[1.15]">{vaga.titulo}</h3>
 
                     {/* Sessão de Requisitos: Alinhado à esquerda */}
                     <div className="w-full text-left mb-8">
