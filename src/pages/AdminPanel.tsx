@@ -165,7 +165,7 @@ export default function AdminPanel() {
   const [cursoFile, setCursoFile] = useState<File | null>(null);
   const [categoriaForm, setCategoriaForm] = useState({ titulo: '', ordem: 0, imagem_url: '' });
   const [categoriaFile, setCategoriaFile] = useState<File | null>(null);
-  const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
+  const [vagaForm, setVagaForm] = useState({ titulo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
   const [alunoFile, setAlunoFile] = useState<File | null>(null);
   const [parceiroForm, setParceiroForm] = useState({ nome: '', logo_url: '' });
@@ -322,7 +322,7 @@ export default function AdminPanel() {
       if (adminSearchTerm.trim() !== '') {
         const term = `%${adminSearchTerm}%`;
         if (activeTab === 'vagas') {
-          query = query.or(`titulo.ilike.${term},resumo.ilike.${term},local.ilike.${term}`);
+          query = query.or(`titulo.ilike.${term},local.ilike.${term}`);
         } else if (activeTab === 'alunos') {
           query = query.or(`nome.ilike.${term},empresa.ilike.${term}`);
         } else if (activeTab === 'banco_talentos' || activeTab === 'candidaturas') {
@@ -551,7 +551,7 @@ export default function AdminPanel() {
     setCursoFile(null);
     setCategoriaForm({ titulo: '', ordem: 0, imagem_url: '' });
     setCategoriaFile(null);
-    setVagaForm({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
+    setVagaForm({ titulo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
     setAlunoForm({ nome: '', idade: '', empresa: '', imagem_url: '' });
     setAlunoFile(null);
     setParceiroForm({ nome: '', ordem: 0, logo_url: '' });
@@ -590,7 +590,6 @@ export default function AdminPanel() {
     } else if (activeTab === 'vagas') {
       setVagaForm({
         titulo: item.titulo || '',
-        resumo: item.resumo || '',
         area: item.area || item['àrea'] || '',
         local: item.local || '',
         valor_bolsa: item.valor_bolsa || '',
@@ -808,7 +807,7 @@ export default function AdminPanel() {
       const name = (item.titulo || item.nome || item.nome_completo || item.razao_social || '').toLowerCase();
       const company = (item.empresa || '').toLowerCase();
       const area = (item.area || item['àrea'] || '').toLowerCase();
-      const res = (item.resumo || item.descricao || item.descricao_curta || item.vaga_aplicada || '').toLowerCase();
+      const res = (item.descricao || item.descricao_curta || item.vaga_aplicada || '').toLowerCase();
       const email = (item.email || '').toLowerCase();
       const phone = (item.telefone_whatsapp || item.whatsapp || '').toLowerCase();
       
@@ -1840,7 +1839,6 @@ export default function AdminPanel() {
                           {activeTab === 'vagas' && (
                             <>
                               <FormInput label="Título da Vaga" value={vagaForm.titulo} onChange={(v: string) => setVagaForm({...vagaForm, titulo: v})} />
-                              <FormTextArea label="Resumo da Vaga" value={vagaForm.resumo} onChange={(v: string) => setVagaForm({...vagaForm, resumo: v})} placeholder="Breve resumo da oportunidade..." />
                               <div className="grid grid-cols-2 gap-4">
                                 <FormInput 
                                   label="Área" 
@@ -2049,7 +2047,7 @@ export default function AdminPanel() {
                                   <td className="px-8 py-6">
                                     <div className="max-w-[240px]">
                                       <div className="text-xs text-gray-500 font-medium line-clamp-2 leading-relaxed">
-                                        {item.descricao_curta || item.resumo || item.subtitulo || item.descricao || item.requisitos || item.local || item.empresa}
+                                        {item.descricao_curta || item.subtitulo || item.descricao || item.requisitos || item.local || item.empresa}
                                       </div>
                                       {(activeTab === 'vagas' || activeTab === 'cursos') && (
                                         <div className="flex items-center space-x-2 mt-1">
@@ -2440,7 +2438,7 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         overflow: 'hidden'
       }}
     >
-      {/* 1. Top Logo */}
+      {/* Top Logo */}
       <div style={{ padding: '60px 0 40px 0', zIndex: 10 }}>
         <img 
           src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png" 
@@ -2449,13 +2447,13 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         />
       </div>
 
-      {/* 2. Orange Header Bar */}
+      {/* Header Bar */}
       <div style={{ 
         width: '100%', 
         backgroundColor: '#EA580C', 
         padding: '35px 0', 
         zIndex: 10,
-        marginBottom: '50px'
+        marginBottom: '60px'
       }}>
         <div style={{ 
           fontSize: '70px', 
@@ -2469,101 +2467,110 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         </div>
       </div>
 
-      {/* 3. Company & Role Info */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 80px', gap: '50px', marginBottom: '50px', width: '100%', textAlign: 'left' }}>
-        <div style={{ 
-          width: '240px', 
-          height: '240px', 
-          minWidth: '240px',
-          backgroundColor: 'transparent', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          overflow: 'hidden',
-          padding: '0'
+      {/* Group 1: Título da vaga (em destaque) */}
+      <div style={{ padding: '0 80px', marginBottom: '60px', width: '100%' }}>
+        <h1 style={{ 
+          fontSize: '90px', 
+          fontWeight: '900', 
+          color: '#1a234e', 
+          lineHeight: '1.1',
+          textTransform: 'uppercase',
+          textAlign: 'center'
         }}>
-          {partner?.logo_url ? (
-            <img src={partner.logo_url} alt={partner.nome} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          {vacancy.titulo}
+        </h1>
+        {partner?.nome && (
+          <div style={{ fontSize: '32px', fontWeight: '600', color: '#64748B', marginTop: '10px' }}>
+            {partner.nome}
+          </div>
+        )}
+      </div>
+
+      {/* Group 2: Requisitos (lista de requisitos) */}
+      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
+        <div style={{ 
+          fontSize: '36px', 
+          fontWeight: '900', 
+          textTransform: 'uppercase', 
+          color: '#EA580C', 
+          marginBottom: '30px',
+          borderLeft: '12px solid #EA580C',
+          paddingLeft: '25px'
+        }}>
+          REQUISITOS:
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingLeft: '20px' }}>
+          {vacancy.requisitos ? (
+            vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 5).map((req: string, i: number) => (
+              <div key={i} style={{ display: 'flex', fontSize: '32px', fontWeight: '700', color: '#1E293B', lineHeight: '1.3' }}>
+                <span style={{ marginRight: '20px', color: '#EA580C' }}>•</span>
+                <span>{req}</span>
+              </div>
+            ))
           ) : (
-            <div style={{ fontSize: '24px', fontWeight: '900', textAlign: 'center', color: '#1a234e' }}>LOGO<br/>EMPRESA</div>
+            <div style={{ fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
           )}
         </div>
-        
-        <div style={{ fontSize: '36px', fontWeight: '500', lineHeight: '1.2', color: '#1E293B' }}>
-          {partner?.nome || 'Empresa Parceira'} abre vaga de Estágio para <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span>.
-        </div>
       </div>
 
-      {/* 4. Body Content (Circular Icons) */}
-      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '30px' }}>
-        <div style={{ fontSize: '36px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginBottom: '30px' }}>DETALHES:</div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      {/* Group 3: Detalhes (Área, Local, Valor) */}
+      <div style={{ width: '100%', padding: '0 100px', textAlign: 'left', marginBottom: '60px' }}>
+        <div style={{ 
+          fontSize: '36px', 
+          fontWeight: '900', 
+          textTransform: 'uppercase', 
+          color: '#EA580C', 
+          marginBottom: '30px',
+          borderLeft: '12px solid #EA580C',
+          paddingLeft: '25px'
+        }}>
+          DETALHES:
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '5px' }}>
+          <InfoItem icon="💼" label="Área" text={vacancy.area || vacancy['àrea'] || 'Não informada'} />
           <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
           <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
-          
-          <div style={{ fontSize: '36px', fontWeight: '900', textTransform: 'uppercase', color: '#000000', marginTop: '10px', marginBottom: '20px' }}>REQUISITOS:</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '20px' }}>
-            {vacancy.requisitos ? (
-              vacancy.requisitos.split('\n').filter((l: string) => l.trim()).slice(0, 4).map((req: string, i: number) => (
-                <div key={i} style={{ display: 'flex', fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>
-                  <span style={{ marginRight: '20px', color: '#000' }}>•</span>
-                  <span>{req}</span>
-                </div>
-              ))
-            ) : (
-              <div style={{ fontSize: '30px', fontWeight: '700', color: '#1E293B' }}>Consulte os detalhes no site.</div>
-            )}
-          </div>
         </div>
       </div>
 
-      {/* Deadline Highlight Block */}
+      {/* Group 4: Data das Inscrições / Prazo de candidatura */}
       {vacancy.prazo_candidatura && (
         <div style={{ 
-          width: '90%', 
+          width: '85%', 
           backgroundColor: '#FFF7ED', 
-          borderRadius: '35px', 
-          padding: '20px 40px', 
-          border: '3px dashed #EA580C',
+          borderRadius: '40px', 
+          padding: '35px 50px', 
+          border: '4px dashed #EA580C',
           display: 'flex',
           alignItems: 'center',
-          gap: '20px',
-          margin: '0 auto 30px auto'
+          gap: '30px',
+          margin: '0 auto'
         }}>
-          <div style={{ fontSize: '40px' }}>⏰</div>
+          <div style={{ fontSize: '50px' }}>⏰</div>
           <div style={{ 
-            fontSize: '30px', 
+            fontSize: '34px', 
             fontWeight: '600', 
             color: '#EA580C', 
             textTransform: 'uppercase' 
           }}>
-            Inscrições até: <span style={{ fontSize: '38px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
+            Inscrições até: <span style={{ fontSize: '46px', fontWeight: '900' }}>{formatDate(vacancy.prazo_candidatura)}</span>
           </div>
         </div>
       )}
 
-      {/* 5. CTA Box (Dark Blue) */}
+      {/* Novo Rodapé (Footer da Imagem) */}
       <div style={{ 
-        width: '90%', 
-        backgroundColor: '#1E293B', 
-        borderRadius: '50px', 
-        padding: '30px 40px', 
+        width: '100%', 
+        backgroundColor: '#EA580C', 
+        padding: '60px 40px', 
         color: 'white',
         textAlign: 'center',
         marginTop: 'auto',
-        marginBottom: '60px',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '28px', fontWeight: '500', lineHeight: '1.4' }}>
-          Enviar currículo com o título <span style={{ color: '#EA580C', fontWeight: '900' }}>{vacancy.titulo.toUpperCase()}</span> para o e-mail: <span style={{ color: '#EA580C', fontWeight: '900' }}>vagas@grupocte.com.br</span>
-        </div>
-      </div>
-
-      {/* 6. Footer */}
-      <div style={{ paddingBottom: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-        <div style={{ fontSize: '56px', fontWeight: '900', color: '#000000' }}>
-          www.grupocte.com.br
+        <div style={{ fontSize: '38px', fontWeight: '900', lineHeight: '1.4' }}>
+          Interessados enviar o currículo para o e-mail: <br/>
+          <span style={{ fontSize: '48px', textDecoration: 'underline' }}>vagas@grupocte.com.br</span>
         </div>
       </div>
     </div>

@@ -45,7 +45,6 @@ export default function VagasPage() {
   const filteredVagas = vagas.filter(vaga => {
     const matchesSearch = searchTerm === '' || 
       vaga.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (vaga.resumo && vaga.resumo.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (vaga.local && vaga.local.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesArea = selectedArea === '' || vaga.area === selectedArea;
@@ -150,13 +149,6 @@ export default function VagasPage() {
 
                     {/* Título */}
                     <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center leading-tight">{vaga.titulo}</h3>
-
-                    {/* Resumo da Vaga */}
-                    {vaga.resumo && (
-                      <p className="text-gray-700 text-center mb-8 font-medium line-clamp-3 text-base">
-                        {vaga.resumo}
-                      </p>
-                    )}
 
                     {/* Sessão de Requisitos: Alinhado à esquerda */}
                     <div className="w-full text-left mb-8">
