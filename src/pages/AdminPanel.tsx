@@ -168,7 +168,7 @@ export default function AdminPanel() {
   const [vagaForm, setVagaForm] = useState({ titulo: '', resumo: '', area: '', local: '', valor_bolsa: '', requisitos: '', parceiro_id: '', prazo_candidatura: '' });
   const [alunoForm, setAlunoForm] = useState({ nome: '', idade: '', empresa: '', imagem_url: '' });
   const [alunoFile, setAlunoFile] = useState<File | null>(null);
-  const [parceiroForm, setParceiroForm] = useState({ nome: '', ordem: 0, logo_url: '' });
+  const [parceiroForm, setParceiroForm] = useState({ nome: '', logo_url: '' });
   const [parceiroFile, setParceiroFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -608,7 +608,6 @@ export default function AdminPanel() {
     } else if (activeTab === 'parceiros') {
       setParceiroForm({
         nome: item.nome || '',
-        ordem: item.ordem || 0,
         logo_url: item.logo_url || ''
       });
     }
@@ -753,7 +752,6 @@ export default function AdminPanel() {
       switch (s) {
         case 'Novo': return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Novo</span>;
         case 'Em Análise': return <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Em Análise</span>;
-        case 'Contatado': return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Contatado</span>;
         case 'Encaminhado': return <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Encaminhado</span>;
         case 'Contratado': return <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Contratado</span>;
         default: return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">{s}</span>;
@@ -1302,13 +1300,6 @@ export default function AdminPanel() {
                             onChange={(val: string) => setParceiroForm({...parceiroForm, nome: val})} 
                             placeholder="Ex: Google"
                           />
-                          <FormInput 
-                            label="Ordem de Exibição" 
-                            type="number"
-                            value={parceiroForm.ordem} 
-                            onChange={(val: string) => setParceiroForm({...parceiroForm, ordem: parseInt(val) || 0})} 
-                            placeholder="Ex: 1"
-                          />
                           <div className="space-y-2">
                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Logo da Empresa</label>
                             <input 
@@ -1352,7 +1343,6 @@ export default function AdminPanel() {
                               <tr className="bg-gray-50/50 border-b border-gray-100">
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Logo</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Empresa</th>
-                                <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Ordem</th>
                                 <th className="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
                               </tr>
                             </thead>
@@ -1366,11 +1356,6 @@ export default function AdminPanel() {
                                   </td>
                                   <td className="px-8 py-6">
                                     <span className="font-bold text-blue-950">{item.nome}</span>
-                                  </td>
-                                  <td className="px-8 py-6">
-                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-black text-xs">
-                                      {item.ordem}
-                                    </span>
                                   </td>
                                   <td className="px-8 py-6 text-right">
                                     <div className="flex items-center justify-end space-x-2">
@@ -1556,7 +1541,6 @@ export default function AdminPanel() {
                                       text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border-none outline-none cursor-pointer transition-all appearance-none text-center
                                       ${item.status === 'Novo' ? 'bg-blue-100 text-blue-600' : 
                                         item.status === 'Em Análise' ? 'bg-orange-100 text-orange-600' : 
-                                        item.status === 'Contatado' ? 'bg-yellow-100 text-yellow-600' : 
                                         item.status === 'Encaminhado' ? 'bg-purple-100 text-purple-600' : 
                                         item.status === 'Contratado' ? 'bg-green-100 text-green-600' : 
                                         'bg-gray-100 text-gray-600'}
@@ -1564,7 +1548,6 @@ export default function AdminPanel() {
                                   >
                                     <option value="Novo">Novo</option>
                                     <option value="Em Análise">Em Análise</option>
-                                    <option value="Contatado">Contatado</option>
                                     <option value="Encaminhado">Encaminhado</option>
                                     <option value="Contratado">Contratado</option>
                                   </select>
@@ -2232,7 +2215,6 @@ export default function AdminPanel() {
                               <>
                                 <option value="Novo">Novo</option>
                                 <option value="Em Análise">Em Análise</option>
-                                <option value="Contatado">Contatado</option>
                                 <option value="Encaminhado">Encaminhado</option>
                                 <option value="Contratado">Contratado</option>
                               </>

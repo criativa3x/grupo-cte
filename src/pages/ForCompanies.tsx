@@ -241,7 +241,7 @@ export default function ForCompanies() {
                         value={formData.razao_social}
                         onChange={(e) => setFormData({...formData, razao_social: e.target.value})}
                         placeholder="Nome da sua empresa"
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-blue-950"
                       />
                     </div>
 
@@ -257,7 +257,7 @@ export default function ForCompanies() {
                           value={formData.contato_nome}
                           onChange={(e) => setFormData({...formData, contato_nome: e.target.value})}
                           placeholder="Pessoa responsável"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                       <div className="space-y-2">
@@ -271,7 +271,7 @@ export default function ForCompanies() {
                           value={formData.telefone_whatsapp}
                           onChange={(e) => setFormData({...formData, telefone_whatsapp: e.target.value})}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                     </div>
@@ -287,7 +287,7 @@ export default function ForCompanies() {
                         value={formData.tipo_vaga}
                         onChange={(e) => setFormData({...formData, tipo_vaga: e.target.value})}
                         placeholder="Ex: Administrativo, TI, Vendas..."
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-blue-950"
                       />
                     </div>
                   </div>

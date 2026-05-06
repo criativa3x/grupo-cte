@@ -142,7 +142,7 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
                     value={formData.nome}
                     onChange={(e) => setFormData({...formData, nome: e.target.value})}
                     placeholder="Seu nome"
-                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                   />
                 </div>
 
@@ -155,7 +155,7 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       placeholder="seu@email.com"
-                      className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                      className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                     />
                   </div>
                   <div>
@@ -166,7 +166,7 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
                       value={formData.telefone}
                       onChange={(e) => setFormData({...formData, telefone: e.target.value})}
                       placeholder="(00) 00000-0000"
-                      className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                      className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                     />
                   </div>
                 </div>

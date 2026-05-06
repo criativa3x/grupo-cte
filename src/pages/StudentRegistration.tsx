@@ -141,10 +141,9 @@ export default function StudentRegistration() {
             <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
               <CheckCircle2 size={48} />
             </div>
-            <h2 className="text-4xl font-black text-blue-950 mb-6">Currículo Enviado!</h2>
+            <h2 className="text-4xl font-black text-blue-950 mb-6">Cadastro realizado com sucesso!</h2>
             <p className="text-xl text-gray-500 font-medium mb-10 leading-relaxed">
-              Obrigado por se cadastrar, <span className="text-blue-950 font-bold">{formData.nome_completo.split(' ')[0]}</span>! 
-              Seu perfil agora faz parte do nosso banco de talentos e entraremos em contato assim que surgir uma oportunidade ideal para você.
+              Seu perfil agora faz parte do nosso banco de talentos, iremos analisar seu perfil e entraremos em contato caso esteja alinhado com a vaga.
             </p>
             <button 
               onClick={() => navigate('/')}
@@ -197,7 +196,7 @@ export default function StudentRegistration() {
                         value={formData.nome_completo}
                         onChange={(e) => setFormData({...formData, nome_completo: e.target.value})}
                         placeholder="Seu nome completo"
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                       />
                     </div>
 
@@ -211,7 +210,7 @@ export default function StudentRegistration() {
                           type="date"
                           value={formData.data_nascimento}
                           onChange={(e) => setFormData({...formData, data_nascimento: e.target.value})}
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                       <div className="space-y-2">
@@ -225,7 +224,7 @@ export default function StudentRegistration() {
                           value={formData.telefone_whatsapp}
                           onChange={(e) => setFormData({...formData, telefone_whatsapp: e.target.value})}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                       <div className="space-y-2">
@@ -238,7 +237,7 @@ export default function StudentRegistration() {
                           value={formData.telefone_whatsapp_2}
                           onChange={(e) => setFormData({...formData, telefone_whatsapp_2: e.target.value})}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                     </div>
@@ -253,7 +252,7 @@ export default function StudentRegistration() {
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         placeholder="seu@email.com"
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                       />
                     </div>
 
@@ -268,7 +267,7 @@ export default function StudentRegistration() {
                           value={formData.bairro}
                           onChange={(e) => setFormData({...formData, bairro: e.target.value})}
                           placeholder="Seu bairro"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                       <div className="space-y-2">
@@ -281,7 +280,7 @@ export default function StudentRegistration() {
                           value={formData.cidade}
                           onChange={(e) => setFormData({...formData, cidade: e.target.value})}
                           placeholder="Sua cidade"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                     </div>
@@ -299,7 +298,7 @@ export default function StudentRegistration() {
                         required
                         value={formData.escolaridade}
                         onChange={(e) => setFormData({...formData, escolaridade: e.target.value})}
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                       >
                         <option value="">Selecione...</option>
                         <option value="Ensino Médio Cursando">Ensino Médio Cursando</option>
@@ -320,7 +319,7 @@ export default function StudentRegistration() {
                         value={formData.instituicao_ensino}
                         onChange={(e) => setFormData({...formData, instituicao_ensino: e.target.value})}
                         placeholder="Onde você estuda/estudou?"
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                       />
                     </div>
 
@@ -332,7 +331,7 @@ export default function StudentRegistration() {
                       <select 
                         value={formData.turno_estudo}
                         onChange={(e) => setFormData({...formData, turno_estudo: e.target.value})}
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                       >
                         <option value="">Selecione...</option>
                         <option value="Matutino">Matutino</option>
@@ -381,7 +380,7 @@ export default function StudentRegistration() {
                           value={formData.curso_cte}
                           onChange={(e) => setFormData({...formData, curso_cte: e.target.value})}
                           placeholder="Ex: Auxiliar Administrativo"
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       </div>
                     )}
@@ -402,7 +401,7 @@ export default function StudentRegistration() {
                           value={formData.areas_interesse}
                           onChange={(e) => setFormData({...formData, areas_interesse: e.target.value})}
                           placeholder="Ex: Administrativo, Vendas, TI..."
-                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-orange-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium"
+                          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-orange-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium text-blue-950"
                         />
                       )}
                     </div>
@@ -416,7 +415,7 @@ export default function StudentRegistration() {
                         value={formData.resumo_experiencia}
                         onChange={(e) => setFormData({...formData, resumo_experiencia: e.target.value})}
                         placeholder="Conte um pouco sobre você, suas habilidades e experiências anteriores..."
-                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium h-32 resize-none"
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all font-medium h-32 resize-none text-blue-950"
                       />
                     </div>
                   </div>
