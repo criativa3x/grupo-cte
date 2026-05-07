@@ -22,7 +22,7 @@ export default function VagasPage() {
     try {
       // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const [vagasRes, parceirosRes] = await Promise.all([
-        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('vagas_estagio').select('*').order('prazo_candidatura', { ascending: false }),
         supabase.from('parceiros').select('*')
       ]);
 

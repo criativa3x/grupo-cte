@@ -267,7 +267,7 @@ export default function AdminPanel() {
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('ordem', { ascending: true }),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
-        supabase.from('vagas_estagio').select('*').order('created_at', { ascending: false }),
+        supabase.from('vagas_estagio').select('*').order('prazo_candidatura', { ascending: false }),
         supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
         supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
         supabase.from('curriculos_estagiarios').select('*').order('created_at', { ascending: false }),
@@ -2394,7 +2394,9 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
   
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    // Corrigindo problema de fuso horário: formatar data sem conversão automática para UTC
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('pt-BR');
   };
 
@@ -2550,7 +2552,7 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '5px' }}>
             <InfoItem icon="💼" label="Área" text={vacancy.area || vacancy['àrea'] || 'Não informada'} />
             <InfoItem icon="📍" label="Local" text={vacancy.local || 'Não informado'} />
-            <InfoItem icon="💰" label="Bolsa + VT" text={vacancy.valor_bolsa || 'A combinar'} />
+            <InfoItem icon="💰" label="Bolsa + Transporte" text={vacancy.valor_bolsa || 'A combinar'} />
           </div>
         </div>
 
