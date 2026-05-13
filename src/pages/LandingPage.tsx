@@ -3,15 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Menu, X, ChevronRight, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed, Building2 } from 'lucide-react';
+import { Menu, X, ChevronRight, ChevronLeft, Quote, Facebook, Instagram, Linkedin, MapPin, Mail, Phone, Briefcase, Loader2, GraduationCap, Clock, Star, CheckCircle2, Users, Award, ArrowRight, Play, ExternalLink, DollarSign, Headset, Calculator, UtensilsCrossed, Building2 } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination } from 'swiper/modules';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -820,17 +821,21 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="relative">
-            <Swiper
-              modules={[Autoplay, Pagination]}
-              spaceBetween={30}
-              slidesPerView={1}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              pagination={{ clickable: true }}
-              breakpoints={{
+            <div className="relative group/carousel">
+              <Swiper
+                modules={[Autoplay, Pagination, Navigation]}
+                spaceBetween={30}
+                slidesPerView={1}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                pagination={{ clickable: true }}
+                navigation={{
+                  prevEl: '.swiper-button-prev-custom',
+                  nextEl: '.swiper-button-next-custom',
+                }}
+                breakpoints={{
                 640: {
                   slidesPerView: 2,
                 },
@@ -881,6 +886,14 @@ export default function LandingPage() {
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* Navigation Arrows */}
+            <button className="swiper-button-prev-custom absolute left-[-20px] lg:left-[-60px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 disabled:opacity-0 hidden md:flex cursor-pointer border border-gray-100">
+              <ChevronLeft size={28} />
+            </button>
+            <button className="swiper-button-next-custom absolute right-[-20px] lg:right-[-60px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 disabled:opacity-0 hidden md:flex cursor-pointer border border-gray-100">
+              <ChevronRight size={28} />
+            </button>
 
             {/* CTA Button - Mural de Sucesso */}
             <div className="flex justify-center mt-12 mb-8">
