@@ -112,7 +112,9 @@ export default function AdminPanel() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const storyRef = React.useRef<HTMLDivElement>(null);
+  const hiredRef = React.useRef<HTMLDivElement>(null);
   const [capturingVacancy, setCapturingVacancy] = useState<any>(null);
+  const [capturingHired, setCapturingHired] = useState<any>(null);
 
   const handleDownloadInstagram = async (vacancy: any) => {
     setCapturingVacancy(vacancy);
@@ -141,6 +143,36 @@ export default function AdminPanel() {
       } else {
         toast.error('Erro interno: Template não encontrado.');
         setCapturingVacancy(null);
+      }
+    }, 800);
+  };
+
+  const handleDownloadInstagramHired = async (aluno: any) => {
+    setCapturingHired(aluno);
+    toast.info('Gerando imagem para Instagram...', { description: 'Aguarde um momento.' });
+    
+    setTimeout(async () => {
+      if (hiredRef.current) {
+        try {
+          const dataUrl = await toPng(hiredRef.current, {
+            width: 1080,
+            height: 1350,
+            cacheBust: true,
+          });
+          const link = document.createElement('a');
+          link.download = `contratado-${generateSlug(aluno.nome)}.png`;
+          link.href = dataUrl;
+          link.click();
+          toast.success('Imagem baixada com sucesso!');
+        } catch (err) {
+          console.error('Erro ao gerar imagem:', err);
+          toast.error('Erro ao gerar imagem.');
+        } finally {
+          setCapturingHired(null);
+        }
+      } else {
+        toast.error('Erro interno: Template não encontrado.');
+        setCapturingHired(null);
       }
     }, 800);
   };
@@ -2063,10 +2095,10 @@ export default function AdminPanel() {
                                   </td>
                                   <td className="px-8 py-6 text-right">
                                     <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      {activeTab === 'vagas' && (
+                                      {(activeTab === 'vagas' || activeTab === 'alunos') && (
                                         <button 
-                                          onClick={() => handleDownloadInstagram(item)}
-                                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                                          onClick={() => activeTab === 'vagas' ? handleDownloadInstagram(item) : handleDownloadInstagramHired(item)}
+                                          className={`p-2 rounded-lg transition-all ${activeTab === 'vagas' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-orange-600 hover:bg-orange-50'}`}
                                           title="Baixar Imagem para Instagram"
                                         >
                                           <Download size={18} />
@@ -2287,6 +2319,10 @@ export default function AdminPanel() {
           ref={storyRef} 
           vacancy={capturingVacancy} 
           partner={data.parceiros.find(p => p.id === capturingVacancy?.parceiro_id)}
+        />
+        <InstagramHiredTemplate
+          ref={hiredRef}
+          aluno={capturingHired}
         />
       </div>
     </div>
@@ -2595,6 +2631,142 @@ const InstagramStoryTemplate = React.forwardRef(({ vacancy, partner }: any, ref:
         <div style={{ fontSize: '38px', fontWeight: '900', lineHeight: '1.4' }}>
           Interessados enviar o currículo para o e-mail: <br/>
           <span style={{ fontSize: '48px', textDecoration: 'underline' }}>vagas@grupocte.com.br</span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const InstagramHiredTemplate = React.forwardRef(({ aluno }: any, ref: any) => {
+  if (!aluno) return null;
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        width: '1080px',
+        height: '1350px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-end',
+        backgroundColor: '#000000',
+        position: 'relative',
+        color: 'white',
+        fontFamily: 'Inter, sans-serif',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Background Image */}
+      <img
+        src={aluno.imagem_url || `https://picsum.photos/seed/${aluno.id}/1080/1350`}
+        alt={aluno.nome}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 0
+        }}
+      />
+
+      {/* Overlay Gradient */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        height: '60%',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
+        zIndex: 1
+      }} />
+
+      {/* Top Banner (Orange Seal) */}
+      <div style={{
+        position: 'absolute',
+        top: '60px',
+        left: '60px',
+        backgroundColor: '#EA580C',
+        padding: '15px 40px',
+        borderRadius: '12px',
+        zIndex: 10,
+        boxShadow: '0 10px 20px rgba(0,0,0,0.2)'
+      }}>
+        <div style={{
+          fontSize: '32px',
+          fontWeight: '900',
+          letterSpacing: '0.1em',
+          color: 'white'
+        }}>
+          CONTRATADO(A)
+        </div>
+      </div>
+
+      {/* Logo (Top Right) */}
+      <div style={{
+        position: 'absolute',
+        top: '60px',
+        right: '60px',
+        zIndex: 10,
+        filter: 'drop-shadow(0 5px 10px rgba(0,0,0,0.3))'
+      }}>
+        <img
+          src="https://res.cloudinary.com/dapsovbs5/image/upload/v1774648783/logo_kb9nkn.png"
+          alt="Grupo CTE"
+          style={{ height: '80px', width: 'auto' }}
+        />
+      </div>
+
+      {/* Bottom Info Section */}
+      <div style={{
+        padding: '80px 60px',
+        zIndex: 10,
+        width: '100%',
+        textAlign: 'left'
+      }}>
+        <h1 style={{
+          fontSize: '85px',
+          fontWeight: '900',
+          color: 'white',
+          lineHeight: '1.0',
+          marginBottom: '10px',
+          textTransform: 'uppercase'
+        }}>
+          {aluno.nome}
+        </h1>
+        
+        <div style={{
+          fontSize: '32px',
+          fontWeight: '700',
+          color: '#E2E8F0',
+          marginBottom: '30px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}>
+          {aluno.idade}
+        </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '15px',
+          backgroundColor: 'rgba(234, 88, 12, 0.1)',
+          padding: '15px 25px',
+          borderRadius: '15px',
+          borderLeft: '8px solid #EA580C',
+          width: 'fit-content'
+        }}>
+          <div style={{ color: '#EA580C', fontSize: '36px' }}>💼</div>
+          <span style={{ 
+            fontSize: '42px', 
+            fontWeight: '900', 
+            color: '#EA580C',
+            textTransform: 'uppercase'
+          }}>
+            {aluno.empresa}
+          </span>
         </div>
       </div>
     </div>
