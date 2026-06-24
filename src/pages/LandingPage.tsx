@@ -104,7 +104,7 @@ export default function LandingPage() {
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('ordem', { ascending: true }),
         supabase.from('vagas_estagio').select('*').order('prazo_candidatura', { ascending: false }),
-        supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }),
+        supabase.from('alunos_contratados').select('*').order('created_at', { ascending: false }).limit(12),
         supabase.from('categorias').select('*').order('ordem', { ascending: true }),
         supabase.from('depoimentos').select('*').order('created_at', { ascending: false }),
         supabase.from('parceiros').select('*').order('ordem', { ascending: true }),
