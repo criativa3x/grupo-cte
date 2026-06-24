@@ -22,6 +22,15 @@ export default function WorkWithUsModal({ isOpen, onClose }: WorkWithUsModalProp
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
+      const MAX_SIZE_MB = 2;
+      const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+      if (selectedFile.size > MAX_SIZE_BYTES) {
+        toast.error(`O arquivo é muito grande. O limite é de ${MAX_SIZE_MB}MB.`);
+        e.target.value = '';
+        return;
+      }
+
       const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
       
       if (validTypes.includes(selectedFile.type) || selectedFile.name.endsWith('.pdf') || selectedFile.name.endsWith('.docx') || selectedFile.name.endsWith('.doc')) {

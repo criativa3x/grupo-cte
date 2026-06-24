@@ -7,6 +7,7 @@ import { getAreaIcon } from '../lib/icons';
 import { motion, AnimatePresence } from 'motion/react';
 import UsefulLinksGrid from '../components/UsefulLinksGrid';
 import { toPng } from 'html-to-image';
+import { compressImage } from '../lib/imageUtils';
 
 const generateSlug = (text: string) => {
   return text
@@ -115,6 +116,21 @@ export default function AdminPanel() {
   const hiredRef = React.useRef<HTMLDivElement>(null);
   const [capturingVacancy, setCapturingVacancy] = useState<any>(null);
   const [capturingHired, setCapturingHired] = useState<any>(null);
+
+  const deleteFileFromUrl = async (url: string, bucket = 'categorias_imagens') => {
+    if (!url) return;
+    try {
+      // Extrair o path relativo do Storage do Supabase
+      // Formato esperado: .../storage/v1/object/public/bucket/folder/filename.ext
+      const parts = url.split(`/public/${bucket}/`);
+      if (parts.length > 1) {
+        const filePath = parts[1];
+        await supabase.storage.from(bucket).remove([filePath]);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar arquivo antigo:', error);
+    }
+  };
 
   const handleDownloadInstagram = async (vacancy: any) => {
     setCapturingVacancy(vacancy);
@@ -429,15 +445,30 @@ export default function AdminPanel() {
 
       let finalFormData = { ...formMap[activeTab] };
 
-      // Handle Banner Image Upload
-      if (activeTab === 'aparencia' && bannerFile) {
-        const fileExt = bannerFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `banners/${fileName}`;
+      const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
+      // Helper to process and compress image
+      const processImage = async (file: File, folder: string) => {
+        if (file.size > MAX_IMAGE_SIZE) {
+          throw new Error('A imagem é muito grande. O limite é de 5MB.');
+        }
+        
+        // Comprimir imagem (converter para Blob JPEG)
+        const compressedBlob = await compressImage(file);
+        const fileName = `${Math.random()}.jpg`;
+        const filePath = `${folder}/${fileName}`;
+
+        // Deletar imagem antiga se estiver editando
+        if (editingId) {
+          const dataKey = activeTab === 'aparencia' ? 'banners' : activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : activeTab === 'alunos' ? 'alunos' : 'cursos';
+          const item = data[dataKey as keyof typeof data].find((i: any) => i.id === editingId);
+          const oldUrl = activeTab === 'parceiros' ? item?.logo_url : item?.imagem_url;
+          if (oldUrl) await deleteFileFromUrl(oldUrl);
+        }
 
         const { error: uploadError } = await supabase.storage
           .from('categorias_imagens')
-          .upload(filePath, bannerFile);
+          .upload(filePath, compressedBlob, { contentType: 'image/jpeg' });
 
         if (uploadError) throw uploadError;
 
@@ -445,7 +476,12 @@ export default function AdminPanel() {
           .from('categorias_imagens')
           .getPublicUrl(filePath);
 
-        finalFormData.imagem_url = publicUrl;
+        return publicUrl;
+      };
+
+      // Handle Banner Image Upload
+      if (activeTab === 'aparencia' && bannerFile) {
+        finalFormData.imagem_url = await processImage(bannerFile, 'banners');
       }
 
       // Process Cursos Textareas into Arrays
@@ -464,78 +500,22 @@ export default function AdminPanel() {
 
       // Handle Category Image Upload
       if (activeTab === 'categorias' && categoriaFile) {
-        const fileExt = categoriaFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `categorias/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('categorias_imagens')
-          .upload(filePath, categoriaFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('categorias_imagens')
-          .getPublicUrl(filePath);
-
-        finalFormData.imagem_url = publicUrl;
+        finalFormData.imagem_url = await processImage(categoriaFile, 'categorias');
       }
 
       // Handle Partner Logo Upload
       if (activeTab === 'parceiros' && parceiroFile) {
-        const fileExt = parceiroFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `parceiros/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('categorias_imagens')
-          .upload(filePath, parceiroFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('categorias_imagens')
-          .getPublicUrl(filePath);
-
-        finalFormData.logo_url = publicUrl;
+        finalFormData.logo_url = await processImage(parceiroFile, 'parceiros');
       }
 
       // Handle Curso Image Upload
       if (activeTab === 'cursos' && cursoFile) {
-        const fileExt = cursoFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `cursos/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('categorias_imagens')
-          .upload(filePath, cursoFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('categorias_imagens')
-          .getPublicUrl(filePath);
-
-        finalFormData.imagem_url = publicUrl;
+        finalFormData.imagem_url = await processImage(cursoFile, 'cursos');
       }
 
       // Handle Aluno Photo Upload
       if (activeTab === 'alunos' && alunoFile) {
-        const fileExt = alunoFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `alunos/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('categorias_imagens')
-          .upload(filePath, alunoFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('categorias_imagens')
-          .getPublicUrl(filePath);
-
-        finalFormData.imagem_url = publicUrl;
+        finalFormData.imagem_url = await processImage(alunoFile, 'alunos');
       }
 
       if (editingId) {
@@ -674,24 +654,14 @@ export default function AdminPanel() {
       const tableName = tableMap[activeTab];
       if (!tableName) return;
 
-      // If deleting a category, partner or student, we might want to delete its image from storage too
-      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'alunos' || activeTab === 'cursos') {
-        const dataKey = activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : activeTab === 'alunos' ? 'alunos' : 'cursos';
-        const itemToDelete = data[dataKey].find(c => c.id === id);
-        const imageUrl = activeTab === 'categorias' ? itemToDelete?.imagem_url : activeTab === 'parceiros' ? itemToDelete?.logo_url : itemToDelete?.imagem_url;
-        const prefix = activeTab === 'categorias' ? 'categorias/' : activeTab === 'parceiros' ? 'parceiros/' : activeTab === 'alunos' ? 'alunos/' : 'cursos/';
+      // If deleting a category, partner, student or banner, we might want to delete its image from storage too
+      if (activeTab === 'categorias' || activeTab === 'parceiros' || activeTab === 'alunos' || activeTab === 'cursos' || activeTab === 'aparencia') {
+        const dataKey = activeTab === 'categorias' ? 'categorias' : activeTab === 'parceiros' ? 'parceiros' : activeTab === 'alunos' ? 'alunos' : activeTab === 'aparencia' ? 'banners' : 'cursos';
+        const itemToDelete = data[dataKey as keyof typeof data].find((c: any) => c.id === id);
+        const imageUrl = activeTab === 'parceiros' ? itemToDelete?.logo_url : itemToDelete?.imagem_url;
 
-        if (itemToDelete && imageUrl) {
-          try {
-            const urlParts = imageUrl.split('/');
-            const fileName = urlParts[urlParts.length - 1];
-            const bucketName = 'categorias_imagens';
-            await supabase.storage
-              .from(bucketName)
-              .remove([`${prefix}${fileName}`]);
-          } catch (storageError) {
-            console.error('Error deleting image from storage:', storageError);
-          }
+        if (imageUrl) {
+          await deleteFileFromUrl(imageUrl);
         }
       }
 
