@@ -983,25 +983,18 @@ export default function AdminPanel() {
             isOpen={isSidebarOpen}
           />
 
-          <SidebarItem 
-            icon={<Database size={20} />} 
-            label="Otimizar Storage" 
-            active={activeTab === 'otimizacao'} 
-            onClick={() => setActiveTab('otimizacao')} 
-            isOpen={isSidebarOpen}
-          />
-
-          <SidebarItem 
-            icon={<Database size={20} />} 
-            label="Otimizar Storage" 
-            active={activeTab === 'otimizacao'} 
-            onClick={() => setActiveTab('otimizacao')} 
-            isOpen={isSidebarOpen}
-          />
-
         </nav>
 
         <div className="p-4 border-t border-white/5 space-y-2">
+          <div className="flex items-center justify-between px-2 mb-2">
+            <button 
+              onClick={() => setActiveTab('otimizacao')}
+              className={`p-1.5 rounded-md transition-all ${activeTab === 'otimizacao' ? 'bg-orange-500/20 text-orange-400' : 'text-white/20 hover:text-white/40'}`}
+              title="Otimizar Storage"
+            >
+              <Database size={14} />
+            </button>
+          </div>
           <SidebarItem 
             icon={<LayoutDashboard size={20} />} 
             label="Voltar ao Site" 
