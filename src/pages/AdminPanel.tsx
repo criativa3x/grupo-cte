@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import UsefulLinksGrid from '../components/UsefulLinksGrid';
 import { toPng } from 'html-to-image';
 import { compressImage } from '../lib/imageUtils';
+import StorageOptimizer from '../components/StorageOptimizer';
 
 const generateSlug = (text: string) => {
   return text
@@ -20,7 +21,7 @@ const generateSlug = (text: string) => {
     .trim();
 };
 
-type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas' | 'links_uteis' | 'candidatos';
+type Tab = 'dashboard' | 'cursos' | 'categorias' | 'vagas' | 'aparencia' | 'alunos' | 'parceiros' | 'banco_talentos' | 'solicitacoes_empresas' | 'candidaturas' | 'links_uteis' | 'candidatos' | 'otimizacao';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -982,6 +983,22 @@ export default function AdminPanel() {
             isOpen={isSidebarOpen}
           />
 
+          <SidebarItem 
+            icon={<Database size={20} />} 
+            label="Otimizar Storage" 
+            active={activeTab === 'otimizacao'} 
+            onClick={() => setActiveTab('otimizacao')} 
+            isOpen={isSidebarOpen}
+          />
+
+          <SidebarItem 
+            icon={<Database size={20} />} 
+            label="Otimizar Storage" 
+            active={activeTab === 'otimizacao'} 
+            onClick={() => setActiveTab('otimizacao')} 
+            isOpen={isSidebarOpen}
+          />
+
         </nav>
 
         <div className="p-4 border-t border-white/5 space-y-2">
@@ -1390,7 +1407,9 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 </div>
-              ) : activeTab === 'banco_talentos' || activeTab === 'candidaturas' || activeTab === 'solicitacoes_empresas' ? (
+                ) : activeTab === 'otimizacao' ? (
+                  <StorageOptimizer />
+                ) : activeTab === 'banco_talentos' || activeTab === 'candidaturas' || activeTab === 'solicitacoes_empresas' ? (
                 <div className="space-y-8">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>

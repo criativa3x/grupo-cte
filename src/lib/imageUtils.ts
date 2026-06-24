@@ -2,7 +2,7 @@
 /**
  * Comprime uma imagem no lado do cliente antes do upload.
  */
-export async function compressImage(file: File, maxWidth = 1200, quality = 0.7): Promise<Blob> {
+export async function compressImage(file: File, maxWidth = 1200, quality = 0.7, type = 'image/jpeg'): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -29,6 +29,12 @@ export async function compressImage(file: File, maxWidth = 1200, quality = 0.7):
           return;
         }
 
+        // Se for JPEG, preencher com fundo branco (evita fundo preto em imagens transparentes)
+        if (type === 'image/jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
+        }
+
         ctx.drawImage(img, 0, 0, width, height);
         
         canvas.toBlob(
@@ -39,8 +45,8 @@ export async function compressImage(file: File, maxWidth = 1200, quality = 0.7):
               reject(new Error('Falha ao gerar Blob da imagem'));
             }
           },
-          'image/jpeg',
-          quality
+          type,
+          type === 'image/jpeg' ? quality : undefined
         );
       };
       img.onerror = () => reject(new Error('Falha ao carregar imagem'));
