@@ -346,6 +346,25 @@ export default function AdminPanel() {
   };
 
   const fetchTabData = async () => {
+    // Evita refetch se já temos dados e não há termo de busca
+    const dataKeyMap: Record<string, keyof typeof data> = {
+      aparencia: 'banners',
+      cursos: 'cursos',
+      categorias: 'categorias',
+      vagas: 'vagas',
+      alunos: 'alunos',
+      parceiros: 'parceiros',
+      banco_talentos: 'curriculos',
+      candidaturas: 'candidaturas',
+      solicitacoes_empresas: 'solicitacoes',
+      candidatos: 'candidatos'
+    };
+
+    const currentKey = dataKeyMap[activeTab];
+    if (adminSearchTerm.trim() === '' && currentKey && data[currentKey]?.length > 0) {
+      return;
+    }
+
     setLoading(true);
     console.log('Buscando dados para:', activeTab, 'Termo:', adminSearchTerm);
     try {
@@ -1321,7 +1340,7 @@ export default function AdminPanel() {
                             />
                             {parceiroForm.logo_url && !parceiroFile && (
                               <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
-                                <img src={parceiroForm.logo_url} alt="Preview" className="h-10 w-auto object-contain" />
+                                <img src={parceiroForm.logo_url} alt="Preview" className="h-10 w-auto object-contain" loading="lazy" />
                               </div>
                             )}
                           </div>
@@ -1362,7 +1381,7 @@ export default function AdminPanel() {
                                 <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
                                   <td className="px-8 py-6">
                                     <div className="w-16 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-2 border border-gray-100">
-                                      <img src={item.logo_url} alt={item.nome} className="max-h-full max-w-full object-contain" />
+                                      <img src={item.logo_url} alt={item.nome} className="max-h-full max-w-full object-contain" loading="lazy" />
                                     </div>
                                   </td>
                                   <td className="px-8 py-6">

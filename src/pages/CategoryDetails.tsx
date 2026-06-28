@@ -154,6 +154,7 @@ export default function CategoryDetails() {
                     alt={curso.titulo} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-blue-950/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">

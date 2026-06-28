@@ -230,6 +230,7 @@ export default function CourseDetails() {
                   alt={course.titulo}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               )}
             </motion.div>

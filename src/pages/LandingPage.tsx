@@ -14,10 +14,26 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
+let cachedLandingContent: any = null;
+
+// Tenta carregar o cache do localStorage na inicialização para persistência entre sessões
+try {
+  const localCache = localStorage.getItem('cte_landing_cache');
+  if (localCache) {
+    const parsed = JSON.parse(localCache);
+    // Cache expira em 1 hora (3600000 ms)
+    if (Date.now() - parsed.timestamp < 3600000) {
+      cachedLandingContent = parsed.data;
+    }
+  }
+} catch (e) {
+  console.error('Erro ao ler cache do localStorage:', e);
+}
+
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [content, setContent] = useState({
+  const [loading, setLoading] = useState(!cachedLandingContent);
+  const [content, setContent] = useState(cachedLandingContent || {
     banners: [] as any[],
     cursos: [] as any[],
     vagas: [] as any[],
@@ -28,6 +44,7 @@ export default function LandingPage() {
   });
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [viewedBanners, setViewedBanners] = useState<Set<number>>(new Set([0]));
   const location = useLocation();
 
   useEffect(() => {
@@ -91,15 +108,21 @@ export default function LandingPage() {
   useEffect(() => {
     if (content.banners.length > 1) {
       const timer = setInterval(() => {
-        setCurrentBannerIndex((prev) => (prev + 1) % content.banners.length);
+        setCurrentBannerIndex((prev) => {
+          const nextIndex = (prev + 1) % content.banners.length;
+          // Registra que este banner foi visualizado para carregar sua imagem
+          setViewedBanners(prevSet => new Set(prevSet).add(nextIndex));
+          return nextIndex;
+        });
       }, 6000);
       return () => clearInterval(timer);
     }
   }, [content.banners.length]);
 
   const fetchContent = async () => {
+    if (cachedLandingContent) return;
+    
     try {
-      // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const [bannersRes, cursosRes, vagasRes, alunosRes, categoriasRes, depoimentosRes, parceirosRes] = await Promise.all([
         supabase.from('banners_home').select('*').order('created_at', { ascending: false }),
         supabase.from('cursos').select('*').order('ordem', { ascending: true }),
@@ -116,7 +139,7 @@ export default function LandingPage() {
         parceiros: partners.find(p => p.id === vaga.parceiro_id)
       }));
 
-      setContent({
+      const newContent = {
         banners: bannersRes.data || [],
         cursos: cursosRes.data || [],
         vagas: vacancies,
@@ -124,7 +147,20 @@ export default function LandingPage() {
         categorias: categoriasRes.data || [],
         depoimentos: depoimentosRes.data || [],
         parceiros: partners,
-      });
+      };
+
+      setContent(newContent);
+      cachedLandingContent = newContent;
+      
+      // Salva no localStorage para persistência
+      try {
+        localStorage.setItem('cte_landing_cache', JSON.stringify({
+          timestamp: Date.now(),
+          data: newContent
+        }));
+      } catch (e) {
+        console.warn('Falha ao salvar cache no localStorage:', e);
+      }
     } catch (error) {
       console.error('Error fetching content:', error);
     } finally {
@@ -194,21 +230,31 @@ export default function LandingPage() {
       <section id="inicio" className="relative min-h-[85vh] flex items-center overflow-hidden bg-blue-950">
         {/* Background Images Stack - Perfect Crossfade */}
         <div className="absolute inset-0">
-          {displayBanners.map((banner, index) => (
-            <div 
-              key={banner.id || index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                currentBannerIndex === index ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <img
-                src={banner.imagem_url}
-                alt={banner.titulo}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          ))}
+          {displayBanners.map((banner, index) => {
+            const isVisible = currentBannerIndex === index;
+            const hasBeenViewed = viewedBanners.has(index);
+            // Só carrega o src se for o banner atual ou se já tiver sido visualizado
+            const imageSrc = (isVisible || hasBeenViewed) ? banner.imagem_url : '';
+            
+            return (
+              <div 
+                key={banner.id || index}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  isVisible ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {imageSrc && (
+                  <img
+                    src={imageSrc}
+                    alt={banner.titulo}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Fixed Overlay - Always on top of images, below text */}
@@ -296,6 +342,7 @@ export default function LandingPage() {
                       className="w-10 h-10 rounded-full border-2 border-blue-950 object-cover" 
                       alt="Aluno"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
                     />
                   ))}
                 </div>
@@ -689,6 +736,7 @@ export default function LandingPage() {
                     alt={cat.titulo} 
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
@@ -768,6 +816,7 @@ export default function LandingPage() {
                         alt={depo.nome} 
                         className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
                     </div>
                     <div className="pt-12 text-center">
@@ -795,6 +844,7 @@ export default function LandingPage() {
                     alt={depo.nome} 
                     className="w-24 h-24 rounded-full border-4 border-orange-600 object-cover shadow-xl group-hover:scale-110 transition-transform"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
                 </div>
                 <div className="pt-12 text-center">
@@ -860,6 +910,7 @@ export default function LandingPage() {
                         alt={aluno.nome} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
                       
                       {/* Floating Badge */}
@@ -943,6 +994,7 @@ export default function LandingPage() {
                   alt={logo.name} 
                   className="h-10 md:h-14 w-auto grayscale opacity-100 hover:grayscale-0 hover:scale-110 transition-all duration-500 cursor-pointer object-contain"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </SwiperSlide>
             ))}

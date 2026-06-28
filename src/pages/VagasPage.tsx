@@ -6,21 +6,41 @@ import Footer from '../components/Footer';
 import { MapPin, Briefcase, ChevronLeft, Loader2, DollarSign, Headset, Calculator, UtensilsCrossed, Calendar, Search, Filter } from 'lucide-react';
 import { getAreaIcon } from '../lib/icons';
 
+let cachedVagas: any[] | null = null;
+
 export default function VagasPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [vagas, setVagas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(!cachedVagas);
+  const [vagas, setVagas] = useState<any[]>(cachedVagas || []);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Tenta carregar do localStorage se não houver cache em memória
+    if (!cachedVagas) {
+      try {
+        const localCache = localStorage.getItem('cte_vagas_cache');
+        if (localCache) {
+          const parsed = JSON.parse(localCache);
+          if (Date.now() - parsed.timestamp < 3600000) {
+            setVagas(parsed.data);
+            cachedVagas = parsed.data;
+            setLoading(false);
+          }
+        }
+      } catch (e) {
+        console.error('Erro ao ler cache do localStorage:', e);
+      }
+    }
     fetchVagas();
   }, []);
 
   const fetchVagas = async () => {
+    // Se já temos cache, evitamos o loading visual, mas ainda buscamos em background 
+    // ou simplesmente retornamos se o cache for muito recente.
+    // Aqui vamos buscar sempre para garantir dados frescos, mas sem bloquear a UI se houver cache.
     try {
-      // Forçamos a busca em tempo real desativando o cache no cliente Supabase
       const [vagasRes, parceirosRes] = await Promise.all([
         supabase.from('vagas_estagio').select('*').order('prazo_candidatura', { ascending: false }),
         supabase.from('parceiros').select('*')
@@ -35,6 +55,17 @@ export default function VagasPage() {
       }));
 
       setVagas(joinedVagas);
+      cachedVagas = joinedVagas;
+      
+      // Salva no localStorage
+      try {
+        localStorage.setItem('cte_vagas_cache', JSON.stringify({
+          timestamp: Date.now(),
+          data: joinedVagas
+        }));
+      } catch (e) {
+        console.warn('Falha ao salvar cache no localStorage:', e);
+      }
     } catch (error) {
       console.error('Error fetching vacancies:', error);
     } finally {
@@ -134,6 +165,7 @@ export default function VagasPage() {
                           alt={vaga.parceiros.nome} 
                           className="h-full w-auto max-w-full object-contain"
                           referrerPolicy="no-referrer"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="w-16 h-16 rounded-2xl bg-[#1a233e] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border-4 border-white">
