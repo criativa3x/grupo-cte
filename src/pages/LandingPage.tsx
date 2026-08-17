@@ -949,7 +949,7 @@ export default function LandingPage() {
             {/* CTA Button - Mural de Sucesso */}
             <div className="flex justify-center mt-12 mb-8">
               <motion.a 
-                href="https://wa.me/5571981586484?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE."
+                href="https://wa.me/5571993442440?text=Olá!%20Gostaria%20de%20informações%20sobre%20o%20Grupo%20CTE."
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
